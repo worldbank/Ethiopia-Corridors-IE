@@ -9,8 +9,6 @@ if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Ban
 tables_file_path <- file.path(project_file_path, "Results", "Tables")
 figures_file_path <- file.path(project_file_path, "Results", "Figures")
 
-
-
 DIST_THRESH <- 2 #km to be considered near a road
 
 dataset <- "points_5percent"
