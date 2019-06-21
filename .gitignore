@@ -1,0 +1,8 @@
+# Ignore Folders
+Code/_old/
+
+# Ignore Files
+*.csv
+*.dta
+*.Rds
+*.Rda

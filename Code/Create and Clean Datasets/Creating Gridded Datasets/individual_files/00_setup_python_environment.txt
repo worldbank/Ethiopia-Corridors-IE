@@ -1,0 +1,26 @@
+# setup python environment
+# channels: default, conda-forge
+conda create -n py36geo2 python=3.6 gdal=2.2.4 geopandas
+conda install -c anaconda numpy
+conda install -c anaconda pandas 
+
+pip install geopandas
+pip install peartree
+pip install osmnx
+
+conda install -c anaconda networkx 
+
+pip install rasterio
+pip install geopy
+pip install boltons
+pip install pyreadr
+
+#conda install -c anaconda scipy 
+
+# conda create -n py36geospatial_v3 python=3.6 geopandas=0.4.0 gdal=2.2.4
+conda create -n py36geospatial_v6 python=3.6 gdal=2.2.4
+
+
+
+
+https://gis.stackexchange.com/questions/305523/gdal-import-error-in-python3-6
