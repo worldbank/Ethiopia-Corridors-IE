@@ -102,6 +102,7 @@ for(subset in c("all", "50above", "below50")){
 for(subset in c("all", "50above", "below50")){
   data[[paste0("years_since_improved_",subset,"_group_placebo")]] <- NA
   data[[paste0("years_since_improved_",subset,"_group_placebo")]][!is.na(data[[paste0("years_since_improved_all")]])] <- "No Treat" # all year regardless of subset
+  data[[paste0("years_since_improved_",subset,"_group_placebo")]][data[[paste0("years_since_improved_",subset)]] >= 0] <- "Treated"
   data[[paste0("years_since_improved_",subset,"_group_placebo")]][data[[paste0("years_since_improved_",subset)]] == -1] <- "T: -1"
   data[[paste0("years_since_improved_",subset,"_group_placebo")]][data[[paste0("years_since_improved_",subset)]] == -2] <- "T: -2"
   data[[paste0("years_since_improved_",subset,"_group_placebo")]][data[[paste0("years_since_improved_",subset)]] == -3] <- "T: -3"

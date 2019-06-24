@@ -3,7 +3,7 @@
 
 # PARAMETERS
 dataset <- "points_5percent"
-constant_sample <- TRUE
+constant_sample <- FALSE
 baseline <- "ntl_1" # all, ntl_1, ntl_2, ntl_3
 
 WIDTH <- 5.5
@@ -59,6 +59,7 @@ year_improved_end <- 2008
 years_since_end <- 2012 - year_improved_end
 years_since_begin <- 1997 - year_improved_begin 
 
+data$constant_all <- 0
 data$constant_all[(data$year_improved_all %in% year_improved_begin:year_improved_end) & 
                   (data$years_since_improved_all %in% years_since_begin:years_since_end)] <- 1
 
@@ -151,7 +152,7 @@ data_annual_all <- bind_rows(data_annual_all,
                              data_annual_50above,
                              data_annual_below50) %>% gather("variable", "value", -years_since_treat, -treat)
 
-data_annual_all <- data_annual_all[data_annual_all$years_since_treat %in% years_since_begin:years_since_end,]
+if(constant_sample) data_annual_all <- data_annual_all[data_annual_all$years_since_treat %in% years_since_begin:years_since_end,]
 
 #### Reorder Factors
 data_annual_all$treat <- factor(data_annual_all$treat, levels=c("all", "50above", "below50"))

@@ -1,19 +1,9 @@
 # Impact of Expressway Expansion
 # Ethiopia IE
 
-# Setup ------------------------------------------------------------------------
-if(Sys.info()[["user"]] == "r521633") project_file_path <- "/home/wb521633/IEs/Ethiopia IE"
-if(Sys.info()[["user"]] == "WB521633") project_file_path <- "C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE"
-if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Bank/IEs/Ethiopia IE"
-
-tables_file_path <- file.path(project_file_path, "Results", "Tables")
-figures_file_path <- file.path(project_file_path, "Results", "Figures")
-
-DIST_THRESH <- 2 #km to be considered near a road
-
 dataset <- "points_5percent"
-HEIGHT <- 7
-WIDTH <- 10
+HEIGHT <- 6
+WIDTH <- 14
 p_dodge_width <- 1
 
 # Load and Prep Data -----------------------------------------------------------
@@ -26,6 +16,10 @@ results_all$FE[results_all$FE == "GADM_ID_3year"] <- "Woreda & Year"
 results_all$DV_full <- ""
 results_all$DV_full[results_all$DV == "dmspols"] <- "DMSP-OLS (Raw)"
 results_all$DV_full[results_all$DV == "dmspols_zhang"] <- "DMSP-OLS (Intercalibrated)"
+results_all$DV_full[results_all$DV == "dmspols_1"] <- "DMSP-OLS > 0 (Raw)"
+results_all$DV_full[results_all$DV == "dmspols_5"] <- "DMSP-OLS > 5 (Raw)"
+results_all$DV_full[results_all$DV == "dmspols_zhang_1"] <- "DMSP-OLS > 0 (Intercalibrated)"
+results_all$DV_full[results_all$DV == "dmspols_zhang_5"] <- "DMSP-OLS > 5 (Intercalibrated)"
 results_all$DV_full[results_all$DV == "ndvi"] <- "NDVI"
 results_all$DV_full[results_all$DV == "ndvi_cropland"] <- "NDVI:  Cropland"
 results_all$DV_full[results_all$DV == "globcover_urban"] <- "Globcover: Urban"
@@ -44,6 +38,7 @@ ntl_base <- 1
 constant_sample <- FALSE
 
 for(DV in c("dmspols", "dmspols_zhang",
+            "dmspols_zhang_1",
             "ndvi", "ndvi_cropland",
             "globcover_urban", "globcover_cropland")){
   for(improved_road in "All"){

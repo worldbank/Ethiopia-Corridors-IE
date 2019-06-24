@@ -1,16 +1,6 @@
 # Impact of Expressway Expansion
 # Ethiopia IE
 
-# Setup ------------------------------------------------------------------------
-if(Sys.info()[["user"]] == "r521633") project_file_path <- "/home/wb521633/IEs/Ethiopia IE"
-if(Sys.info()[["user"]] == "WB521633") project_file_path <- "C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE"
-if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Bank/IEs/Ethiopia IE"
-
-tables_file_path <- file.path(project_file_path, "Results", "Tables")
-figures_file_path <- file.path(project_file_path, "Results", "Figures")
-
-DIST_THRESH <- 2 #km to be considered near a road
-
 dataset <- "points_5percent"
 
 # Load Data --------------------------------------------------------------------
@@ -57,6 +47,8 @@ results_all <- data.frame(NULL)
 model_id <- 1
 
 for(DV in c("dmspols", "dmspols_zhang",
+            "dmspols_1", "dmspols_5",
+            "dmspols_zhang_1", "dmspols_zhang_5",
             "ndvi", "ndvi_cropland",
             "globcover_urban", "globcover_cropland")){
   for(FE in c("year", "cell_id + year", "GADM_ID_3 + year")){
