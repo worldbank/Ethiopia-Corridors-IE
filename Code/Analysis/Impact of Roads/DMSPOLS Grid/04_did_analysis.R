@@ -21,9 +21,30 @@ if(dataset == "points_5percent"){
 data <- data[(data$year >= 1996) & (data$year <= 2016),]
 data <- data[!is.na(data$years_since_improved_all),]
 
-# Years Since Improved Variables -----------------------------------------------
+# Fix Variables ----------------------------------------------------------------
 data$years_since_improved_all_group_placebo <- factor(data$years_since_improved_all_group_placebo, 
                                                       levels = c("T: -1","Treated", "T: -2", "T: -3", "T: -4"))
+
+data$rsdp_phase_improved_all <- 0
+data$rsdp_phase_improved_all[data$year_improved_all %in% 1996:2002 & data$year >= 1996] <- 0
+data$rsdp_phase_improved_all[data$year_improved_all %in% 2003:2007 & data$year >= 2003] <- 2
+data$rsdp_phase_improved_all[data$year_improved_all %in% 2008:2010 & data$year >= 2008] <- 3
+data$rsdp_phase_improved_all[data$year_improved_all %in% 2011:2016 & data$year >= 2011] <- 4
+data$rsdp_phase_improved_all <- as.factor(data$rsdp_phase_improved_all)
+
+data$rsdp_phase_improved_50above <- 0
+data$rsdp_phase_improved_50above[data$year_improved_50above %in% 1996:2002 & data$year >= 1996] <- 0
+data$rsdp_phase_improved_50above[data$year_improved_50above %in% 2003:2007 & data$year >= 2003] <- 2
+data$rsdp_phase_improved_50above[data$year_improved_50above %in% 2008:2010 & data$year >= 2008] <- 3
+data$rsdp_phase_improved_50above[data$year_improved_50above %in% 2011:2016 & data$year >= 2011] <- 4
+data$rsdp_phase_improved_50above <- as.factor(data$rsdp_phase_improved_50above)
+
+data$rsdp_phase_improved_below50 <- 0
+data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 1996:2002 & data$year >= 1996] <- 0
+data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2003:2007 & data$year >= 2003] <- 2
+data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2008:2010 & data$year >= 2008] <- 3
+data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2011:2016 & data$year >= 2011] <- 4
+data$rsdp_phase_improved_below50 <- as.factor(data$rsdp_phase_improved_below50)
 
 
 
@@ -72,13 +93,31 @@ felm_allroads_placebo_ndvi_nocropland_yearfe <- felm(ndvi_nocropland ~ years_sin
 felm_allroads_placebo_ndvi_nocropland_yearlinear <- felm(ndvi_nocropland ~ years_since_improved_all_placebo_bin + year | cell_id | 0 | GADM_ID_3, data=data[data$globcover_cropland_2015 %in% 0,])
 
 # Placebo - Leads
-felm_allreaods_placebo_leads_dmspols <- felm(dmspols_zhang ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
-felm_allreaods_placebo_leads_dmspols_1 <- felm(dmspols_zhang_1 ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
-felm_allreaods_placebo_leads_dmspols_5 <- felm(dmspols_zhang_5 ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
-felm_allreaods_placebo_leads_urban <- felm(globcover_urban ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
-felm_allreaods_placebo_leads_cropland <- felm(globcover_cropland ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
-felm_allreaods_placebo_leads_ndvi <- felm(ndvi ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
-felm_allreaods_placebo_leads_ndvi_cropland <- felm(ndvi_nocropland ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_placebo_leads_dmspols <- felm(dmspols_zhang ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_placebo_leads_dmspols_1 <- felm(dmspols_zhang_1 ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_placebo_leads_dmspols_5 <- felm(dmspols_zhang_5 ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_placebo_leads_urban <- felm(globcover_urban ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_placebo_leads_cropland <- felm(globcover_cropland ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_placebo_leads_ndvi <- felm(ndvi ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_placebo_leads_ndvi_cropland <- felm(ndvi_nocropland ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
+
+# Did - all
+felm_allroads_did_dmspols <- felm(dmspols_zhang ~ rsdp_phase_improved_all | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_did_dmspols_1 <- felm(dmspols_zhang_1 ~ rsdp_phase_improved_all | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_did_dmspols_5 <- felm(dmspols_zhang_5 ~ rsdp_phase_improved_all | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_did_urban <- felm(globcover_urban ~ rsdp_phase_improved_all | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_did_cropland <- felm(globcover_cropland ~ rsdp_phase_improved_all | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_did_ndvi <- felm(ndvi ~ rsdp_phase_improved_all | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_allroads_did_ndvi_cropland <- felm(ndvi_cropland ~ rsdp_phase_improved_all | year + cell_id | 0 | GADM_ID_3, data=data)
+
+# Did - by road
+felm_byroad_did_dmspols <- felm(dmspols_zhang ~ rsdp_phase_improved_50above + rsdp_phase_improved_below50  | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_byroad_did_dmspols_1 <- felm(dmspols_zhang_1 ~ rsdp_phase_improved_50above + rsdp_phase_improved_below50 | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_byroad_did_dmspols_5 <- felm(dmspols_zhang_5 ~ rsdp_phase_improved_50above + rsdp_phase_improved_below50 | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_byroad_did_urban <- felm(globcover_urban ~ rsdp_phase_improved_50above + rsdp_phase_improved_below50 | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_byroad_did_cropland <- felm(globcover_cropland ~ rsdp_phase_improved_50above + rsdp_phase_improved_below50 | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_byroad_did_ndvi <- felm(ndvi ~ rsdp_phase_improved_50above + rsdp_phase_improved_below50 | year + cell_id | 0 | GADM_ID_3, data=data)
+felm_byroad_did_ndvi_cropland <- felm(ndvi_cropland ~ rsdp_phase_improved_50above + rsdp_phase_improved_below50 | year + cell_id | 0 | GADM_ID_3, data=data)
 
 # DMSP-OLS Value 
 felm_allroads <- felm(dmspols_zhang ~ years_since_improved_all_bin | cell_id + year | 0 | GADM_ID_3, data=data)
@@ -237,7 +276,6 @@ felm_allroads_blabv50roads_ndvi_cropland <- felm(ndvi_cropland ~ factor(years_si
 felm_allroads_yearssince_ndvi_nocropland <- felm(ndvi_nocropland ~ factor(years_since_improved_all_group) | cell_id + year | 0 | GADM_ID_3, data=data[data$globcover_cropland_2015 %in% 0,])
 felm_allroads_blabv50roads_ndvi_nocropland <- felm(ndvi_nocropland ~ factor(years_since_improved_below50_group) + factor(years_since_improved_50above_group) | cell_id + year | 0 | GADM_ID_3, data=data[data$globcover_cropland_2015 %in% 0,])
 
-
 # Placebo - Leads
 felm_allreaods_placebo_leads_dmspols <- felm(dmspols_zhang ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
 felm_allreaods_placebo_leads_dmspols_1 <- felm(dmspols_zhang_1 ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
@@ -247,13 +285,13 @@ felm_allreaods_placebo_leads_cropland <- felm(globcover_cropland ~ factor(years_
 felm_allreaods_placebo_leads_ndvi <- felm(ndvi ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
 felm_allreaods_placebo_leads_ndvi_cropland <- felm(ndvi_nocropland ~ factor(years_since_improved_all_group_placebo) | year + cell_id | 0 | GADM_ID_3, data=data)
 
-stargazer(felm_allreaods_placebo_leads_dmspols,
-          felm_allreaods_placebo_leads_dmspols_1,
-          felm_allreaods_placebo_leads_dmspols_5,
-          felm_allreaods_placebo_leads_urban,
-          felm_allreaods_placebo_leads_cropland,
-          felm_allreaods_placebo_leads_ndvi,
-          felm_allreaods_placebo_leads_ndvi_cropland,
+stargazer(felm_allroads_placebo_leads_dmspols,
+          felm_allroads_placebo_leads_dmspols_1,
+          felm_allroads_placebo_leads_dmspols_5,
+          felm_allroads_placebo_leads_urban,
+          felm_allroads_placebo_leads_cropland,
+          felm_allroads_placebo_leads_ndvi,
+          felm_allroads_placebo_leads_ndvi_cropland,
           dep.var.labels.include = T,
           dep.var.labels = c("DMSP-OLS","DMSP-OLS $>$ 0","DMSP-OLS $>$ 5","Proportion Urban",
                              "Crop", "NDVI", "NDVI: Crop"),
@@ -275,6 +313,69 @@ stargazer(felm_allreaods_placebo_leads_dmspols,
                                                      "_dataset",dataset,
                                                      "_distthresh",DIST_THRESH,
                                                      ".tex")))
+
+
+
+stargazer(felm_allroads_did_dmspols,
+          felm_allroads_did_dmspols_1,
+          felm_allroads_did_dmspols_5,
+          felm_allroads_did_urban,
+          felm_allroads_did_cropland,
+          felm_allroads_did_ndvi,
+          felm_allroads_did_ndvi_cropland,
+          dep.var.labels.include = T,
+          dep.var.labels = c("DMSP-OLS","DMSP-OLS $>$ 0","DMSP-OLS $>$ 5","Proportion Urban",
+                             "Crop", "NDVI", "NDVI: Crop"),
+          dep.var.caption = "",
+          covariate.labels = c("RSDP Phase 2", 
+                               "RSDP Phase 3",
+                               "RSDP Phase 4"),
+          omit.stat = c("f","ser"),
+          align=TRUE,
+          no.space=TRUE,
+          float=FALSE,
+          column.sep.width="-15pt",
+          digits=2,
+          add.lines = list(
+            c("Cell FE", rep("Y", 7)),
+            c("Year FE", rep("Y", 7))),
+          out = file.path(tables_file_path, paste0("eventstudy_results_did_all",
+                                                   "_dataset",dataset,
+                                                   "_distthresh",DIST_THRESH,
+                                                   ".tex")))
+
+stargazer(felm_byroad_did_dmspols,
+          felm_byroad_did_dmspols_1,
+          felm_byroad_did_dmspols_5,
+          felm_byroad_did_urban,
+          felm_byroad_did_cropland,
+          felm_byroad_did_ndvi,
+          felm_byroad_did_ndvi_cropland,
+          dep.var.labels.include = T,
+          dep.var.labels = c("DMSP-OLS","DMSP-OLS $>$ 0","DMSP-OLS $>$ 5","Proportion Urban",
+                             "Crop", "NDVI", "NDVI: Crop"),
+          dep.var.caption = "",
+          covariate.labels = c("RSDP Phase 2 [Speed 50 Above]", 
+                               "RSDP Phase 3 [Speed 50 Above]",
+                               "RSDP Phase 4 [Speed 50 Above]",
+                               "RSDP Phase 2 [Speed Below 50]", 
+                               "RSDP Phase 3 [Speed Below 50]",
+                               "RSDP Phase 4 [Speed Below 50]"),
+          omit.stat = c("f","ser"),
+          align=TRUE,
+          no.space=TRUE,
+          float=FALSE,
+          column.sep.width="-15pt",
+          digits=2,
+          add.lines = list(
+            c("Cell FE", rep("Y", 7)),
+            c("Year FE", rep("Y", 7))),
+          out = file.path(tables_file_path, paste0("eventstudy_results_did_byroad",
+                                                   "_dataset",dataset,
+                                                   "_distthresh",DIST_THRESH,
+                                                   ".tex")))
+
+
 
 
 
