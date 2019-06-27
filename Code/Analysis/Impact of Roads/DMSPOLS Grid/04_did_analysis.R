@@ -46,8 +46,6 @@ data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2008:2010 & dat
 data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2011:2016 & data$year >= 2011] <- 4
 data$rsdp_phase_improved_below50 <- as.factor(data$rsdp_phase_improved_below50)
 
-
-
 # Regressions: Binary Treatment ------------------------------------------------
 covariate.labels <- c("Imp. Rd, Any",
                       "Imp. Rd $<$ 50km/hr",
@@ -65,7 +63,11 @@ covariate.labels <- c("Imp. Rd, Any",
                       "Imp. Rd $\\geq$ 50km/hr $\\times$ Base NTL Low",
                       "Imp. Rd $\\geq$ 50km/hr $\\times$ Base NTL High")
 
-# Points -----------------------------------------------------------------------
+# Regressions ------------------------------------------------------------------
+#data$years_since_improved_all_bin <- as.numeric(data$years_since_improved_all >= 0)
+#data <- data[data$year >= 1997 & data$year <= 2012,]
+#a <- felm(dmspols_zhang ~ factor(years_since_improved_all) | cell_id + year | 0 | GADM_ID_3, data=data)
+#b <- felm(dmspols_zhang ~ years_since_improved_all_bin | cell_id + year | 0 | GADM_ID_3, data=data)
 
 # Placebo
 felm_allroads_placebo_dmspols_yearfe <- felm(dmspols_zhang ~ years_since_improved_all_placebo_bin | cell_id + year | 0 | GADM_ID_3, data=data)
