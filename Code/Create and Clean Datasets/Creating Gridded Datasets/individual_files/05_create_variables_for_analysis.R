@@ -140,6 +140,17 @@ data$ndvi_nocropland <- data$ndvi
 data$ndvi_nocropland[!(data$globcover_cropland %in% 0)] <- 0
 data$ndvi_nocropland[!(data$year %in% 2000:2015)] <- NA
 
+# Adjust Order of Factor Variables ---------------------------------------------
+# For years since treatment, make "-1" the left out group.
+for(subset in c("all", "50above", "below50")){
+  data[[paste0("years_since_improved_",subset)]] <- factor(data[[paste0("years_since_improved_",subset)]])
+  data[[paste0("years_since_improved_",subset)]] <- relevel(data[[paste0("years_since_improved_",subset)]], "-1")
+  
+  data[[paste0("years_since_improved_",subset,"_placebo")]] <- factor(data[[paste0("years_since_improved_",subset,"_placebo")]])
+  data[[paste0("years_since_improved_",subset,"_placebo")]] <- relevel(data[[paste0("years_since_improved_",subset,"_placebo")]], "-1")
+  
+}
+
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(project_file_path, "Data", "FinalData", "dmspols_grid_dataset", paste0(filename,"_analysisvars.Rds")))
 
