@@ -46,6 +46,10 @@ data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2008:2010 & dat
 data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2011:2016 & data$year >= 2011] <- 4
 data$rsdp_phase_improved_below50 <- as.factor(data$rsdp_phase_improved_below50)
 
+# Subset by Phase --------------------------------------------------------------
+#data$near_improved_50above[data$year == 2016] %>% table
+#cells_near_improved_road <- data$cell_id[(data$year == 2016) & (data$near_improved_all_2016)]
+
 # Regressions: Binary Treatment ------------------------------------------------
 covariate.labels <- c("Imp. Rd, Any",
                       "Imp. Rd $<$ 50km/hr",

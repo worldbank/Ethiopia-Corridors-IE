@@ -4,6 +4,8 @@ data <- readRDS(file.path(project_file_path, "Data", "FinalData", "dmspols_grid_
 felm_allroads_yearssince_dmspols_group <- felm(dmspols_zhang ~ factor(years_since_improved_all_group) | cell_id + year | 0 | GADM_ID_3, data=data)
 felm_allroads_yearssince_dmspols <- felm(dmspols_zhang ~ factor(years_since_improved_all) | cell_id + year | 0 | GADM_ID_3, data=data)
 
+stargazer()
+
 summary(felm_allroads_yearssince_dmspols_group)
 summary(felm_allroads_yearssince_dmspols)
 
