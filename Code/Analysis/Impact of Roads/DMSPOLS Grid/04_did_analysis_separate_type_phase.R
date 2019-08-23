@@ -8,7 +8,6 @@ road_variable <- "below50"
 phase_cat <- "phase_12"
 phase_cat <- "phase_34"
 
-
 for(phase_cat in c("phase_all", "phase_12", "phase_34")){
   for(road_variable in c("below50", "50above", "all")){
     print(road_variable)
@@ -36,6 +35,10 @@ for(phase_cat in c("phase_all", "phase_12", "phase_34")){
       year_start <- 2008
       year_end <- 2016
     }
+    
+    # Near improved now gives binary variable WHEN an improved road is improved (eg, 0 0 1 0 0), change so becomes
+    # 0 0 1 1 1.
+    data[[paste0("near_improved_", road_variable)]] <- as.numeric(as.character(data[[paste0("years_since_improved_", road_variable)]])) >= 0
     
     cells_near_improved_road_beginyear <- data$cell_id[(data$year == year_start) & (data[[paste0("near_improved_", road_variable)]] == 0)]
     cells_near_improved_road_endyear <- data$cell_id[(data$year == year_end) & (data[[paste0("near_improved_", road_variable)]] == 1)]

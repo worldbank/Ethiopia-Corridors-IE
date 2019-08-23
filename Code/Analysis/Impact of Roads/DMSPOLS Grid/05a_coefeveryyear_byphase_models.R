@@ -16,8 +16,6 @@ felm_extractcoefs <- function(formula, data){
   
 }
 
-
-
 # Load Data --------------------------------------------------------------------
 data_all <- readRDS(file.path(project_file_path, "Data", "FinalData", "dmspols_grid_dataset", "dmspols_level_dataset_5percentsample_analysisvars.Rds"))
 
@@ -30,7 +28,7 @@ results_all <- data.frame(NULL)
 
 for(phase_cat in c("phase_all", "phase_12", "phase_34")){
   for(road_variable in c("below50", "50above", "all")){
-    print(road_variable)
+    print(phase_cat)
     print(road_variable)
     print("")
     
@@ -56,16 +54,24 @@ for(phase_cat in c("phase_all", "phase_12", "phase_34")){
       year_end <- 2016
     }
     
+    # Near improved now gives binary variable WHEN an improved road is improved (eg, 0 0 1 0 0), change so becomes
+    # 0 0 1 1 1.
+    data[[paste0("near_improved_", road_variable)]] <- as.numeric(as.character(data[[paste0("years_since_improved_", road_variable)]])) >= 0
+    
     cells_near_improved_road_beginyear <- data$cell_id[(data$year == year_start) & (data[[paste0("near_improved_", road_variable)]] == 0)]
     cells_near_improved_road_endyear <- data$cell_id[(data$year == year_end) & (data[[paste0("near_improved_", road_variable)]] == 1)]
     cells_near_improved_road <- intersect(cells_near_improved_road_beginyear, cells_near_improved_road_endyear)
-      
+    
     #### Restrict to cells
     data <- data[data$cell_id %in% cells_near_improved_road,]
     
     data$years_since_improved <- data[[paste0("years_since_improved_", road_variable)]]
-    data$years_since_improved <- data$years_since_improved %>% as.character %>% as.numeric %>% as.factor %>% relevel(ref="-5")
-  
+    data$years_since_improved <- data$years_since_improved %>% as.character %>% as.numeric %>% as.factor %>% relevel(ref="0")
+    
+    ####
+    #data$years_since_improved[!is.na(data$dmspols_zhang)] %>% table
+    #a <- data[data$cell_id == 7026,]
+    
     felm_allroads_yearssince_dmspols <- felm_extractcoefs(dmspols_zhang ~ years_since_improved | cell_id + year | 0 | GADM_ID_3, data=data)
     felm_allroads_yearssince_dmspols1 <- felm_extractcoefs(dmspols_zhang_1 ~ years_since_improved | cell_id + year | 0 | GADM_ID_3, data=data)
     felm_allroads_yearssince_dmspols5 <- felm_extractcoefs(dmspols_zhang_5 ~ years_since_improved | cell_id + year | 0 | GADM_ID_3, data=data)
