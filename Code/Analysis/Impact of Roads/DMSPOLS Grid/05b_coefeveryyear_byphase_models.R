@@ -26,9 +26,9 @@ results_all$dep_var_clean[results_all$dep_var == "globcover_urban"] <- "Urban"
 results_all$dep_var_clean[results_all$dep_var == "ndvi"] <- "NDVI"
 results_all$dep_var_clean[results_all$dep_var == "ndvi_cropland"] <- "NDVI (Cropland Areas)"
 
-
 for(phase_cat in c("Phase 1 and 2", "Phase 3 and 4", "All Phases")){
   results_temp <- results_all[results_all$phase_cat == phase_cat,]
+  results_temp <- results_temp[results_temp$dmspols_base_group %in% 123,]
   
   for(dep_var in unique(results_temp$dep_var)){
     
@@ -58,4 +58,32 @@ for(phase_cat in c("Phase 1 and 2", "Phase 3 and 4", "All Phases")){
 }
 
 
+# 50 km/hr and Above          All Roads     Below 50 km/hr 
+results_temp <- results_all[results_all$phase_cat == "All Phases",]
+results_temp <- results_temp[results_temp$road_variable == "All Roads",]
+results_temp <- results_temp[results_temp$dep_var == "globcover_urban",]
+results_temp <- results_temp[results_temp$dmspols_base_group != 123,]
 
+results_temp$dmspols_base_group <- as.character(results_temp$dmspols_base_group)
+results_temp$dmspols_base_group[results_temp$dmspols_base_group == "1"] <- "Zero"
+results_temp$dmspols_base_group[results_temp$dmspols_base_group == "2"] <- "Below Median"
+results_temp$dmspols_base_group[results_temp$dmspols_base_group == "3"] <- "Above Median"
+results_temp$dmspols_base_group <- results_temp$dmspols_base_group %>% as.factor
+
+p <- ggplot(data=results_temp, 
+            aes(x=years_since_improved, y=Estimate, 
+                ymin = coef_lb, ymax = coef_ub,
+                group=dmspols_base_group, color=dmspols_base_group)) +
+  facet_wrap(~ phase_cat, nrow = 1, scales="free") +
+  geom_vline(xintercept=0, linetype="solid", color = "gray70") +
+  geom_linerange(size=.5,
+                 position = position_dodge(width=.6)) +
+  geom_point(size=1.5,
+             position = position_dodge(width=.6)) +
+  theme_minimal() +
+  labs(title = "Urban",
+       color="Baseline NTL",
+       x="Years Since Road Improved") +
+  theme(plot.title = element_text(hjust=0.5)) +
+  scale_x_continuous(breaks=seq(-24,24,2))
+p
