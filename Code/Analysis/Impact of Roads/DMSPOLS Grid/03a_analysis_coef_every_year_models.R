@@ -3,6 +3,8 @@
 
 dataset <- "points_5percent"
 
+# TODO: Collapse coefficients in later years into one >10;<10
+
 # Load Data --------------------------------------------------------------------
 if(dataset == "cluster_all"){
   data <- readRDS(file.path(project_file_path, "Data", "FinalData", "urban_cluster_dataset", "urban_cluster_data_analysisvars.Rds"))
