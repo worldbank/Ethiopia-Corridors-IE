@@ -20,9 +20,6 @@ if(dataset == "points_5percent"){
 
 data <- data[(data$year >= 1996) & (data$year <= 2016),]
 
-# Create Variables -------------------------------------------------------------
-data$dmspols_1997_group %>% table
-
 # Functions --------------------------------------------------------------------
 lm_confint_tidy <- function(lm){
   lm_confint <- confint(lm) %>% 
@@ -43,6 +40,7 @@ FE <- "cell_id"
 dmspols_1997_bin_choice <- "all"
 constant_sample <- FALSE
 
+# Initialize dataframe to store results
 results_all <- data.frame(NULL)
 model_id <- 1
 
@@ -54,43 +52,63 @@ for(DV in c("dmspols", "dmspols_zhang",
   for(FE in c("year", "cell_id + year", "GADM_ID_3 + year")){
     for(dmspols_1997_bin_choice in c("zero","low","high","all")){
       for(constant_sample in c(FALSE)){
+        for(gadm_id_1_choice in c("1","2","3","4","5","6","7","8","9","10","11","all")){
+
+          tryCatch({
+            
+            # Print current step in for loop
+            print(paste(DV, FE, dmspols_1997_bin_choice, constant_sample, gadm_id_1_choice))
+            
+            # Create nighttime lights base variable to subset on
+            if(dmspols_1997_bin_choice == "zero") ntl_base <- 1 
+            if(dmspols_1997_bin_choice == "low") ntl_base <- 2 
+            if(dmspols_1997_bin_choice == "high") ntl_base <- 3 
+            if(dmspols_1997_bin_choice == "all") ntl_base <- 1:3 
+            
+            # Create adm 1 variable to subset on
+            if(gadm_id_1_choice == "all"){
+              gadm_id_1 <- 1:11
+            } else{
+              gadm_id_1 <- gadm_id_1_choice %>% as.numeric
+            }
+            
+            # Define formula
+            improved_all_formula <- paste(DV, "~ factor(years_since_improved_all) | ", FE, " | 0 | GADM_ID_3") %>% as.formula
+            improved_byspeed_formula <- paste(DV, "~ factor(years_since_improved_50above) + factor(years_since_improved_below50) | ", FE, " | 0 | GADM_ID_3") %>% as.formula
+            
+            # Regressions and create dataframes of results
+            improved_all_felm <- felm(improved_all_formula, data=data[(data$dmspols_1997_group %in% ntl_base) & 
+                                                                        (data$GADM_ID_1 %in% gadm_id_1),]) %>% 
+              lm_confint_tidy %>% 
+              dplyr::mutate(model_category = "All Roads") %>%
+              dplyr::mutate(improved_road = "All") %>%
+              dplyr::mutate(constant_sample = constant_sample) %>%
+              dplyr::mutate(DV = DV) %>%
+              dplyr::mutate(FE = gsub("\\+| ","",FE)) %>%
+              dplyr::mutate(dmspols_1997_bin = paste(ntl_base, collapse="")) %>%
+              dplyr::mutate(gadm_id_1 = gadm_id_1_choice)
+            improved_all_felm$model_id <- paste0("all_", model_id)
+            
+            improved_byspeed_felm <- felm(improved_byspeed_formula, data=data[data$dmspols_1997_group %in% ntl_base,]) %>% 
+              lm_confint_tidy %>% 
+              dplyr::mutate(model_category = "By Speed") %>%
+              dplyr::mutate(constant_sample = constant_sample) %>%
+              dplyr::mutate(DV = DV) %>%
+              dplyr::mutate(FE = gsub("\\+| ","",FE)) %>%
+              dplyr::mutate(dmspols_1997_bin = paste(ntl_base, collapse="")) %>%
+              dplyr::mutate(gadm_id_1 = gadm_id_1_choice)
+            
+            improved_byspeed_felm$improved_road <- ifelse(grepl("50above", improved_byspeed_felm$variable), "50above", "below50")
+            improved_byspeed_felm$model_id <- paste0("byspeed_", model_id)
+            
+            # Append results to master dataframe
+            results_i <- bind_rows(improved_all_felm, improved_byspeed_felm)
+            results_all <- bind_rows(results_all, results_i)
+            
+            model_id <- model_id + 1
+          }, error=function(e){})
         
-        print(paste(DV, FE, dmspols_1997_bin_choice, constant_sample))
-      
-        if(dmspols_1997_bin_choice == "zero") ntl_base <- 1 
-        if(dmspols_1997_bin_choice == "low") ntl_base <- 2 
-        if(dmspols_1997_bin_choice == "high") ntl_base <- 3 
-        if(dmspols_1997_bin_choice == "all") ntl_base <- 1:3 
-        
-        improved_all_formula <- paste(DV, "~ factor(years_since_improved_all) | ", FE, " | 0 | GADM_ID_3") %>% as.formula
-        improved_byspeed_formula <- paste(DV, "~ factor(years_since_improved_50above) + factor(years_since_improved_below50) | ", FE, " | 0 | GADM_ID_3") %>% as.formula
-        
-        improved_all_felm <- felm(improved_all_formula, data=data[data$dmspols_1997_group %in% ntl_base,]) %>% 
-          lm_confint_tidy %>% 
-          dplyr::mutate(model_category = "All Roads") %>%
-          dplyr::mutate(improved_road = "All") %>%
-          dplyr::mutate(constant_sample = constant_sample) %>%
-          dplyr::mutate(DV = DV) %>%
-          dplyr::mutate(FE = gsub("\\+| ","",FE)) %>%
-          dplyr::mutate(dmspols_1997_bin = paste(ntl_base, collapse=""))
-        improved_all_felm$model_id <- paste0("all_", model_id)
-        
-        improved_byspeed_felm <- felm(improved_byspeed_formula, data=data[data$dmspols_1997_group %in% ntl_base,]) %>% 
-          lm_confint_tidy %>% 
-          dplyr::mutate(model_category = "By Speed") %>%
-          dplyr::mutate(constant_sample = constant_sample) %>%
-          dplyr::mutate(DV = DV) %>%
-          dplyr::mutate(FE = gsub("\\+| ","",FE)) %>%
-          dplyr::mutate(dmspols_1997_bin = paste(ntl_base, collapse=""))
-        improved_byspeed_felm$improved_road <- ifelse(grepl("50above", improved_byspeed_felm$variable), "50above", "below50")
-        improved_byspeed_felm$model_id <- paste0("byspeed_", model_id)
-        
-        
-        results_i <- bind_rows(improved_all_felm, improved_byspeed_felm)
-        results_all <- bind_rows(results_all, results_i)
-        
-        model_id <- model_id + 1
-        
+        }
       }
     }
   }

@@ -5,18 +5,18 @@ dataset <- "points_5percent"
 # Load Data --------------------------------------------------------------------
 if(dataset == "cluster_all"){
   filename <- "urban_cluster_data"
-  data <- readRDS(file.path(project_file_path, "Data", "FinalData", "dmspols_grid_dataset", paste0(filename,".Rds")))
+  data <- readRDS(file.path(finaldata_file_path, "dmspols_grid_dataset", paste0(filename,".Rds")))
   data$cell_id <- data$cluster_id
 }
 
 if(dataset == "points"){
   filename <- "dmspols_level_dataset"
-  data <- readRDS(file.path(project_file_path, "Data", "FinalData", "dmspols_grid_dataset", paste0(filename,".Rds")))
+  data <- readRDS(file.path(finaldata_file_path, "dmspols_grid_dataset", paste0(filename,".Rds")))
 }
 
 if(dataset == "points_5percent"){
   filename <- "dmspols_level_dataset_5percentsample"
-  data <- readRDS(file.path(project_file_path, "Data", "FinalData", "dmspols_grid_dataset", paste0(filename,".Rds")))
+  data <- readRDS(file.path(finaldata_file_path, "dmspols_grid_dataset", paste0(filename,".Rds")))
   data$gc_urban_mean <- data$globcover_urban
 }
 

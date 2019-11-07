@@ -21,7 +21,7 @@ if(dataset == "points_5percent"){
 data <- data[(data$year >= 1996) & (data$year <= 2016),]
 data <- data[!is.na(data$years_since_improved_all),]
 
-# Fix Variables ----------------------------------------------------------------
+# Create Variables -------------------------------------------------------------
 data$years_since_improved_all_group_placebo <- factor(data$years_since_improved_all_group_placebo, 
                                                       levels = c("T: -1","Treated", "T: -2", "T: -3", "T: -4"))
 
@@ -45,10 +45,6 @@ data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2003:2007 & dat
 data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2008:2010 & data$year >= 2008] <- 3
 data$rsdp_phase_improved_below50[data$year_improved_below50 %in% 2011:2016 & data$year >= 2011] <- 4
 data$rsdp_phase_improved_below50 <- as.factor(data$rsdp_phase_improved_below50)
-
-# Subset by Phase --------------------------------------------------------------
-#data$near_improved_50above[data$year == 2016] %>% table
-#cells_near_improved_road <- data$cell_id[(data$year == 2016) & (data$near_improved_all_2016)]
 
 # Regressions: Binary Treatment ------------------------------------------------
 covariate.labels <- c("Imp. Rd, Any",
@@ -248,7 +244,7 @@ felm_blabv50roads_ntlbase_ndvi_nocropland <- felm(ndvi_nocropland ~ years_since_
 
 
 
-## Time Since Treatment
+#### Time Since Treatment
 felm_allroads_yearssince_dmspols <- felm(dmspols_zhang ~ factor(years_since_improved_all_group) | cell_id + year | 0 | GADM_ID_3, data=data)
 felm_allroads_blabv50roads_dmspols <- felm(dmspols_zhang ~ factor(years_since_improved_below50_group) + factor(years_since_improved_50above_group) | cell_id + year | 0 | GADM_ID_3, data=data)
 

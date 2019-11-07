@@ -44,6 +44,8 @@ library(stringr)
 library(doBy)
 library(stargazer)
 library(scales)
+library(rasterVis)
+library(ggpubr)
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 
 
