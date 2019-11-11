@@ -9,8 +9,8 @@ if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Ban
 rawdata_file_path <- file.path(project_file_path, "Data", "RawData")
 outputs_for_grid <- file.path(project_file_path, "Data", "IntermediateData", "Outputs for Grid")
 finaldata_file_path <- file.path(project_file_path, "Data", "FinalData")
-figures_file_path <- file.path(project_file_path, "Results", "Figures")
-tables_file_path <- file.path(project_file_path, "Results", "Tables")
+figures_file_path <- file.path(project_file_path,"Outputs", "Results", "Figures")
+tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 
 # Parameters -------------------------------------------------------------------
 

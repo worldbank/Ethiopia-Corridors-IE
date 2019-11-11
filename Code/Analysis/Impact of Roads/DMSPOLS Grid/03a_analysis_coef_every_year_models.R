@@ -22,8 +22,26 @@ if(dataset == "points_5percent"){
 
 data <- data[(data$year >= 1996) & (data$year <= 2016),]
 
-# Create Variables -------------------------------------------------------------
+# Create/Clean Variables -------------------------------------------------------
+### Region Type
 data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense")
+
+# Year Since Improved - Grouped Together later/early years
+data$years_since_improved_all <- data$years_since_improved_all %>% as.character() %>% as.numeric
+data$years_since_improved_50above <- data$years_since_improved_50above %>% as.character() %>% as.numeric
+data$years_since_improved_below50 <- data$years_since_improved_below50 %>% as.character() %>% as.numeric
+
+data$years_since_improved_all[data$years_since_improved_all >= 10] <- 10
+data$years_since_improved_50above[data$years_since_improved_50above >= 10] <- 10
+data$years_since_improved_below50[data$years_since_improved_below50 >= 10] <- 10
+
+data$years_since_improved_all[data$years_since_improved_all <= -10] <- -10
+data$years_since_improved_50above[data$years_since_improved_50above <= -10] <- -10
+data$years_since_improved_below50[data$years_since_improved_below50 <= -10] <- -10
+
+data$years_since_improved_all <- data$years_since_improved_all %>% as.factor() %>% relevel(ref="-1")
+data$years_since_improved_50above <- data$years_since_improved_50above %>% as.factor() %>% relevel(ref="-1")
+data$years_since_improved_below50 <- data$years_since_improved_below50 %>% as.factor() %>% relevel(ref="-1")
 
 # Functions --------------------------------------------------------------------
 lm_confint_tidy <- function(lm){
@@ -61,7 +79,7 @@ for(DV in c("dmspols", "dmspols_zhang",
         tryCatch({
           
           # Print current step in for loop
-          print(paste(DV, FE, dmspols_1997_bin_choice, constant_sample, region_type))
+          print(paste(DV, FE, dmspols_1997_bin_choice, region_type))
           
           # If region type is ALL, give all types
           if(region_type %in% "All"){
@@ -75,8 +93,8 @@ for(DV in c("dmspols", "dmspols_zhang",
           if(dmspols_1997_bin_choice == "all") ntl_base <- 1:3 
           
           # Define formula
-          improved_all_formula <- paste(DV, "~ factor(years_since_improved_all) | ", FE, " | 0 | GADM_ID_3") %>% as.formula
-          improved_byspeed_formula <- paste(DV, "~ factor(years_since_improved_50above) + factor(years_since_improved_below50) | ", FE, " | 0 | GADM_ID_3") %>% as.formula
+          improved_all_formula <- paste(DV, "~ years_since_improved_all | ", FE, " | 0 | GADM_ID_3") %>% as.formula
+          improved_byspeed_formula <- paste(DV, "~ years_since_improved_50above + years_since_improved_below50 | ", FE, " | 0 | GADM_ID_3") %>% as.formula
           
           # Regressions and create dataframes of results
           improved_all_felm <- felm(improved_all_formula, data=data[(data$dmspols_1997_group %in% ntl_base) & 
