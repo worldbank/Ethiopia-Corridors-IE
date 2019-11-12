@@ -108,7 +108,8 @@ for(DV in c("dmspols", "dmspols_zhang",
             dplyr::mutate(region_type = region_type %>% paste(collapse=";", sep=""))
           improved_all_felm$model_id <- paste0("all_", model_id)
           
-          improved_byspeed_felm <- felm(improved_byspeed_formula, data=data[data$dmspols_1997_group %in% ntl_base,]) %>% 
+          improved_byspeed_felm <- felm(improved_byspeed_formula, data=data[(data$dmspols_1997_group %in% ntl_base) & 
+                                                                              (data$region_type %in% region_type),]) %>%
             lm_confint_tidy %>% 
             dplyr::mutate(model_category = "By Speed") %>%
             dplyr::mutate(DV = DV) %>%
