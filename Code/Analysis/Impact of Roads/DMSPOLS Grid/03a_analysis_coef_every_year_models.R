@@ -43,6 +43,8 @@ data$years_since_improved_all <- data$years_since_improved_all %>% as.factor() %
 data$years_since_improved_50above <- data$years_since_improved_50above %>% as.factor() %>% relevel(ref="-1")
 data$years_since_improved_below50 <- data$years_since_improved_below50 %>% as.factor() %>% relevel(ref="-1")
 
+data$dmspols_log <- log(data$dmspols+1)
+
 # Functions --------------------------------------------------------------------
 lm_confint_tidy <- function(lm){
   lm_confint <- confint(lm) %>% 
@@ -71,7 +73,8 @@ for(DV in c("dmspols", "dmspols_zhang",
             "dmspols_1", "dmspols_5",
             "dmspols_zhang_1", "dmspols_zhang_5",
             "ndvi", "ndvi_cropland",
-            "globcover_urban", "globcover_cropland")){
+            "globcover_urban", "globcover_cropland",
+            "dmspols_log")){
   for(FE in c("year", "cell_id + year", "GADM_ID_3 + year")){
     for(dmspols_1997_bin_choice in c("zero","low","high","all")){
       for(region_type in c("Dense","Sparse", "All")){
