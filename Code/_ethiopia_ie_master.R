@@ -14,6 +14,9 @@ tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 
 # Parameters -------------------------------------------------------------------
 
+DATASET_TYPE <- "dmspols_grid_dataset_randomsample"
+
+
 # Parameters for Grid Analysis
 CHUNK_SIZE_DIST_ROADS <- 1250
 MCCORS_DIST_ROADS <- 1

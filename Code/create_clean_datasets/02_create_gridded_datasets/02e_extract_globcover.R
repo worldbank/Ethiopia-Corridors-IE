@@ -5,7 +5,7 @@
 #coordinates(points) <- ~long+lat
 #crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
-polygons <- readRDS(file.path(outputs_for_grid, "DMSPOLS", "polygons.Rds"))
+polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons.Rds"))
 
 # Add Data ---------------------------------------------------------------------
 extract_globcover <- function(year){
@@ -53,13 +53,13 @@ extract_globcover <- function(year){
   polygons$year <- year
   
   df_out <- as.data.frame(polygons)
-  df_out <- subset(df_out, select=-c(geometry, eth_dmspols_allyears))
-  
+  df_out$geometry <- NULL
+
   return(df_out)
 }
 
 polygons_globcover <- lapply(1992:2015, extract_globcover) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(polygons_globcover, file.path(outputs_for_grid, TYPE, "points_globcover.Rds"))
+saveRDS(polygons_globcover, file.path(finaldata_file_path, DATASET_TYPE, "points_globcover.Rds"))
 

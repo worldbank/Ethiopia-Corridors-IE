@@ -3,7 +3,7 @@
 # Creates a blank (1) point dataset and (2) polygon dataset of grids at the DMSP-OLS
 # level (ie, 1x1km grid). These datasets contain a unique ID and spatial information.
 # The points file is saved as a dataframe with lat/lon while the poylgon is saved
-# as a spatial polygons dataframe.
+# as a spatial features object.
 
 # The script also generates a dataset that includes a panel of DMSP-OLS data. It 
 # is done in this script as the process for preparing the above files makes
@@ -58,16 +58,15 @@ dmspols_coords <- coordinates(dmspols) %>%
 dmspols_coords <- dmspols_coords[cells_to_keep,]
 dmspols_coords$cell_id <- 1:nrow(dmspols_coords)
 
-saveRDS(dmspols_coords, file.path(finaldata_file_path, "dmspols_grid_dataset_randomsample", "individual_datasets","points.Rds"))
+saveRDS(dmspols_coords, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets","points.Rds"))
 
 # Polygon of Points ------------------------------------------------------------
-
 dmspols_poly <- polygonize(dmspols, na.rm=F)
-
 dmspols_poly <- dmspols_poly[cells_to_keep,]
 dmspols_poly$cell_id <- 1:nrow(dmspols_poly)
+dmspols_poly$eth_dmspols_allyears <- NULL
 
-saveRDS(dmspols_poly, file.path(finaldata_file_path, "dmspols_grid_dataset_randomsample", "individual_datasets","polygons.Rds"))
+saveRDS(dmspols_poly, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets","polygons.Rds"))
 
 # DMSP Panel -------------------------------------------------------------------
 # Create datsaet of DMSPOLS data. Easier to do here because if the cells_to_keep
@@ -86,5 +85,5 @@ dmspols_panel <- lapply(1:22, function(i){
   }) %>%
   bind_rows
 
-saveRDS(dmspols_panel, file.path(finaldata_file_path, "dmspols_grid_dataset_randomsample", "individual_datasets","points_dmspols.Rds"))
+saveRDS(dmspols_panel, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets","points_dmspols.Rds"))
 
