@@ -14,6 +14,7 @@ results_all$FE[results_all$FE == "cell_idyear"] <- "Cell ID & Year"
 results_all$FE[results_all$FE == "GADM_ID_3year"] <- "Woreda & Year"
 
 results_all$DV_full <- ""
+results_all$DV_full[results_all$DV == "dmspols_log"] <- "DMSP-OLS (Log)"
 results_all$DV_full[results_all$DV == "dmspols"] <- "DMSP-OLS"
 results_all$DV_full[results_all$DV == "dmspols_zhang"] <- "DMSP-OLS (Intercalibrated)"
 results_all$DV_full[results_all$DV == "dmspols_1"] <- "DMSP-OLS > 0"
@@ -53,7 +54,7 @@ ntl_base <- 123
 FE <- "Cell ID & Year"
 region_type <- "All"
 
-for(DV in c("dmspols", "dmspols_zhang",
+for(DV in c("dmspols", "dmspols_zhang", "dmspols_log",
         "dmspols_zhang_1",
         "ndvi", "ndvi_cropland",
         "globcover_urban", "globcover_cropland")){
