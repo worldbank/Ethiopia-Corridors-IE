@@ -20,6 +20,7 @@ points <- points %>% spTransform(CRS(UTM_ETH))
 #### Load roads
 roads_sdf <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
 roads_sdf$id <- 1 # useful to have a variable the same for all obs when aggreagting roads later
+roads_sdf <- roads_sdf %>% spTransform(CRS(UTM_ETH))
 
 # Calculate Distance -----------------------------------------------------------
 determine_distance_to_points <- function(year, points, roads){
@@ -41,7 +42,7 @@ determine_distance_to_points <- function(year, points, roads){
     print(paste(speed, year))
     
     roads_subset <- roads_yyyy[roads_yyyy[[paste0("Speed", year)]] %in% speed,] %>% raster::aggregate(by="id")
-    points[[paste0("distance_road_speed_", speed)]] <- gDistance_chunks(points, roads_subset, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS) 
+    points[[paste0("distance_improvedroad_speed_", speed)]] <- gDistance_chunks(points, roads_subset, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS) 
   }
   
   points$year <- year

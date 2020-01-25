@@ -16,6 +16,7 @@ points <- points %>% spTransform(CRS(UTM_ETH))
 #### Load roads
 roads_sdf <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
 roads_sdf$id <- 1 # useful to have a variable the same for all obs when aggreagting roads later
+roads_sdf <- roads_sdf %>% spTransform(CRS(UTM_ETH))
 
 # Calculate Distance -----------------------------------------------------------
 roads <-roads_sdf

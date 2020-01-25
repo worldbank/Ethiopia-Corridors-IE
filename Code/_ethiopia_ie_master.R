@@ -49,6 +49,7 @@ library(stargazer)
 library(scales)
 library(rasterVis)
 library(ggpubr)
+library(readr)
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 
 

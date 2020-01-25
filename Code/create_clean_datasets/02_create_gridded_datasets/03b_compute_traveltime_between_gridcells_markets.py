@@ -17,8 +17,6 @@ if getpass.getuser() == 'robmarty': code_file_path = '/Users/robmarty/Documents/
 DATASET_TYPE = "dmspols_grid_dataset_randomsample"
 
 # Load Packages
-import pandas
-import pandas as pd
 import geopy
 import geopandas as gpd
 import os, sys, time
@@ -29,7 +27,8 @@ import osmnx as ox
 from shapely.ops import unary_union, linemerge, transform
 from shapely.wkt import loads
 from shapely.geometry import LineString, MultiLineString, Point
-sys.path.append(r'' + code_file_path + 'Code/general_functions/GOSTNets/GOSTNets')
+#sys.path.append(r'' + code_file_path + 'Code/general_functions/GOSTNets/GOSTNets')
+sys.path.append(code_file_path + 'Code/general_functions/GOSTNets/GOSTNets') # this was works with mac
 import GOSTnet as gn
 import LoadOSM as losm
 import pyproj
@@ -100,9 +99,11 @@ def calc_MA_per_node(points_nodes_i):
 #'C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE/Data/FinalData/dmspols_grid_dataset_randomsample/individual_datasets/points.Rds'
 #points_dict = pyreadr.read_r('C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE/Data/FinalData/dmspols_grid_dataset_randomsample/individual_datasets/points.Rds')
 
-points_dict = pyreadr.read_r(os.path.join(project_file_path,'Data','FinalData',DATASET_TYPE,'individual_datasets', 'points.Rds'))
-points_df = points_dict[None]
-points_df = pd.DataFrame(points_df)
+#points_dict = pyreadr.read_r(os.path.join(project_file_path,'Data','FinalData',DATASET_TYPE,'individual_datasets', 'points.Rds'))
+#points_df = points_dict[None]
+#points_df = pd.DataFrame(points_df)
+
+points_df = pd.read_csv(os.path.join(project_file_path,'Data','FinalData',DATASET_TYPE,'individual_datasets', 'points.csv'))
 
 geometry = [Point(xy) for xy in zip(points_df.long, points_df.lat)]
 points_df = points_df.drop(['long', 'lat'], axis=1)
@@ -120,17 +121,29 @@ markets_gdp = gpd.GeoDataFrame(markets, crs=crs, geometry=geometry)
 UTM_eth_str = 'epsg:20138'
 UTM_eth = {'init': 'epsg:20138'}
 
+YEAR = '1998'
+G = nx.read_gpickle(os.path.join(project_file_path,'Data','RawData','RoadNetworkPanelDataV3_GraphObjects','roads_' + YEAR + '.pickle'))
+
 # Loop through year -----------------------------------------------------------
+# Strategy:
+  # 1. Snap markets and grid cells to nearest node on network. In this, we calculate the
+  #    distance of points to the nearest node.
+  # 2. Create a dataframe. Rows are
+
 for YEAR in ['1996', '1998','2000','2002','2004', '2006', '2008', '2010', '2012', '2014', '2016']:
 
-    # Load Graph
+    # Load and Prep -----------------------------------------------------------
+    #### Load Graph
     G = nx.read_gpickle(os.path.join(project_file_path,'Data','RawData','RoadNetworkPanelDataV3_GraphObjects','roads_' + YEAR + '.pickle'))
 
-    # Snap Origin/Destination to Network
+    #### Snap Origin/Destination to Network
+    # Puts point on network and includes variable with distance to network. Creates a dataframe with
+    # id, geometry, NN (nearest node), NN_dist (distance to nearest node)
     markets_gdp_Gsnap = gn.pandana_snap(G, markets_gdp, add_dist_to_node_col=True, target_crs = UTM_eth_str)
     points_gdp_Gsnap = gn.pandana_snap(G, points_gdp, add_dist_to_node_col=True, target_crs = UTM_eth_str)
 
     # Dataframe of Travel Time: Markets to all Nodes --------------------------
+    # Create dataframe
     nodes = list(markets_gdp_Gsnap.NN)
 
     # Initialize Dataframe

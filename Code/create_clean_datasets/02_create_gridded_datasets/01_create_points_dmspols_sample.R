@@ -59,6 +59,7 @@ dmspols_coords <- dmspols_coords[cells_to_keep,]
 dmspols_coords$cell_id <- 1:nrow(dmspols_coords)
 
 saveRDS(dmspols_coords, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets","points.Rds"))
+write_csv(dmspols_coords, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets","points.csv"))
 
 # Polygon of Points ------------------------------------------------------------
 dmspols_poly <- polygonize(dmspols, na.rm=F)

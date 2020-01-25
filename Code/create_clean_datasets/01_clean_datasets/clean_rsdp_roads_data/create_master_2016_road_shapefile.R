@@ -107,6 +107,9 @@ for(year in c(1997,1999,2001,2003,2005,2007,2009,2011,2013,2015)){
   roads_2016[[paste0("Speed",year)]][roads_2016$Complete_G == year] <- roads_2016[[paste0("Speed",year+1)]][roads_2016$Complete_G == year]
 }
 
+# Reproject to WGS 84 ----------------------------------------------------------
+roads_2016 <- roads_2016 %>% spTransform("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
 # Export -----------------------------------------------------------------------
 saveRDS(roads_2016, file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
 

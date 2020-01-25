@@ -1,24 +1,110 @@
 # Create Variables for Analysis
 
-dataset <- "points_5percent"
+# All distances measured in meters.
+
+NEAR_CUTOFF <- 5 * 1000
 
 # Load Data --------------------------------------------------------------------
-if(dataset == "cluster_all"){
-  filename <- "urban_cluster_data"
-  data <- readRDS(file.path(finaldata_file_path, "dmspols_grid_dataset", paste0(filename,".Rds")))
-  data$cell_id <- data$cluster_id
+data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
+
+# Distance to aggregate road categories ----------------------------------------
+# We calculate distance to roads by speed limit. Here we calculate distance
+# to any road, road 50 km/hr and above and roads less than 50 km/hr
+
+# If all NA, then return NA; if one isn't NA, return a value
+min_NAifAllNA <- function(x){
+  
+  if(sum(!is.na(x)) > 0){
+    return(min(x, na.rm=T))
+  } else{
+    return(NA)
+  }
+
 }
 
-if(dataset == "points"){
-  filename <- "dmspols_level_dataset"
-  data <- readRDS(file.path(finaldata_file_path, "dmspols_grid_dataset", paste0(filename,".Rds")))
+data$distance_road <- apply(data[,paste0("distance_road_speed_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_NAifAllNA)
+data$distance_road_50above <- apply(data[,paste0("distance_road_speed_",c(50,70,120))], 1, FUN = min_NAifAllNA)
+data$distance_road_below50 <- apply(data[,paste0("distance_road_speed_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
+
+data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speed_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_NAifAllNA)
+data$distance_improvedroad_50above <- apply(data[,paste0("distance_improvedroad_speed_",c(50,70,120))], 1, FUN = min_NAifAllNA)
+data$distance_improvedroad_below50 <- apply(data[,paste0("distance_improvedroad_speed_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
+
+# Add Treatment Variables ------------------------------------------------------
+min_ignore_zero <- function(x){
+  # Calculates min, exlcuding zeros. Useful for determining first year of improved
+  # road. For example, with: 0, 0, 0, 2004, 0, 0, 2007, 0, 0 -- will return 2004.
+  # If all zeros or all NAs, then returns NA.
+  
+  x <- x[!(x %in% 0)]
+  x <- x[!is.na(x)]
+  
+  if(length(x) %in% 0){
+    return(NA)
+  } else{
+    return(min(x))
+  }
 }
 
-if(dataset == "points_5percent"){
-  filename <- "dmspols_level_dataset_5percentsample"
-  data <- readRDS(file.path(finaldata_file_path, "dmspols_grid_dataset", paste0(filename,".Rds")))
-  data$gc_urban_mean <- data$globcover_urban
-}
+
+data <- data %>%
+  
+  #### Whether cell near road
+  mutate(near_road         = distance_road         <= NEAR_CUTOFF,
+         near_road_50above = distance_road_50above <= NEAR_CUTOFF,
+         near_road_below50 = distance_road_below50 <= NEAR_CUTOFF,
+         
+         near_improvedroad         = distance_improvedroad         <= NEAR_CUTOFF,
+         near_improvedroad_50above = distance_improvedroad_50above <= NEAR_CUTOFF,
+         near_improvedroad_below50 = distance_improvedroad_below50 <= NEAR_CUTOFF) %>%
+  
+  #### Cell group variables
+  group_by(cell_id) %>%
+  
+  # Year road improved (if any). Only consider earliest improved road. If cell near
+  # area where another road was improved, we don't consider this.
+  mutate(year_improved         = min_ignore_zero(near_improvedroad         * year),
+         year_improved_50above = min_ignore_zero(near_improvedroad_50above * year),
+         year_improved_below50 = min_ignore_zero(near_improvedroad_below50 * year)) %>%
+         
+  ungroup() %>%
+  
+  #### Year since road improved
+  mutate(years_since_improved         = year - year_improved,
+         years_since_improved_50above = year - year_improved_50above,
+         years_since_improved_below50 = year - year_improved_below50)
+
+# Dependent Variable Transformations -------------------------------------------
+#### Inverse Hyperbolic Since Transformation 
+# This is used by Mitnik et. al. due to lots of zeros in DMSP-OLS 
+calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
+
+data <- data %>%
+  
+  group_by(cell_id) %>%
+  
+  # Baseline variables
+  mutate(dmspols_1997 = dmspols[year == 1997]) %>%
+  mutate(globcover_cropland_2015 = globcover_cropland[year == 2015]) %>%
+  
+  ungroup() %>%
+  
+  mutate(dmspols_ihs = calc_ihs(dmspols),
+         dmspols_zhang_ihs = calc_ihs(dmspols_zhang),
+         dmspols_1997 = calc_ihs(dmspols_1997))
+  
+# Years Since Improved: Left out factor (-1) -----------------------------------
+data$years_since_improved <- data$years_since_improved %>% as.factor() %>% relevel(ref="-1")
+data$years_since_improved_50above <- data$years_since_improved_50above %>% as.factor() %>% relevel(ref="-1")
+data$years_since_improved_below50 <- data$years_since_improved_below50 %>% as.factor() %>% relevel(ref="-1")
+
+
+a <- lm(dmspols ~ years_since_improved + factor(year), data=data)
+aa <- felm(globcover_urban ~ years_since_improved | year + cell_id | 0 | GADM_ID_3, data=data)
+aa %>% summary()
+
+
+
 
 # Years Since Improved Variables -----------------------------------------------
 #### Distance to Roads
