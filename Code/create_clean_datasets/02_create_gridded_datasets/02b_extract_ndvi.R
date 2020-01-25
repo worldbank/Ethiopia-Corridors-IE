@@ -36,5 +36,5 @@ extract_ndvi_to_polygons <- function(year, polygons){
 polygons_ndvi <- lapply(2000:2018, extract_ndvi_to_polygons, polygons) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(polygons_ndvi, file.path(finaldata_file_path, DATASET_TYPE, "points_ndvi.Rds"))
+saveRDS(polygons_ndvi, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_ndvi.Rds"))
 

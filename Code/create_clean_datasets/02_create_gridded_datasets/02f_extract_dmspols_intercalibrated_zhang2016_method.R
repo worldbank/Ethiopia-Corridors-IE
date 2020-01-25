@@ -1,7 +1,7 @@
 # Extract DMSPOLS-Intercalibrated to Points
 
 # Load Data --------------------------------------------------------------------
-points <- readRDS(file.path(outputs_for_grid, TYPE, "points.Rds"))
+points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
 coordinates(points) <- ~long+lat
 crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
@@ -42,5 +42,5 @@ extract_raster_to_points <- function(year, points){
 points_all <- lapply(1992:2012, extract_raster_to_points, points) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(points_all, file.path(outputs_for_grid, TYPE, "points_dmspols_zhang2016.Rds"))
+saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_dmspols_zhang2016.Rds"))
 

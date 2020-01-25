@@ -14,5 +14,5 @@ points$GADM_ID_2 <- points_OVER_gadm$NAME_2 %>% as.factor()
 points$GADM_ID_3 <- points_OVER_gadm$NAME_3 %>% as.factor()
 
 # Export -----------------------------------------------------------------------
-saveRDS(points@data, file.path(finaldata_file_path, DATASET_TYPE, "points_gadm.Rds"))
+saveRDS(points@data, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_gadm.Rds"))
 

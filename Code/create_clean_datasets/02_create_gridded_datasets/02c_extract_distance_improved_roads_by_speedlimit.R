@@ -1,7 +1,11 @@
-# Distance to Roads by Speed Limit and Year
+# Distance to Improved Roads by Speed Limit and Year
 
-# Calculate distance of each point to the closest road for each speed limit in 
-# each year.
+# Calculate distance of each point to the closest improved road for each speed 
+# limit in each year. Only considers roads improved in the current year. Consequently,
+# if createing a variable that indicates if near an improved road, variable would
+# could look like: 0 0 1 0 0 1 0 0 (where near improved road in two years). If
+# wanted variable that turns and stays on after first time improved, need to further
+# clean this variable. In short, only considers year of treatment.
 
 # Load and Prep Data -----------------------------------------------------------
 # Load data and reporject to Ethiopia UTM. UTM better for distance calculations 
@@ -18,33 +22,36 @@ roads_sdf <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", 
 roads_sdf$id <- 1 # useful to have a variable the same for all obs when aggreagting roads later
 
 # Calculate Distance -----------------------------------------------------------
-roads <-roads_sdf
 determine_distance_to_points <- function(year, points, roads){
   
   print("* -------------------------")
   print(year)
   
-  # Grab roads for relevant year. Select if speed limit above 0 (ie, road exists)
+  # Grab roads for relevant year
   roads_yyyy <- roads[roads[[paste0("Speed",year)]] > 0,]
+  
+  # Subset to improved roads. Determined improved by whether speed is greater in
+  # this year compared to previous year.
+  roads_yyyy <- roads_yyyy[roads_yyyy[[paste0("Speed",year)]] > roads_yyyy[[paste0("Speed", year-1 )]],]
   
   # Loop through speeds. Subset road based on that speed. Add that speed to the
   # points dataframe
   for(speed in sort(unique(roads_yyyy[[paste0("Speed", year)]]))){
     print("* -------------------------")
-    print(speed)
+    print(paste(speed, year))
     
-    # Restrict to roads that are speed limit "speed" and aggregate to one row
     roads_subset <- roads_yyyy[roads_yyyy[[paste0("Speed", year)]] %in% speed,] %>% raster::aggregate(by="id")
     points[[paste0("distance_road_speed_", speed)]] <- gDistance_chunks(points, roads_subset, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS) 
   }
   
   points$year <- year
   
+  rm(roads)
   return(points@data)
 }
 
-points_all <- lapply(1996:2016, determine_distance_to_points, points, roads_sdf) %>% bind_rows
+points_all <- lapply(1997:2016, determine_distance_to_points, points, roads_sdf) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_distance_roads_byspeed.Rds"))
+saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_distance_improved_roads_byspeed.Rds"))
 

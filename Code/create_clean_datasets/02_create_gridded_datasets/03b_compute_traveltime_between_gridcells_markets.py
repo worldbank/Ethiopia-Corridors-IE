@@ -11,7 +11,14 @@ import getpass
 if getpass.getuser() == 'WB521633': project_file_path = 'C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE/'
 if getpass.getuser() == 'robmarty': project_file_path = '/Users/robmarty/Dropbox/World Bank/IEs/Ethiopia IE/'
 
+if getpass.getuser() == 'WB521633': code_file_path = 'C:/Users/wb521633/Documents/Github/Ethiopia-Corridors-IE/'
+if getpass.getuser() == 'robmarty': code_file_path = '/Users/robmarty/Documents/Github/Ethiopia-Corridors-IE/'
+
+DATASET_TYPE = "dmspols_grid_dataset_randomsample"
+
 # Load Packages
+import pandas
+import pandas as pd
 import geopy
 import geopandas as gpd
 import os, sys, time
@@ -22,7 +29,7 @@ import osmnx as ox
 from shapely.ops import unary_union, linemerge, transform
 from shapely.wkt import loads
 from shapely.geometry import LineString, MultiLineString, Point
-sys.path.append(r'' + project_file_path + 'Code/GOSTNets/GOSTNets')
+sys.path.append(r'' + code_file_path + 'Code/general_functions/GOSTNets/GOSTNets')
 import GOSTnet as gn
 import LoadOSM as losm
 import pyproj
@@ -89,7 +96,11 @@ def calc_MA_per_node(points_nodes_i):
 
 # Load Origin and Destinations ------------------------------------------------
 # Origins
-points_dict = pyreadr.read_r(os.path.join(project_file_path,'Data','IntermediateData','Outputs for Grid','DMSPOLS', 'points.Rds'))
+#os.path.join(project_file_path,'Data','FinalData',DATASET_TYPE,'individual_datasets', 'points.Rds')   
+#'C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE/Data/FinalData/dmspols_grid_dataset_randomsample/individual_datasets/points.Rds'
+#points_dict = pyreadr.read_r('C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE/Data/FinalData/dmspols_grid_dataset_randomsample/individual_datasets/points.Rds')
+
+points_dict = pyreadr.read_r(os.path.join(project_file_path,'Data','FinalData',DATASET_TYPE,'individual_datasets', 'points.Rds'))
 points_df = points_dict[None]
 points_df = pd.DataFrame(points_df)
 

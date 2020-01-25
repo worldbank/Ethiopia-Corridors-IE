@@ -61,5 +61,5 @@ extract_globcover <- function(year){
 polygons_globcover <- lapply(1992:2015, extract_globcover) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(polygons_globcover, file.path(finaldata_file_path, DATASET_TYPE, "points_globcover.Rds"))
+saveRDS(polygons_globcover, file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points_globcover.Rds"))
 
