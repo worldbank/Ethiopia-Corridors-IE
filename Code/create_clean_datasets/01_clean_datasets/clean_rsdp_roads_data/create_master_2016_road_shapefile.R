@@ -107,6 +107,22 @@ for(year in c(1997,1999,2001,2003,2005,2007,2009,2011,2013,2015)){
   roads_2016[[paste0("Speed",year)]][roads_2016$Complete_G == year] <- roads_2016[[paste0("Speed",year+1)]][roads_2016$Complete_G == year]
 }
 
+# Add Phase Variable -----------------------------------------------------------
+roads_2016$rsdp_phase <- NA
+roads_2016$rsdp_phase[roads_2016$Complete_G %in% 1997:2002] <- 1
+roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2003:2007] <- 2
+roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2008:2010] <- 3
+roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2011:2016] <- 4
+roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2017:2020] <- 5
+
+# Years Since Phase Started ----------------------------------------------------
+roads_2016@data <- roads_2016@data %>%
+  group_by(rsdp_phase) %>%
+  mutate(phase_start_year = min(Complete_G)) %>%
+  ungroup() %>%
+  mutate(years_since_phase_start = Complete_G - phase_start_year) %>%
+  as.data.frame()
+
 # Reproject to WGS 84 ----------------------------------------------------------
 roads_2016 <- roads_2016 %>% spTransform("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
@@ -115,12 +131,5 @@ saveRDS(roads_2016, file.path(project_file_path, "Data", "FinalData", "roads", "
 
 roads_2016_sf <- st_as_sf(roads_2016)
 st_write(roads_2016_sf, file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.geojson"), delete_dsn=T)
-
-#### Truncates variables so don't use
-#writeOGR(obj=roads_2016, 
-#         dsn=file.path(project_file_path, "Data", "FinalData", "roads"), 
-#         layer="RoadNetworkPanelData_1996_2016", 
-#         driver="ESRI Shapefile",
-#         overwrite_layer=T)
 
 

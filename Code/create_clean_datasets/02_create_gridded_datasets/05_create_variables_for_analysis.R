@@ -30,7 +30,7 @@ data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speed_",
 data$distance_improvedroad_50above <- apply(data[,paste0("distance_improvedroad_speed_",c(50,70,120))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_below50 <- apply(data[,paste0("distance_improvedroad_speed_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 
-# Add Treatment Variables ------------------------------------------------------
+# Add Near Road Variables ------------------------------------------------------
 min_ignore_zero <- function(x){
   # Calculates min, exlcuding zeros. Useful for determining first year of improved
   # road. For example, with: 0, 0, 0, 2004, 0, 0, 2007, 0, 0 -- will return 2004.
@@ -58,7 +58,7 @@ data <- data %>%
          near_improvedroad_50above = distance_improvedroad_50above <= NEAR_CUTOFF,
          near_improvedroad_below50 = distance_improvedroad_below50 <= NEAR_CUTOFF) %>%
   
-  #### Cell group variables
+  # Cell group variables
   group_by(cell_id) %>%
   
   # Year road improved (if any). Only consider earliest improved road. If cell near
@@ -75,7 +75,7 @@ data <- data %>%
          years_since_improved_below50 = year - year_improved_below50)
 
 # Dependent Variable Transformations -------------------------------------------
-#### Inverse Hyperbolic Since Transformation 
+# Inverse Hyperbolic Since Transformation 
 # This is used by Mitnik et. al. due to lots of zeros in DMSP-OLS 
 calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
 
@@ -84,24 +84,125 @@ data <- data %>%
   group_by(cell_id) %>%
   
   # Baseline variables
-  mutate(dmspols_1997 = dmspols[year == 1997]) %>%
-  mutate(globcover_cropland_2015 = globcover_cropland[year == 2015]) %>%
+  mutate(dmspols_1996 = dmspols[year == 1996],
+         dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+         globcover_cropland_1996 = globcover_cropland[year == 1996],
+         globcover_urban_1996 = globcover_urban[year == 1996]) %>%
   
   ungroup() %>%
   
   mutate(dmspols_ihs = calc_ihs(dmspols),
          dmspols_zhang_ihs = calc_ihs(dmspols_zhang),
-         dmspols_1997 = calc_ihs(dmspols_1997))
-  
+         dmspols_1996_ihs = calc_ihs(dmspols_1996),
+         dmspols_zhang_1996_ihs = calc_ihs(dmspols_zhang_1996))
+
+# Baseline NTL quantiles
+dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
+data$dmspols_1996_group <- 1
+data$dmspols_1996_group[data$dmspols_1996 > 0] <- 2
+data$dmspols_1996_group[data$dmspols_1996 >= dmspols_1996_median] <- 3
+
+dmspols_zhang_1996_median <- data$dmspols_zhang_1996[data$dmspols_zhang_1996 > 0] %>% median(na.rm=T) 
+data$dmspols_zhang_1996_group <- 1
+data$dmspols_zhang_1996_group[data$dmspols_zhang_1996 > 0] <- 2
+data$dmspols_zhang_1996_group[data$dmspols_zhang_1996 >= dmspols_zhang_1996_median] <- 3
+
+data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
+data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
+
+
+# Post Improved Road -----------------------------------------------------------
+data$post_improved <- (data$years_since_improved >= 0) %>% as.numeric
+data$post_improved_50above <- (data$years_since_improved_50above >= 0) %>% as.numeric
+data$post_improved_below50 <- (data$years_since_improved_below50 >= 0) %>% as.numeric
+
 # Years Since Improved: Left out factor (-1) -----------------------------------
 data$years_since_improved <- data$years_since_improved %>% as.factor() %>% relevel(ref="-1")
 data$years_since_improved_50above <- data$years_since_improved_50above %>% as.factor() %>% relevel(ref="-1")
 data$years_since_improved_below50 <- data$years_since_improved_below50 %>% as.factor() %>% relevel(ref="-1")
 
+# Factor to Numeric for Select Variables ---------------------------------------
+data$near_improvedroad <- data$near_improvedroad %>% as.numeric()
+data$near_improvedroad_50above <- data$near_improvedroad_50above %>% as.numeric()
+data$near_improvedroad_below50 <- data$near_improvedroad_below50 %>% as.numeric()
 
-a <- lm(dmspols ~ years_since_improved + factor(year), data=data)
-aa <- felm(globcover_urban ~ years_since_improved | year + cell_id | 0 | GADM_ID_3, data=data)
-aa %>% summary()
+data$near_road <- data$near_road %>% as.numeric()
+data$near_road_50above <- data$near_road_50above %>% as.numeric()
+data$near_road_below50 <- data$near_road_below50 %>% as.numeric()
+
+# Geographic Regions -----------------------------------------------------------
+data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% as.factor()
+
+# Export -----------------------------------------------------------------------
+saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
+
+
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# PURGATORY --------------------------------------------------------------------
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
