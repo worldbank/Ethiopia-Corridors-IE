@@ -23,8 +23,10 @@
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
 
-data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
-data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
+# Overal Results ---------------------------------------------------------------
+lm_result <- felm(globcover_urban ~ years_since_improved | year + cell_id | 0 | GADM_ID_3, data=data) 
+
+data$years_since_improved_50aboveafter %>% table()
 
 # Improved by RDSP -------------------------------------------------------------
 # RDSP I - From July 1997 - June 2002 [1997 - 2002]

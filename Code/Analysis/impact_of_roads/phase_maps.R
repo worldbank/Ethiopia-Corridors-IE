@@ -26,3 +26,10 @@ p <- ggplot() +
   labs(color = "Years Since\nPhase Started")
 
 ggsave(p, filename = file.path(figures_file_path, "map_rsdp_phases.png"), width=5.5, height=5.5)
+
+##########################
+roads_2016 <- readRDS(file.path(finaldata_file_path, "roads", "RoadNetworkPanelData_1996_2016.Rds"))
+roads_2016_50_1996 <- roads_2016[roads_2016$Speed1996 %in% 50,]
+roads_2016_50_1996_improved <- roads_2016_50_1996[roads_2016_50_1996$Speed2012 > 50,]
+plot(roads_2016_50_1996_improved[roads_2016_50_1996_improved$Complete_G %in% 2012,], add=T, col="blue")
+roads_2016_50_1996_improved$Complete_G %>% table()

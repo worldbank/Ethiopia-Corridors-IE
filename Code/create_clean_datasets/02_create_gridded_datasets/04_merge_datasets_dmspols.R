@@ -10,13 +10,14 @@ points_all <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_da
 #### Names of datasets to merge in
 # Separate by time invarient (merge by cell_id) and time varying (merge by cell_id 
 # and year)
-DATASETS_TIME_INVARIANT <- c("points_gadm.Rds")
+DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds")
 DATASETS_TIME_VARYING <- c("points_viirs.Rds",
                            "points_ndvi.Rds",
                            "points_globcover.Rds",
                            "points_dmspols_zhang2016.Rds",
                            "points_distance_roads_byspeed.Rds",
-                           "points_distance_improved_roads_byspeed.Rds")
+                           "points_distance_improved_roads_byspeed_before.Rds",
+                           "points_distance_improved_roads_byspeed_after.Rds")
 
 # Merge ------------------------------------------------------------------------
 for(dataset in DATASETS_TIME_VARYING){
@@ -35,6 +36,12 @@ for(dataset in DATASETS_TIME_INVARIANT){
 
 # Export -----------------------------------------------------------------------
 saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
+
+
+
+
+
+
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------

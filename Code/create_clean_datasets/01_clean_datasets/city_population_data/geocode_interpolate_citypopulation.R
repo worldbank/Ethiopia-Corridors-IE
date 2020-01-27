@@ -1,23 +1,11 @@
 # Geocode and interpolate city population
 
-# - - - - - - - - - - - - - - - #
-##### *** Preliminaries *** #####
-# - - - - - - - - - - - - - - - #
-
-# Rob Personal Computer
-file.path = "~/Dropbox/Ethiopia IE/"
-
-# Libraries
-library(readxl)
-library(geonames)
-library(plyr)
-
 # - - - - - - - - - - - - - - - - - -#
 ##### *** Load and Prep Data *** #####
 # - - - - - - - - - - - - - - - - - -#
 
 ##### City Population Data #####
-city.data <- read_excel(paste(file.path, "Data/citypopulation/original/citypopulation_census.xls", sep=""), 1)
+city.data <- read_excel(file.path(rawdata_file_path, "city_population", "citypopulation_census.xls"), 1)
 city.data <- as.data.frame(city.data)
 city.data$name.raw <- city.data$name
 
@@ -44,8 +32,8 @@ prep.name.for.geocode <- function(name){
 city.data$name <- unlist(lapply(city.data$name, prep.name.for.geocode))
 
 ##### Geocoded Data #####
-setwd(paste(file.path,"Data/eth_pplp_multiplesources_20160205/",sep=""))
-cities.locs <- readOGR(dsn=".","eth_pplp_multiplesources_20160205")
+cities.locs <- readOGR(dsn=file.path(rawdata_file_path,"eth_pplp_multiplesources_20160205"),
+                       "eth_pplp_multiplesources_20160205")
 cities.locs$lon <- coordinates(cities.locs)[,1]
 cities.locs$lat <- coordinates(cities.locs)[,2]
 cities.locs <- cities.locs@data
@@ -321,6 +309,8 @@ city.data <- subset(city.data, select=c(name,lat,lon,
                                            pop.2015,
                                            pop.2016))
 
-write.csv(city.data, paste(file.path, "Data/citypopulation/geocoded_interpolated/city_pop_geocoded.csv", sep=""))
+names(city.data) <- names(city.data) %>% str_replace_all("\\.", "_")
+
+write.csv(city.data, file.path(finaldata_file_path, "city_population", "city_pop_geocoded.csv"), row.names=T)
 
 
