@@ -70,6 +70,8 @@ generate_road_improved_variables <- function(road_var, data){
     dplyr::select(year_roadTEMP, years_since_roadTEMP, post_roadTEMP)
   
   data$years_since_roadTEMP <- data$years_since_roadTEMP %>% as.factor() %>% relevel("-1")
+  data$post_roadTEMP <- data$post_roadTEMP %>% as.numeric()
+  
   names(data) <- names(data) %>% str_replace_all("roadTEMP", road_type)
   
   return(data)
