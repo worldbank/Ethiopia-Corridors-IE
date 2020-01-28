@@ -32,102 +32,56 @@ data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improved
 data$distance_improvedroad_50abovebefore <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(50))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_below50before <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 
-# Add Near Road Variables ------------------------------------------------------
-min_ignore_zero <- function(x){
-  # Calculates min, exlcuding zeros. Useful for determining first year of improved
-  # road. For example, with: 0, 0, 0, 2004, 0, 0, 2007, 0, 0 -- will return 2004.
-  # If all zeros or all NAs, then returns NA.
-  
-  x <- x[!(x %in% 0)]
-  x <- x[!is.na(x)]
-  
-  if(length(x) %in% 0){
-    return(NA)
-  } else{
-    return(min(x))
-  }
+# Near Roads -------------------------------------------------------------------
+for(var in c("distance_road", "distance_road_50above", "distance_road_below50",
+             "distance_road_speed_50")){
+  data[[str_replace_all(var, "distance_", "near_")]] <- data[[var]] < NEAR_CUTOFF
 }
 
-#road_var <- "distance_road"
-
-#gen_road_variables <- function(road_var, data){
+# Years Since / Post Improved Variables ----------------------------------------
+generate_road_improved_variables <- function(road_var, data){
+  print(road_var)
   
-#}
-
-road_var <- "distance_road"
-
-data <- data %>%
+  road_type <- road_var %>% str_replace_all("distance_", "")
+  data$distance_roadTEMP <- data[[road_var]]
   
-  # Whether near improved road
-  mutate(near_improvedroad = distance_improvedroad <= NEAR_CUTOFF) %>%
+  data <- data %>%
+    
+    # Whether near improved road
+    mutate(near_roadTEMP = distance_roadTEMP <= NEAR_CUTOFF) %>%
+    
+    # Year road improved (if any). Only consider earliest improved road. If cell near
+    # area where another road was improved, we don't consider this. So:
+    # 0 0 0 0 2007 0 0 2010 0 0 0 --> would yield 2007, while all zeros returns NA
+    mutate(near_roadTEMP_X_year = near_roadTEMP * year) %>%
+    mutate(near_roadTEMP_X_year = na_if(near_roadTEMP_X_year, 0)) %>%
+    mutate(near_roadTEMP_X_year = near_roadTEMP_X_year %>% as.numeric())
   
-  # Year road improved (if any). Only consider earliest improved road. If cell near
-  # area where another road was improved, we don't consider this. So:
-  # 0 0 0 0 2007 0 0 2010 0 0 0 --> would yield 2007, while all zeros returns NA
-  mutate(near_improvedroad_X_year = near_improvedroad * year) %>%
-  mutate(near_improvedroad_X_year = na_if(near_improvedroad_X_year, 0)) %>%
-  mutate(near_improvedroad_X_year = near_improvedroad_X_year %>% as.numeric())
-
-# Variable for each cell of first year became near an improved road
-data_dt <- as.data.table(data)
-data <- data_dt[, year_improved:=min(near_improvedroad_X_year,na.rm=T), by=list(cell_id)] %>% as.data.frame()
-data$year_improved[data$year_improved %in% Inf] <- NA
-
-data$years_since_improved <- data$year - data$year_improved
-
-
-View(data[1:2000, c("cell_id", "year", "near_improvedroad", "year_improved", "years_since_improved")])
-
-##############################
-
-
-data <- data %>%
+  # Variable for each cell of first year became near an improved road
+  data_dt <- as.data.table(data)
+  data <- data_dt[, year_roadTEMP:=min(near_roadTEMP_X_year,na.rm=T), by=list(cell_id)] %>% as.data.frame()
+  data$year_roadTEMP[data$year_roadTEMP %in% Inf] <- NA
   
-  #### Whether cell near road
-  mutate(near_road          = distance_road          <= NEAR_CUTOFF,
-         near_road_speed_50 = distance_road_speed_50 <= NEAR_CUTOFF,
-         near_road_50above  = distance_road_50above  <= NEAR_CUTOFF,
-         near_road_below50  = distance_road_below50  <= NEAR_CUTOFF,
-         
-         near_improvedroad                = distance_improvedroad                <= NEAR_CUTOFF,
-         near_improvedroad_speedbefore_50 = distance_improvedroad_speedbefore_50 <= NEAR_CUTOFF,
-         near_improvedroad_50aboveafter   = distance_improvedroad_50aboveafter   <= NEAR_CUTOFF,
-         near_improvedroad_below50after   = distance_improvedroad_below50after   <= NEAR_CUTOFF,
-         near_improvedroad_50abovebefore  = distance_improvedroad_50abovebefore  <= NEAR_CUTOFF,
-         near_improvedroad_below50before  = distance_improvedroad_below50before  <= NEAR_CUTOFF) %>%
+  data$years_since_roadTEMP <- data$year - data$year_roadTEMP
+  data$post_roadTEMP <- data$years_since_roadTEMP >= 0
   
-  mutate(near_improvedroad = near_improvedroad %>% as.numeric) %>%
-  mutate(t1 = near_improvedroad                * year) %>%
+  # Subset variables and rename
+  data <- data %>%
+    dplyr::select(year_roadTEMP, years_since_roadTEMP, post_roadTEMP)
   
-  # Cell group variables
-  group_by(cell_id) %>%
+  data$years_since_roadTEMP <- data$years_since_roadTEMP %>% as.factor() %>% relevel("-1")
+  names(data) <- names(data) %>% str_replace_all("roadTEMP", road_type)
   
-  
-  # Year road improved (if any). Only consider earliest improved road. If cell near
-  # area where another road was improved, we don't consider this.
-  mutate(t2 = min_ignore_zero(t1),
-         t2_2 = min(t1[t1>0], na.rm=T),
-         year_improved                = min_ignore_zero(near_improvedroad                * year),
-         year_improved_speedbefore_50 = min_ignore_zero(near_improvedroad_speedbefore_50 * year),
-         year_improved_50aboveafter   = min_ignore_zero(near_improvedroad_50aboveafter   * year),
-         year_improved_below50after   = min_ignore_zero(near_improvedroad_below50after   * year),
-         year_improved_50abovebefore  = min_ignore_zero(near_improvedroad_50abovebefore  * year),
-         year_improved_below50before  = min_ignore_zero(near_improvedroad_below50before  * year)) %>%
-         
-  ungroup() %>%
-  
-  #### Year since road improved
-  mutate(years_since_improved                = year - year_improved,
-         years_since_improved_speedbefore_50 = year - year_improved_speedbefore_50,
-         years_since_improved_50aboveafter   = year - year_improved_50aboveafter,
-         years_since_improved_below50after   = year - year_improved_below50after,
-         years_since_improved_50abovebefore  = year - year_improved_50abovebefore,
-         years_since_improved_below50before  = year - year_improved_below50before)
+  return(data)
+}
 
-# View(data[1:2000,c("cell_id", "year", "near_improvedroad", "year_improved", "years_since_improved", "t1", "t2", "t2_2")])
-data$years_since_improved %>% table()
-data$year %>% table()
-data$year_improved_50aboveafter %>% table()
+roadimproved_df <- lapply(c("distance_improvedroad", 
+                            "distance_improvedroad_50aboveafter", "distance_improvedroad_below50after",
+                            "distance_improvedroad_50abovebefore", "distance_improvedroad_below50before",
+                            "distance_improvedroad_speedbefore_50"),
+       generate_road_improved_variables, data) %>% bind_cols()
+
+data <- bind_cols(data, roadimproved_df)
 
 # Dependent Variable Transformations -------------------------------------------
 # Inverse Hyperbolic Since Transformation 
@@ -165,7 +119,6 @@ data$dmspols_zhang_1996_group[data$dmspols_zhang_1996 >= dmspols_zhang_1996_medi
 
 data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
 data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
-
 
 # Post Improved Road -----------------------------------------------------------
 data$post_improved <- (data$years_since_improved >= 0) %>% as.numeric

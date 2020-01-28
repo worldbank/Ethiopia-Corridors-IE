@@ -23,8 +23,133 @@
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
 
+# Functions --------------------------------------------------------------------
+lm_confint_tidy <- function(lm, varremove){
+  lm_confint <- confint(lm) %>% 
+    as.data.frame
+  names(lm_confint) <- c("p025", "p975")
+  lm_confint$b <- (lm_confint$p025 + lm_confint$p975)/2
+  lm_confint$variable <- row.names(lm_confint)
+  
+  lm_confint <- lm_confint[!grepl("cluster_id)|year)|Intercept)", lm_confint$variable),]
+  lm_confint$years_since_improved <- gsub(varremove, "", lm_confint$variable) %>% as.numeric
+  
+  return(lm_confint)
+}
+
+
 # Overal Results ---------------------------------------------------------------
-lm_result <- felm(globcover_urban ~ years_since_improved | year + cell_id | 0 | GADM_ID_3, data=data) 
+globcover_urban_df <- data.frame(NULL)
+globcover_cropland_df <- data.frame(NULL)
+ndvi_df <- data.frame(NULL)
+dmspols_zhang_ihs_df <- data.frame(NULL)
+
+for(region_type in c("All", "Dense", "Sparse")){
+  print(region_type)
+  if(region_type %in% c("Dense", "Sparse")){
+    data_temp <- data[data$region_type %in% region_type,]
+  } else{
+    data_temp <- data
+  }
+  
+  globcover_urban_df_temp <- bind_rows(
+    felm(globcover_urban ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
+    
+    felm(globcover_urban ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
+    
+    felm(globcover_urban ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
+    ) %>% mutate(region = region_type)
+  
+  globcover_cropland_df_temp <- bind_rows(
+    felm(globcover_cropland ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
+    
+    felm(globcover_cropland ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
+    
+    felm(globcover_cropland ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
+  ) %>% mutate(region = region_type)
+  
+  ndvi_df_temp <- bind_rows(
+    felm(ndvi ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
+    
+    felm(ndvi ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
+    
+    felm(ndvi ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
+  ) %>% mutate(region = region_type)
+  
+  dmspols_zhang_ihs_df_temp <- bind_rows(
+    felm(dmspols_zhang_ihs ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
+    
+    felm(dmspols_zhang_ihs ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
+    
+    felm(dmspols_zhang_ihs ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
+  ) %>% mutate(region = region_type)
+  
+  globcover_urban_df <- bind_rows(globcover_urban_df_temp, globcover_urban_df)
+  globcover_cropland_df <- bind_rows(globcover_cropland_df_temp, globcover_cropland_df)
+  dmspols_zhang_ihs_df <- bind_rows(dmspols_zhang_ihs_df_temp, dmspols_zhang_ihs_df)
+  ndvi_df <- bind_rows(ndvi_df_temp, ndvi_df)
+}
+
+# Figures ----------------------------------------------------------------------
+p_dodge_width <- .5
+ggplot(data=globcover_df, aes(x=years_since_improved, y=b, ymin=p025, ymax=p975,
+                              group = var, color = var)) + 
+  geom_vline(xintercept=0,size=3,alpha=0.15) +
+  geom_point(position = position_dodge(width = p_dodge_width),size=3) + 
+  geom_linerange(position = position_dodge(width = p_dodge_width),size=1.25) +
+  labs(x="Years Since Improved Road Constructed",
+       y="Coefficient",
+       color="Road\nType") +
+  theme_minimal() +
+  facet_wrap(~region, scales="free", nrow=3)
+
+fig <- ggplot(data = results_all_i[results_all_i$improved_road == "All",],
+              aes(x = years_since_improved, 
+                  y = b, ymin = p025, ymax = p975,
+                  group = region_type, color = region_type)) +
+  geom_vline(xintercept=0,size=3,alpha=0.15) +
+  geom_point(position = position_dodge(width = p_dodge_width),size=3) + 
+  geom_linerange(position = position_dodge(width = p_dodge_width),size=1.25) +
+  labs(x="Years Since Improved Road Constructed",
+       y="Coefficient",
+       color = "Region",
+       title = paste0(results_all_i$DV_full)) +
+  scale_x_continuous(breaks = seq(-30, 30, by = 2)) +
+  theme_minimal() +
+  theme(axis.text = element_text(size=14, color="black"),
+        axis.title = element_text(size=15, color="black"),
+        legend.text = element_text(size=14),
+        legend.title = element_text(size=14),
+        plot.title = element_text(hjust = 0.5, face="bold"),
+        strip.text = element_text(size=14))  +
+  facet_wrap( ~ ntl_base_full, nrow=4, scales="free") 
+
+
+
+lm_result2 <- felm(dmspols_zhang_ihs ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data) 
+
+lm_result1 <- felm(globcover_urban ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data[data$distance_city_addisababa > 50*1000,]) 
+lm_result2 <- felm(dmspols_zhang_ihs ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data[data$distance_city_addisababa > 50*1000,]) 
+
+lm_result1 <- felm(globcover_urban ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data[data$distance_city_addisababa > 50*1000,]) 
+lm_result2 <- felm(dmspols_zhang_ihs ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data[data$distance_city_addisababa > 50*1000,]) 
+
+
+
+
+summary(lm_result2)
 
 data$years_since_improved_50aboveafter %>% table()
 
