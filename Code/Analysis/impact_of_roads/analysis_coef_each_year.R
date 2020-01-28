@@ -53,11 +53,14 @@ for(region_type in c("All", "Dense", "Sparse")){
     
     if(region_type %in% c("Dense", "Sparse")){
       data_temp <- data[data$region_type %in% region_type,]
+      
     } else{
       data_temp <- data
     }
     
     if(addis_distance %in% "Far") data_temp <- data_temp[data_temp$distance_city_addisababa >= 100*1000,]
+    
+    #data_temp <- data_temp[data_temp$year_improvedroad %in% 1997:2012,]
     
     globcover_urban_df_temp <- bind_rows(
       felm(globcover_urban ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
