@@ -10,7 +10,7 @@ points_all <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_da
 #### Names of datasets to merge in
 # Separate by time invarient (merge by cell_id) and time varying (merge by cell_id 
 # and year)
-DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds")
+DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds", "points_distance_rsdp_phases.Rds")
 DATASETS_TIME_VARYING <- c("points_viirs.Rds",
                            "points_ndvi.Rds",
                            "points_globcover.Rds",

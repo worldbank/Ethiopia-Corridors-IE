@@ -127,21 +127,6 @@ data$post_improved <- (data$years_since_improved >= 0) %>% as.numeric
 data$post_improved_50aboveafter <- (data$years_since_improved_50aboveafter >= 0) %>% as.numeric
 data$post_improved_below50after <- (data$years_since_improved_below50after >= 0) %>% as.numeric
 
-# Years Since Improved: Left out factor (-1) -----------------------------------
-data$years_since_improved <- data$years_since_improved %>% as.factor() %>% relevel(ref="-1")
-data$years_since_improved_speedbefore_50 <- data$years_since_improved_speedbefore_50 %>% as.factor() %>% relevel(ref="-1")
-data$years_since_improved_50aboveafter <- data$years_since_improved_50aboveafter %>% as.factor() %>% relevel(ref="-1")
-data$years_since_improved_below50after <- data$years_since_improved_below50after %>% as.factor() %>% relevel(ref="-1")
-
-# Factor to Numeric for Select Variables ---------------------------------------
-data$near_improvedroad <- data$near_improvedroad %>% as.numeric()
-data$near_improvedroad_50aboveafter <- data$near_improvedroad_50aboveafter %>% as.numeric()
-data$near_improvedroad_below50after <- data$near_improvedroad_below50after %>% as.numeric()
-
-data$near_road <- data$near_road %>% as.numeric()
-data$near_road_50aboveafter <- data$near_road_50above %>% as.numeric()
-data$near_road_below50after <- data$near_road_below50 %>% as.numeric()
-
 # Geographic Regions -----------------------------------------------------------
 data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% as.factor()
 

@@ -108,12 +108,21 @@ for(year in c(1997,1999,2001,2003,2005,2007,2009,2011,2013,2015)){
 }
 
 # Add Phase Variable -----------------------------------------------------------
+#### Phase Variable
 roads_2016$rsdp_phase <- NA
 roads_2016$rsdp_phase[roads_2016$Complete_G %in% 1997:2002] <- 1
 roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2003:2007] <- 2
 roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2008:2010] <- 3
 roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2011:2016] <- 4
 roads_2016$rsdp_phase[roads_2016$Complete_G %in% 2017:2020] <- 5
+
+#### Speed at Start of Phase
+roads_2016$speed_phasestart <- NA
+roads_2016$speed_phasestart[roads_2016$rsdp_phase %in% 1] <- roads_2016$Speed1997[roads_2016$rsdp_phase %in% 1]
+roads_2016$speed_phasestart[roads_2016$rsdp_phase %in% 2] <- roads_2016$Speed2003[roads_2016$rsdp_phase %in% 2]
+roads_2016$speed_phasestart[roads_2016$rsdp_phase %in% 3] <- roads_2016$Speed2008[roads_2016$rsdp_phase %in% 3]
+roads_2016$speed_phasestart[roads_2016$rsdp_phase %in% 4] <- roads_2016$Speed2011[roads_2016$rsdp_phase %in% 4]
+roads_2016$speed_phasestart[roads_2016$rsdp_phase %in% 5] <- roads_2016$Speed2017[roads_2016$rsdp_phase %in% 5]
 
 # Years Since Phase Started ----------------------------------------------------
 roads_2016@data <- roads_2016@data %>%

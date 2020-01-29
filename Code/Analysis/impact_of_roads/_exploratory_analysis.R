@@ -24,6 +24,7 @@
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
 
 data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
+data$dmspols_zhang_6 <- data$dmspols_zhang >= 6 # near median
 
 # Functions --------------------------------------------------------------------
 lm_confint_tidy <- function(lm, varremove){
@@ -45,6 +46,7 @@ globcover_urban_df <- data.frame(NULL)
 globcover_cropland_df <- data.frame(NULL)
 ndvi_df <- data.frame(NULL)
 dmspols_zhang_ihs_df <- data.frame(NULL)
+dmspols_ihs_df <- data.frame(NULL)
 dmspols_zhang_2_df <- data.frame(NULL)
 
 for(region_type in c("All", "Dense", "Sparse")){
@@ -88,6 +90,17 @@ for(region_type in c("All", "Dense", "Sparse")){
       lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
   ) %>% mutate(region = region_type)
   
+  dmspols_ihs_df_temp <- bind_rows(
+    felm(dmspols_ihs ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
+    
+    felm(dmspols_ihs ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
+    
+    felm(dmspols_ihs ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
+      lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
+  ) %>% mutate(region = region_type)
+  
   dmspols_zhang_ihs_df_temp <- bind_rows(
     felm(dmspols_zhang_ihs ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
       lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
@@ -112,6 +125,7 @@ for(region_type in c("All", "Dense", "Sparse")){
   
   globcover_urban_df <- bind_rows(globcover_urban_df_temp, globcover_urban_df)
   globcover_cropland_df <- bind_rows(globcover_cropland_df_temp, globcover_cropland_df)
+  dmspols_ihs_df <- bind_rows(dmspols_ihs_df_temp, dmspols_ihs_df)
   dmspols_zhang_ihs_df <- bind_rows(dmspols_zhang_ihs_df_temp, dmspols_zhang_ihs_df)
   dmspols_zhang_2_df <- bind_rows(dmspols_zhang_2_df_temp, dmspols_zhang_2_df)
   ndvi_df <- bind_rows(ndvi_df_temp, ndvi_df)

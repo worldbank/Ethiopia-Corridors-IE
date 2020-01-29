@@ -30,6 +30,7 @@ data_w <- data %>%
   group_by(GADM_ID_3, year) %>%
   summarise(dmspols_zhang_ihs = mean(dmspols_zhang_ihs, na.rm=T),
             globcover_urban = mean(globcover_urban, na.rm=T),
+            globcover_cropland = mean(globcover_cropland, na.rm=T),
             post_improvedroad = max(post_improvedroad, na.rm=T),
             post_improvedroad_50aboveafter = max(post_improvedroad_50aboveafter, na.rm=T),
             post_improvedroad_below50after = max(post_improvedroad_below50after, na.rm=T),
@@ -48,7 +49,7 @@ for(var in names(data_w)){
 }
 
 # Export Results ---------------------------------------------------------------
-for(dv in c("dmspols_zhang_ihs", "globcover_urban")){
+for(dv in c("dmspols_zhang_ihs", "globcover_urban", "globcover_cropland")){
   for(addis_distance in c("All", "Far")){
     for(unit in c("cell", "woreda")){
         
@@ -65,6 +66,7 @@ for(dv in c("dmspols_zhang_ihs", "globcover_urban")){
       
       if(dv %in% "dmspols_zhang_ihs") dep_var_label <- "DMSP OLS (Log)"
       if(dv %in% "globcover_urban") dep_var_label <- "Globcover: Urban"
+      if(dv %in% "globcover_cropland") dep_var_label <- "Globcover: Cropland"
       
       if(unit %in% "woreda"){
         lm <- felm(dv ~ post_improvedroad | GADM_ID_3 + year | 0 | 0, data=data_w_temp)
