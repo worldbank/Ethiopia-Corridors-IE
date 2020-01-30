@@ -1,24 +1,6 @@
-# Exploratory Analysis
+# Analysis: Coefficient Each Year - Results
 
-# APPROACH: Somewhat follow the Haiti paper. There it seems road improvement
-# kinda random throughout their years. Here that's not the case, but maybe
-# can assume that within an RDSP phase?
-
-# OUTLINE
-# 1. Overall impact of each phase.
-# 2. Heterogeneity of impact, within each phase
-#    2.1. Road type 
-#    2.2. Baseline Dep Var (for ntl, num or divide into thirds a la aiddata?)
-#    2.3. Distance to City (could break down by city pop)
-
-# DEPENDENT VARIABLES
-# 1. dmspols_zhang_ihs
-# 2. globcover_urban
-# 3. Cropland? NDVI?
-
-# PRESENT RESULTS
-# 1. Post-treatment
-# 2. Coef-plots. In same plot. All cells and (for hetro), below/above cutoffs (median / quartiles). Super important to see pre-trends.
+# Exports dataframe of results, to be used to make figures
 
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
@@ -69,11 +51,11 @@ for(region_type in c("All", "Dense", "Sparse")){
           data_temp$dv <- data_temp[[dv]]
           
           #### Subsetting by Phase
-          if(phase %in% "all")     phase_years <- 1997:2016
-          if(phase %in% "phase_1") phase_years <- 1997:2002
-          if(phase %in% "phase_2") phase_years <- 2003:2007
-          if(phase %in% "phase_3") phase_years <- 2008:2010
-          if(phase %in% "phase_4") phase_years <- 2011:2016
+          if(phase %in% "phase_all") phase_years <- 1997:2016
+          if(phase %in% "phase_1")   phase_years <- 1997:2002
+          if(phase %in% "phase_2")   phase_years <- 2003:2007
+          if(phase %in% "phase_3")   phase_years <- 2008:2010
+          if(phase %in% "phase_4")   phase_years <- 2011:2016
     
           data_temp_improvedroad              <- data_temp[data_temp$year_improvedroad              %in% phase_years,]
           data_temp_improvedroad_50aboveafter <- data_temp[data_temp$year_improvedroad_50aboveafter %in% phase_years,]
@@ -106,55 +88,4 @@ for(region_type in c("All", "Dense", "Sparse")){
 
 # Export Results ---------------------------------------------------------------
 saveRDS(results_df, file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
-
-# Load Data --------------------------------------------------------------------
-results_df <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
-
-# Figures ----------------------------------------------------------------------
-p_dodge_width <- .5
-
-for(dv in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cropland", "ndvi",
-              "dmspols_zhang_2", "dmspols_zhang_6")){
-  for(addis_distance in c("All", "Far")){
-    for(phase in c("phase_all",  "phase_1", "phase_2", "phase_3", "phase_4")){
-      for(ntl_group in c("All", "1", "2", "3")){
-        
-        print(paste(dv, addis_distance, phase))
-      
-        if(dv == "globcover_urban")    dv_title <- "Globcover: Urban"
-        if(dv == "globcover_cropland") dv_title <- "Globcover: Cropland"
-        if(dv == "ndvi")               dv_title <- "NDVI"
-        if(dv == "dmspols_ihs")        dv_title <- "NTL - DMSPOLS (Log)"
-        if(dv == "dmspols_zhang_ihs")  dv_title <- "NTL - DMSPOLS (Log)"
-        if(dv == "dmspols_zhang_2")    dv_title <- "DMSPOLS >= 2"
-        if(dv == "dmspols_zhang_6")    dv_title <- "DMSPOLS >= 6"
-        
-        p <- ggplot(data = results_df[(results_df$dv %in% dv) & 
-                                      (results_df$addis_distance %in% addis_distance) & 
-                                      (results_df$phase %in% phase) & 
-                                      (results_df$ntl_group %in% ntl_group),], 
-                    aes(x=years_since_improved, y=b, ymin=p025, ymax=p975,
-                        group = var, color = var)) + 
-          geom_vline(xintercept=0,size=3,alpha=0.15) +
-          geom_hline(yintercept=0,size=1,alpha=0.15) +
-          geom_point(position = position_dodge(width = p_dodge_width),size=1.5) + 
-          geom_linerange(position = position_dodge(width = p_dodge_width),size=1) +
-          labs(x="Years Since Improved Road Constructed",
-               y="Coefficient",
-               color="Road\nType",
-               title = dv_title) +
-          theme_minimal() +
-          theme(plot.title = element_text(face="bold", hjust=.5)) +
-          facet_wrap(~region, scales="fixed", nrow=1)
-        ggsave(p, filename = file.path(figures_file_path, paste0("regressions_eachyear_",dv,"_addis",addis_distance,"_",phase,"_ntl",ntl_group,".png")),
-               height = 3.5, width =11)
-        
-        
-      }
-    }
-  }
-}
-
-
-
 
