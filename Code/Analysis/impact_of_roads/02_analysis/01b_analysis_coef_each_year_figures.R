@@ -70,6 +70,11 @@ for(dv in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cr
         results_df$ntl_group[results_df$ntl_group %in% "2"] <- "Below Median"
         results_df$ntl_group[results_df$ntl_group %in% "3"] <- "Above Median"
         
+        results_df$ntl_group <- results_df$ntl_group %>% factor(levels = c("All",
+                                                                           "Zero",
+                                                                           "Below Median",
+                                                                           "Above Median"))
+        
         p <- ggplot(data = results_df[(results_df$ntl_group %in% c("Zero", "Below Median", "Above Median")) &
                                         (results_df$dv %in% dv) & 
                                         (results_df$addis_distance %in% addis_distance) & 
@@ -87,7 +92,7 @@ for(dv in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cr
                title = dv_title) +
           theme_minimal() +
           theme(plot.title = element_text(face="bold", hjust=.5)) +
-          facet_wrap(~ntl_group, scales="fixed", nrow=1)
+          facet_wrap(~ntl_group, scales="free", nrow=1)
         ggsave(p, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_",dv,"_addis",addis_distance,"_",phase,"_region",region,".png")),
                height = 3.5, width =11)
         

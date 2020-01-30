@@ -20,10 +20,14 @@ lm_confint_tidy <- function(lm, years_since_variable){
 }
 
 # Overal Results ---------------------------------------------------------------
-region_type <- "All"
-addis_distance <- "All"
-phase <- "all"
-dv <- "globcover_urban"
+if(F){
+  region_type <- "All"
+  addis_distance <- "All"
+  phase <- "phase_all"
+  dv <- "dmspols_zhang_ihs"
+  ntl_group <- "2"
+}
+
 
 results_df <- data.frame(NULL)
 
@@ -42,7 +46,7 @@ for(region_type in c("All", "Dense", "Sparse")){
           if(region_type %in% c("Dense", "Sparse")) data_temp <- data_temp[data_temp$region_type %in% region_type,]
           
           #### Subset by baseline nighttime lights
-          if(ntl_group %in% c("1", "2", "3")) data_temp <- data_temp[data_temp$dmspols_zhang_1996_group %in% ntl_group %>% as.numeric(),]
+          if(ntl_group %in% c("1", "2", "3")) data_temp <- data_temp[data_temp$dmspols_zhang_1996_group %in% as.numeric(ntl_group),]
           
           #### Subset by All or Far from Addis
           if(addis_distance %in% "Far") data_temp <- data_temp[data_temp$distance_city_addisababa >= 100*1000,]
