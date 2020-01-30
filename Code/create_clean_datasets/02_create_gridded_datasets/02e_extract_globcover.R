@@ -11,8 +11,9 @@ polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_data
 extract_globcover <- function(year){
   print(year)
   
-  globcover <- raster(file.path(rawdata_file_path, "esa_globcover", "scratch", "ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"), (year-1991)) %>% crop(extent(polygons))
-  
+  if(year %in% 1992:2015) globcover <- raster(file.path(rawdata_file_path, "esa_globcover", "scratch", "ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"), (year-1991)) %>% crop(extent(polygons))
+  if(year %in% 2016:2018) globcover <- raster(file.path(rawdata_file_path, "esa_globcover", "2016_2018_data", paste0("C3S-LC-L4-LCCS-Map-300m-P1Y-",year,"-v2.1.1.tif"))) %>% crop(extent(polygons))
+
   globcover_urban_fun <- function(r){
     r[] <- as.numeric(r[] %in% c(190))
     return(r)
@@ -58,7 +59,7 @@ extract_globcover <- function(year){
   return(df_out)
 }
 
-polygons_globcover <- lapply(1992:2015, extract_globcover) %>% bind_rows
+polygons_globcover <- lapply(1992:2018, extract_globcover) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
 saveRDS(polygons_globcover, file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points_globcover.Rds"))

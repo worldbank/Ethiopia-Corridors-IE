@@ -37,10 +37,14 @@ for(i in 1:10) gc()
 
 globcover_panel <- lapply(1:24, function(i){
     print(i)
-    globcover_i <- crop(raster(file.path(rawdata_file_path, "esa_globcover", "scratch","ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"),i), eth_adm3, snap="out")[] %>% 
-      as.data.frame %>%
-      dplyr::rename(globcover = ".")
-    globcover_i$year <- i + 1991
+  
+    if(i %in% 1:24){
+      globcover_i <- crop(raster(file.path(rawdata_file_path, "esa_globcover", "scratch","ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"),i), eth_adm3, snap="out")[] %>% 
+        as.data.frame %>%
+        dplyr::rename(globcover = ".")
+      globcover_i$year <- i + 1991
+    }
+
     
     globcover_i <- globcover_i[cells_to_keep,]
     globcover_i$cell_id <- 1:nrow(globcover_i)
