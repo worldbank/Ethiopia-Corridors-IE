@@ -23,17 +23,8 @@
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
 
-data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
-data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
-
-#lm_1 <- felm(globcover_urban ~ years_since_improvedroad_speedbefore_50 | year + cell_id | 0 | GADM_ID_3, data=data[data$near_road_speed_50_1996 %in% TRUE,])
-#lm_2 <- felm(dmspols_zhang_ihs ~ years_since_improvedroad_speedbefore_50 | year + cell_id | 0 | GADM_ID_3, data=data[data$near_road_speed_50_1996 %in% TRUE,])
-
-#summary(lm_1)
-#summary(lm_2)
-
 # Functions --------------------------------------------------------------------
-lm_confint_tidy <- function(lm, varremove){
+lm_confint_tidy <- function(lm, years_since_variable){
   lm_confint <- confint(lm) %>% 
     as.data.frame
   names(lm_confint) <- c("p025", "p975")
@@ -41,161 +32,126 @@ lm_confint_tidy <- function(lm, varremove){
   lm_confint$variable <- row.names(lm_confint)
   
   lm_confint <- lm_confint[!grepl("cluster_id)|year)|Intercept)", lm_confint$variable),]
-  lm_confint$years_since_improved <- gsub(varremove, "", lm_confint$variable) %>% as.numeric
+  lm_confint$years_since_improved <- gsub(years_since_variable, "", lm_confint$variable) %>% as.numeric
   
   return(lm_confint)
 }
 
 # Overal Results ---------------------------------------------------------------
-globcover_urban_df <- data.frame(NULL)
-globcover_cropland_df <- data.frame(NULL)
-ndvi_df <- data.frame(NULL)
-dmspols_ihs_df <- data.frame(NULL)
-dmspols_zhang_ihs_df <- data.frame(NULL)
-dmspols_zhang_2_df <- data.frame(NULL)
-dmspols_zhang_6_df <- data.frame(NULL)
+region_type <- "All"
+addis_distance <- "All"
+phase <- "all"
+dv <- "globcover_urban"
+
+results_df <- data.frame(NULL)
 
 for(region_type in c("All", "Dense", "Sparse")){
   for(addis_distance in c("All", "Far")){
-    print(paste(region_type, addis_distance))
+    for(phase in c("phase_all", "phase_1", "phase_2", "phase_3", "phase_4")){
+      for(dv in c("globcover_urban","globcover_cropland", "ndvi", "dmspols_ihs", "dmspols_zhang_ihs", "dmspols_zhang_2", "dmspols_zhang_6")){
+        for(ntl_group in c("All", "1", "2", "3")){
+          
+          # Printing so know where we be!
+          print(paste(region_type, addis_distance, phase, dv))
+          
+          data_temp <- data
+          
+          #### Subset by region type
+          if(region_type %in% c("Dense", "Sparse")) data_temp <- data_temp[data_temp$region_type %in% region_type,]
+          
+          #### Subset by baseline nighttime lights
+          if(region_type %in% c("1", "2", "3")) data_temp <- data_temp[data_temp$dmspols_zhang_1996_group %in% region_type %>% as.numeric(),]
+          
+          #### Subset by All or Far from Addis
+          if(addis_distance %in% "Far") data_temp <- data_temp[data_temp$distance_city_addisababa >= 100*1000,]
+          
+          #### Add dependent variable as temp variable
+          data_temp$dv <- data_temp[[dv]]
+          
+          #### Subsetting by Phase
+          if(phase %in% "all")     phase_years <- 1997:2016
+          if(phase %in% "phase_1") phase_years <- 1997:2002
+          if(phase %in% "phase_2") phase_years <- 2003:2007
+          if(phase %in% "phase_3") phase_years <- 2008:2010
+          if(phase %in% "phase_4") phase_years <- 2011:2016
     
-    if(region_type %in% c("Dense", "Sparse")){
-      data_temp <- data[data$region_type %in% region_type,]
-      
-    } else{
-      data_temp <- data
+          data_temp_improvedroad              <- data_temp[data_temp$year_improvedroad              %in% phase_years,]
+          data_temp_improvedroad_50aboveafter <- data_temp[data_temp$year_improvedroad_50aboveafter %in% phase_years,]
+          data_temp_improvedroad_below50after <- data_temp[data_temp$year_improvedroad_below50after %in% phase_years,]
+          
+          #### Estimate Models
+          
+          results_df_temp <- bind_rows(
+            felm(dv ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad) %>%
+              lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
+            
+            felm(dv ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_50aboveafter) %>%
+              lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
+            
+            felm(dv ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_below50after) %>%
+              lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
+            ) %>% mutate(region = region_type,
+                         addis_distance = addis_distance,
+                         phase = phase,
+                         dv = dv,
+                         ntl_group = ntl_group)
+          
+          results_df <- bind_rows(results_df, results_df_temp)
+          
+        }
+      }
     }
-    
-    if(addis_distance %in% "Far") data_temp <- data_temp[data_temp$distance_city_addisababa >= 100*1000,]
-    
-    #data_temp <- data_temp[data_temp$year_improvedroad %in% 1997:2012,]
-    
-    globcover_urban_df_temp <- bind_rows(
-      felm(globcover_urban ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-      
-      felm(globcover_urban ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-      
-      felm(globcover_urban ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
-      ) %>% mutate(region = region_type,
-                   addis_distance = addis_distance)
-    
-    globcover_cropland_df_temp <- bind_rows(
-      felm(globcover_cropland ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-      
-      felm(globcover_cropland ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-      
-      felm(globcover_cropland ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
-    ) %>% mutate(region = region_type,
-                 addis_distance = addis_distance)
-    
-    ndvi_df_temp <- bind_rows(
-      felm(ndvi ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-      
-      felm(ndvi ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-      
-      felm(ndvi ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
-    ) %>% mutate(region = region_type,
-                 addis_distance = addis_distance)
-    
-    dmspols_ihs_df_temp <- bind_rows(
-      felm(dmspols_ihs ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-      
-      felm(dmspols_ihs ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-      
-      felm(dmspols_ihs ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
-    ) %>% mutate(region = region_type,
-                 addis_distance = addis_distance)
-    
-    dmspols_zhang_ihs_df_temp <- bind_rows(
-      felm(dmspols_zhang_ihs ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-      
-      felm(dmspols_zhang_ihs ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-      
-      felm(dmspols_zhang_ihs ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
-    ) %>% mutate(region = region_type,
-                 addis_distance = addis_distance)
-    
-    dmspols_zhang_2_df_temp <- bind_rows(
-      felm(dmspols_zhang_2 ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-      
-      felm(dmspols_zhang_2 ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-      
-      felm(dmspols_zhang_2 ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
-    ) %>% mutate(region = region_type,
-                 addis_distance = addis_distance)
-    
-    dmspols_zhang_6_df_temp <- bind_rows(
-      felm(dmspols_zhang_6 ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-      
-      felm(dmspols_zhang_6 ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-      
-      felm(dmspols_zhang_6 ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp) %>%
-        lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
-    ) %>% mutate(region = region_type,
-                 addis_distance = addis_distance)
-    
-    globcover_urban_df <- bind_rows(globcover_urban_df_temp, globcover_urban_df)
-    globcover_cropland_df <- bind_rows(globcover_cropland_df_temp, globcover_cropland_df)
-    dmspols_ihs_df <- bind_rows(dmspols_ihs_df_temp, dmspols_ihs_df)
-    dmspols_zhang_ihs_df <- bind_rows(dmspols_zhang_ihs_df_temp, dmspols_zhang_ihs_df)
-    dmspols_zhang_2_df <- bind_rows(dmspols_zhang_2_df_temp, dmspols_zhang_2_df)
-    dmspols_zhang_6_df <- bind_rows(dmspols_zhang_6_df_temp, dmspols_zhang_6_df)
-    ndvi_df <- bind_rows(ndvi_df_temp, ndvi_df)
-    
   }
 }
+
+# Export Results ---------------------------------------------------------------
+saveRDS(results_df, file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
+
+# Load Data --------------------------------------------------------------------
+results_df <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
 
 # Figures ----------------------------------------------------------------------
 p_dodge_width <- .5
 
-for(type in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cropland", "ndvi",
+for(dv in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cropland", "ndvi",
               "dmspols_zhang_2", "dmspols_zhang_6")){
   for(addis_distance in c("All", "Far")){
-  
-  print(type)
-  
-  if(type %in% "globcover_urban") df <- globcover_urban_df
-  if(type %in% "dmspols_ihs") df <- dmspols_ihs_df
-  if(type %in% "dmspols_zhang_ihs") df <- dmspols_zhang_ihs_df
-  if(type %in% "globcover_cropland") df <- globcover_cropland_df
-  if(type %in% "ndvi") df <- ndvi_df
-  if(type %in% "dmspols_zhang_2") df <- dmspols_zhang_2_df
-  if(type %in% "dmspols_zhang_6") df <- dmspols_zhang_6_df
-  
-  p <- ggplot(data=df[df$addis_distance %in% addis_distance,], aes(x=years_since_improved, y=b, ymin=p025, ymax=p975,
-                                                                group = var, color = var)) + 
-    geom_vline(xintercept=0,size=3,alpha=0.15) +
-    geom_hline(yintercept=0,size=1,alpha=0.15) +
-    geom_point(position = position_dodge(width = p_dodge_width),size=1.5) + 
-    geom_linerange(position = position_dodge(width = p_dodge_width),size=1) +
-    labs(x="Years Since Improved Road Constructed",
-         y="Coefficient",
-         color="Road\nType") +
-    theme_minimal() +
-    facet_wrap(~region, scales="free", nrow=3)
-  ggsave(p, filename = file.path(figures_file_path, "results_202001", paste0("regressions_eachyear_",type,"_addis",addis_distance,".png")),
-         height = 7, width =7)
-  
+    for(phase in c("phase_all",  "phase_1", "phase_2", "phase_3", "phase_4")){
+      for(ntl_group in c("All", "1", "2", "3")){
+        
+        print(paste(dv, addis_distance, phase))
+      
+        if(dv == "globcover_urban")    dv_title <- "Globcover: Urban"
+        if(dv == "globcover_cropland") dv_title <- "Globcover: Cropland"
+        if(dv == "ndvi")               dv_title <- "NDVI"
+        if(dv == "dmspols_ihs")        dv_title <- "NTL - DMSPOLS (Log)"
+        if(dv == "dmspols_zhang_ihs")  dv_title <- "NTL - DMSPOLS (Log)"
+        if(dv == "dmspols_zhang_2")    dv_title <- "DMSPOLS >= 2"
+        if(dv == "dmspols_zhang_6")    dv_title <- "DMSPOLS >= 6"
+        
+        p <- ggplot(data = results_df[(results_df$dv %in% dv) & 
+                                      (results_df$addis_distance %in% addis_distance) & 
+                                      (results_df$phase %in% phase) & 
+                                      (results_df$ntl_group %in% ntl_group),], 
+                    aes(x=years_since_improved, y=b, ymin=p025, ymax=p975,
+                        group = var, color = var)) + 
+          geom_vline(xintercept=0,size=3,alpha=0.15) +
+          geom_hline(yintercept=0,size=1,alpha=0.15) +
+          geom_point(position = position_dodge(width = p_dodge_width),size=1.5) + 
+          geom_linerange(position = position_dodge(width = p_dodge_width),size=1) +
+          labs(x="Years Since Improved Road Constructed",
+               y="Coefficient",
+               color="Road\nType",
+               title = dv_title) +
+          theme_minimal() +
+          theme(plot.title = element_text(face="bold", hjust=.5)) +
+          facet_wrap(~region, scales="fixed", nrow=1)
+        ggsave(p, filename = file.path(figures_file_path, paste0("regressions_eachyear_",dv,"_addis",addis_distance,"_",phase,"_ntl",ntl_group,".png")),
+               height = 3.5, width =11)
+        
+        
+      }
+    }
   }
 }
 

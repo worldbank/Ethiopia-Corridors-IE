@@ -32,6 +32,9 @@ data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improved
 data$distance_improvedroad_50abovebefore <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(50))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_below50before <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 
+data$distance_improvedroad_below45after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35))], 1, FUN = min_NAifAllNA)
+data$distance_improvedroad_below35after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30))], 1, FUN = min_NAifAllNA)
+
 # Near Roads -------------------------------------------------------------------
 for(var in c("distance_road", "distance_road_50above", "distance_road_below50",
              "distance_road_speed_50")){
@@ -80,7 +83,9 @@ generate_road_improved_variables <- function(road_var, data){
 roadimproved_df <- lapply(c("distance_improvedroad", 
                             "distance_improvedroad_50aboveafter", "distance_improvedroad_below50after",
                             "distance_improvedroad_50abovebefore", "distance_improvedroad_below50before",
-                            "distance_improvedroad_speedbefore_50"),
+                            "distance_improvedroad_speedbefore_50",
+                            "distance_improvedroad_below45after",
+                            "distance_improvedroad_below35after"),
        generate_road_improved_variables, data) %>% bind_cols()
 
 data <- bind_cols(data, roadimproved_df)
@@ -122,13 +127,12 @@ data$dmspols_zhang_1996_group[data$dmspols_zhang_1996 >= dmspols_zhang_1996_medi
 data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
 data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
 
-# Post Improved Road -----------------------------------------------------------
-data$post_improved <- (data$years_since_improved >= 0) %>% as.numeric
-data$post_improved_50aboveafter <- (data$years_since_improved_50aboveafter >= 0) %>% as.numeric
-data$post_improved_below50after <- (data$years_since_improved_below50after >= 0) %>% as.numeric
-
 # Geographic Regions -----------------------------------------------------------
 data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% as.factor()
+
+# Create Other Variables -------------------------------------------------------
+data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
+data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
