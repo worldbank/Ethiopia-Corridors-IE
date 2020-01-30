@@ -54,7 +54,7 @@ for(dv in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cr
             "dmspols_zhang_2", "dmspols_zhang_6")){
   for(addis_distance in c("All", "Far")){
     for(phase in c("phase_all",  "phase_1", "phase_2", "phase_3", "phase_4")){
-      for(region_type in c("All", "Sparse", "Dense")){ ################# DOUBLE CHECK THIS HERE
+      for(region in c("All", "Sparse", "Dense")){ 
         
         print(paste(dv, addis_distance, phase))
         
@@ -74,7 +74,7 @@ for(dv in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cr
                                         (results_df$dv %in% dv) & 
                                         (results_df$addis_distance %in% addis_distance) & 
                                         (results_df$phase %in% phase) & 
-                                        (results_df$ntl_group %in% ntl_group),], 
+                                        (results_df$region %in% region),], 
                     aes(x=years_since_improved, y=b, ymin=p025, ymax=p975,
                         group = var, color = var)) + 
           geom_vline(xintercept=0,size=3,alpha=0.15) +
@@ -88,7 +88,7 @@ for(dv in c("globcover_urban", "dmspols_ihs", "dmspols_zhang_ihs", "globcover_cr
           theme_minimal() +
           theme(plot.title = element_text(face="bold", hjust=.5)) +
           facet_wrap(~ntl_group, scales="fixed", nrow=1)
-        ggsave(p, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_",dv,"_addis",addis_distance,"_",phase,"_ntl",ntl_group,".png")),
+        ggsave(p, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_",dv,"_addis",addis_distance,"_",phase,"_region",region,".png")),
                height = 3.5, width =11)
         
       }

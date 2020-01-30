@@ -34,7 +34,7 @@ for(region_type in c("All", "Dense", "Sparse")){
         for(ntl_group in c("All", "1", "2", "3")){
           
           # Printing so know where we be!
-          print(paste(region_type, addis_distance, phase, dv))
+          print(paste(region_type, addis_distance, phase, dv, ntl_group))
           
           data_temp <- data
           
@@ -42,7 +42,7 @@ for(region_type in c("All", "Dense", "Sparse")){
           if(region_type %in% c("Dense", "Sparse")) data_temp <- data_temp[data_temp$region_type %in% region_type,]
           
           #### Subset by baseline nighttime lights
-          if(region_type %in% c("1", "2", "3")) data_temp <- data_temp[data_temp$dmspols_zhang_1996_group %in% region_type %>% as.numeric(),]
+          if(ntl_group %in% c("1", "2", "3")) data_temp <- data_temp[data_temp$dmspols_zhang_1996_group %in% ntl_group %>% as.numeric(),]
           
           #### Subset by All or Far from Addis
           if(addis_distance %in% "Far") data_temp <- data_temp[data_temp$distance_city_addisababa >= 100*1000,]
@@ -62,21 +62,22 @@ for(region_type in c("All", "Dense", "Sparse")){
           data_temp_improvedroad_below50after <- data_temp[data_temp$year_improvedroad_below50after %in% phase_years,]
           
           #### Estimate Models
-          
-          results_df_temp <- bind_rows(
-            felm(dv ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad) %>%
-              lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
-            
-            felm(dv ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_50aboveafter) %>%
-              lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
-            
-            felm(dv ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_below50after) %>%
-              lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
+          results_df_temp <- tryCatch({
+            bind_rows(
+              felm(dv ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad) %>%
+                lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
+              
+              felm(dv ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_50aboveafter) %>%
+                lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
+              
+              felm(dv ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_below50after) %>%
+                lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
             ) %>% mutate(region = region_type,
                          addis_distance = addis_distance,
                          phase = phase,
                          dv = dv,
                          ntl_group = ntl_group)
+          }, error=function(e) data.frame(NULL))
           
           results_df <- bind_rows(results_df, results_df_temp)
           
