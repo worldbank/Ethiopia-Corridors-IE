@@ -51,6 +51,7 @@ library(scales)
 library(rasterVis)
 library(ggpubr)
 library(readr)
+library(gdistance)
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 
 
