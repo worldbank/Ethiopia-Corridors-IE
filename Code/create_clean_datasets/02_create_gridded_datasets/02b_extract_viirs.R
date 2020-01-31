@@ -2,8 +2,11 @@
 
 # Load Data --------------------------------------------------------------------
 points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
-coordinates(points) <- ~long+lat
-crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+
+if(grepl("grid", DATASET_TYPE)){
+  coordinates(points) <- ~long+lat
+  crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+}
 
 viirs_2012 <- raster(file.path(rawdata_file_path, "Nighttime Lights", "VIIRS", "Annual", "Median", "eth_viirs_2012_median.tif"))
 viirs_2013 <- raster(file.path(rawdata_file_path, "Nighttime Lights", "VIIRS", "Annual", "Median", "eth_viirs_2013_median.tif"))
@@ -17,7 +20,13 @@ viirs_2018 <- raster(file.path(rawdata_file_path, "Nighttime Lights", "VIIRS", "
 extract_viirs_to_points <- function(year, points){
   print(year)
   viirs <- raster(file.path(rawdata_file_path, "Nighttime Lights", "VIIRS", "Annual", "Median", paste0("eth_viirs_",year,"_median.tif")))
-  points$viirs <- extract(viirs, points)
+  
+  if(grepl("grid", DATASET_TYPE)){
+    points$viirs <- extract(viirs, points)
+  } else{
+    points$viirs <- velox(viirs)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
+  }
+  
   points$year <- year
   return(points@data)
 }

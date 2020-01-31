@@ -2,8 +2,10 @@
 
 # Load Data --------------------------------------------------------------------
 points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
-coordinates(points) <- ~long+lat
-crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+if(grepl("grid", DATASET_TYPE)){
+  coordinates(points) <- ~long+lat
+  crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+}
 
 read_ntl <- function(year){
   # Load NTL and crop to points extent. When 2 nigthttime light datasets for a year,
@@ -34,7 +36,13 @@ read_ntl <- function(year){
 extract_raster_to_points <- function(year, points){
   print(year)
   dmspols <- read_ntl(year)
-  points$dmspols_zhang <- raster::extract(dmspols, points)
+
+  if(grepl("grid", DATASET_TYPE)){
+    points$dmspols_zhang <- raster::extract(dmspols, points)
+  } else{
+    points$dmspols_zhang <- velox(dmspols)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
+  }
+  
   points$year <- year
   return(points@data)
 }

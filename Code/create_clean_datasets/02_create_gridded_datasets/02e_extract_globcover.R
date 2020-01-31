@@ -1,10 +1,6 @@
-# Extract GADM to Points
+# Extract Globcover to Points
 
 # Load Data --------------------------------------------------------------------
-#points <- readRDS(file.path(outputs_for_grid, TYPE, "points.Rds"))
-#coordinates(points) <- ~long+lat
-#crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-
 polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons.Rds"))
 
 # Add Data ---------------------------------------------------------------------
