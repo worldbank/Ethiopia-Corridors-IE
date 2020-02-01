@@ -2,10 +2,16 @@
 
 # All distances measured in meters.
 
-NEAR_CUTOFF <- 5 * 1000
+if(grepl("grid", DATASET_TYPE)){
+  NEAR_CUTOFF <- 5 * 1000
+} else{
+  NEAR_CUTOFF <- 0
+}
 
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
+
+if(DATASET_TYPE %in% "woreda_panel_hdx_csa") data$cell_id <- data$uid
 
 # Distance to aggregate road categories ----------------------------------------
 # We calculate distance to roads by speed limit. Here we calculate distance
@@ -31,6 +37,7 @@ data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improved
 data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_50abovebefore <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(50))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_below50before <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
+if(DATASET_TYPE %in% "woreda_panel_hdx_csa") data$distance_improvedroad_50abovebefore <- data$distance_improvedroad_below50before
 
 data$distance_improvedroad_below45after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_below35after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30))], 1, FUN = min_NAifAllNA)
@@ -128,11 +135,25 @@ data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
 data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
 
 # Geographic Regions -----------------------------------------------------------
-data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% as.factor()
+data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
+
+if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
+  data$R_NAME <- data$R_NAME %>% as.character()
+  data$region_type <- ifelse(data$R_NAME %in% c("Afar", "Benishangul Gumuz", "SOMALI REGION"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
+} 
 
 # Create Other Variables -------------------------------------------------------
 data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
 data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
+
+# Log market access ------------------------------------------------------------
+if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
+  
+  for(var in names(data)[grepl("^MA_", names(data))]){
+    data[[paste0(var,"_log")]] <- log(data[[var]])
+  }
+  
+}
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))

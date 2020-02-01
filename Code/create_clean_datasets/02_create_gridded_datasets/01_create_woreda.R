@@ -13,4 +13,4 @@ woreda_blank@data <- woreda@data %>%
 saveRDS(woreda_blank, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
 saveRDS(woreda_blank %>% st_as_sf(), file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "polygons.Rds"))
 
-saveRDS(woreda, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "woreda_details.Rds"))
+saveRDS(woreda@data, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "woreda_details.Rds"))

@@ -1,24 +1,80 @@
-# Exploratory Analysis
+# Market Access Analysis
 
-# APPROACH: Somewhat follow the Haiti paper. There it seems road improvement
-# kinda random throughout their years. Here that's not the case, but maybe
-# can assume that within an RDSP phase?
+# Analysis of market access at woreda level.
 
-# OUTLINE
-# 1. Overall impact of each phase.
-# 2. Heterogeneity of impact, within each phase
-#    2.1. Road type 
-#    2.2. Baseline Dep Var (for ntl, num or divide into thirds a la aiddata?)
-#    2.3. Distance to City (could break down by city pop)
 
-# DEPENDENT VARIABLES
-# 1. dmspols_zhang_ihs
-# 2. globcover_urban
-# 3. Cropland? NDVI?
+data <- readRDS(file.path(finaldata_file_path, "woreda_panel_hdx_csa", "merged_datasets", "grid_data_clean.Rds"))
 
-# PRESENT RESULTS
-# 1. Post-treatment
-# 2. Coef-plots. In same plot. All cells and (for hetro), below/above cutoffs (median / quartiles). Super important to see pre-trends.
+MA_VAR <- "MA_pop2007_theta5_log"
+
+
+for(MA_VAR in c("MA_pop2007_theta1_log", "MA_pop2007_theta5_log")){
+  
+  data$MA_VAR <- data[[MA_VAR]]
+  
+  lm_dmspols_zhang_ihs <- felm(dmspols_zhang_ihs ~ MA_VAR | uid + year | 0 | uid, data=data) 
+  lm_dmspols_zhang_ihs_baselineNTL <- felm(dmspols_zhang_ihs ~ MA_VAR*dmspols_1996_group - dmspols_1996_group  | uid + year | 0 | uid, data=data) 
+  lm_dmspols_zhang_ihs_baselineRegion <- felm(dmspols_zhang_ihs ~ MA_VAR*region_type - region_type  | uid + year | 0 | uid, data=data) 
+  
+  lm_dmspols_zhang_6 <- felm(dmspols_zhang_6 ~ MA_VAR | uid + year | 0 | uid, data=data) 
+  lm_dmspols_zhang_6_baselineNTL <- felm(dmspols_zhang_6 ~ MA_VAR*dmspols_1996_group - dmspols_1996_group  | uid + year | 0 | uid, data=data) 
+  lm_dmspols_zhang_6_baselineRegion <- felm(dmspols_zhang_6 ~ MA_VAR*region_type - region_type  | uid + year | 0 | uid, data=data) 
+  
+  globcover_urban <- felm(globcover_urban ~ MA_VAR | uid + year | 0 | uid, data=data) 
+  globcover_urban_baselineNTL <- felm(globcover_urban ~ MA_VAR*dmspols_1996_group - dmspols_1996_group  | uid + year | 0 | uid, data=data) 
+  globcover_urban_baselineRegion <- felm(globcover_urban ~ MA_VAR*region_type - region_type  | uid + year | 0 | uid, data=data) 
+  
+  globcover_cropland <- felm(globcover_cropland ~ MA_VAR | uid + year | 0 | uid, data=data) 
+  globcover_cropland_baselineNTL <- felm(globcover_cropland ~ MA_VAR*dmspols_1996_group - dmspols_1996_group  | uid + year | 0 | uid, data=data) 
+  globcover_cropland_baselineRegion <- felm(globcover_cropland ~ MA_VAR*region_type - region_type  | uid + year | 0 | uid, data=data) 
+  
+  stargazer(lm_dmspols_zhang_ihs,
+            lm_dmspols_zhang_ihs_baselineNTL,
+            lm_dmspols_zhang_ihs_baselineRegion,
+            
+            lm_dmspols_zhang_6,
+            lm_dmspols_zhang_6_baselineNTL,
+            lm_dmspols_zhang_6_baselineRegion,
+            
+            globcover_urban,
+            globcover_urban_baselineNTL,
+            globcover_urban_baselineRegion,
+            
+            globcover_cropland,
+            globcover_cropland_baselineNTL,
+            globcover_cropland_baselineRegion,
+            
+            dep.var.labels.include = T,
+            dep.var.labels = c("DMSP-OLS (Log)", "DMSP-OLS Above Median", "Globcover: Urban", "Globcover: Cropland"),
+            dep.var.caption = "",
+            covariate.labels = c("MA",
+                                 "MA X DMSP Low",
+                                 "MA X DMSP High",
+                                 "MA X Dense Region"),
+            omit.stat = c("f","ser"),
+            align=TRUE,
+            no.space=TRUE,
+            float=FALSE,
+            column.sep.width="-15pt",
+            digits=2,
+            add.lines = list(
+              c("Woreda FE", rep("Y", 12)),
+              c("Year FE", rep("Y", 12))),
+            out = file.path(tables_file_path, paste0("results_",MA_VAR,".tex")))
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))

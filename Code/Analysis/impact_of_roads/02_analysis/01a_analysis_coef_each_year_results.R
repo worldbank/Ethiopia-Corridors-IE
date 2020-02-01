@@ -65,16 +65,16 @@ for(region_type in c("All", "Dense", "Sparse")){
           data_temp_improvedroad_50aboveafter <- data_temp[data_temp$year_improvedroad_50aboveafter %in% phase_years,]
           data_temp_improvedroad_below50after <- data_temp[data_temp$year_improvedroad_below50after %in% phase_years,]
           
-          #### Estimate Models
-          results_df_temp <- tryCatch({
+          #### Estimate Models // GADM_ID_3
+          results_df_temp <- tryCatch({     
             bind_rows(
-              felm(dv ~ years_since_improvedroad | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad) %>%
+              felm(dv ~ years_since_improvedroad | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad) %>%
                 lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
               
-              felm(dv ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_50aboveafter) %>%
+              felm(dv ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad_50aboveafter) %>%
                 lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
               
-              felm(dv ~ years_since_improvedroad_below50after | year + cell_id | 0 | GADM_ID_3, data=data_temp_improvedroad_below50after) %>%
+              felm(dv ~ years_since_improvedroad_below50after | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad_below50after) %>%
                 lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
             ) %>% mutate(region = region_type,
                          addis_distance = addis_distance,
