@@ -14,8 +14,8 @@ tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 
 # Parameters -------------------------------------------------------------------
 
-#DATASET_TYPE <- "dmspols_grid_dataset_randomsample"
-DATASET_TYPE <- "woreda_panel_hdx_csa"
+DATASET_TYPE <- "dmspols_grid_dataset_randomsample"
+#DATASET_TYPE <- "woreda_panel_hdx_csa"
 
 if(DATASET_TYPE %in% c("woreda_panel_hdx_csa")){
   CHUNK_SIZE_DIST_ROADS <- 3

@@ -5,6 +5,17 @@
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
 
+#data$globcover_cropland %>% is.na %>% table()
+
+data <- data[!is.na(data$globcover_cropland),]
+data <- data %>%
+  group_by(cell_id) %>%
+  mutate(globcover_cropland_1996 = globcover_cropland[year == 1996]) %>%
+  mutate(globcover_cropland_2016 = globcover_cropland[year == 2016]) %>%
+  ungroup()
+
+felm(ndvi ~ years_since_improvedroad_below45after | year + cell_id | 0 | woreda_hdx_w_uid, data=data[(data$globcover_cropland_1996 >= .5) & (data$globcover_cropland_2016 >= .5),]) %>% summary()
+
 # Functions --------------------------------------------------------------------
 lm_confint_tidy <- function(lm, years_since_variable){
   lm_confint <- confint(lm) %>% 
@@ -46,7 +57,7 @@ for(region_type in c("All", "Dense", "Sparse")){
           if(region_type %in% c("Dense", "Sparse")) data_temp <- data_temp[data_temp$region_type %in% region_type,]
           
           #### Subset by baseline nighttime lights
-          if(ntl_group %in% c("1", "2", "3")) data_temp <- data_temp[data_temp$dmspols_zhang_1996_group %in% as.numeric(ntl_group),]
+          if(ntl_group %in% c("1", "2", "3")) data_temp <- data_temp[data_temp$dmspols_zhang_1996_group_woreda %in% as.numeric(ntl_group),]
           
           #### Subset by All or Far from Addis
           if(addis_distance %in% "Far") data_temp <- data_temp[data_temp$distance_city_addisababa >= 100*1000,]

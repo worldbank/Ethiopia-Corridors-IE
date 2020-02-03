@@ -60,7 +60,7 @@ if(F){
 
 for(dv in c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland")){
   for(addis_distance in c("All", "Far")){
-    for(unit in c("cell", "woreda")){
+    for(unit in c("cell")){ # "cell", "woreda"
         
       data$dv <- data[[dv]]
       data_w$dv <- data_w[[dv]]
@@ -95,9 +95,9 @@ for(dv in c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcove
         lm_below50after <- felm(dv ~ post_improvedroad_below50after | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)
         
         # INTERACT BASELINE NIGHTTIME LIGHTS
-        lm_baselineNTL <- felm(dv ~ post_improvedroad*dmspols_zhang_1996_group - dmspols_zhang_1996_group | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)
-        lm_50aboveafter_baselineNTL <- felm(dv ~ post_improvedroad_50aboveafter*dmspols_zhang_1996_group - dmspols_zhang_1996_group | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)
-        lm_below50after_baselineNTL <- felm(dv ~ post_improvedroad_below50after*dmspols_zhang_1996_group - dmspols_zhang_1996_group | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)
+        lm_baselineNTL <- felm(dv ~ post_improvedroad*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)
+        lm_50aboveafter_baselineNTL <- felm(dv ~ post_improvedroad_50aboveafter*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)
+        lm_below50after_baselineNTL <- felm(dv ~ post_improvedroad_below50after*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)
         
         # INTERACT REGION GROUP
         lm_region <- felm(dv ~ post_improvedroad*region_type - region_type | cell_id + year | 0 | woreda_hdx_w_uid, data=data_temp)

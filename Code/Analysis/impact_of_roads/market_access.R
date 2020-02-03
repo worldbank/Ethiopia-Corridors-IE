@@ -7,8 +7,8 @@ data <- readRDS(file.path(finaldata_file_path, "woreda_panel_hdx_csa", "merged_d
 
 MA_VAR <- "MA_pop2007_theta5_log"
 
-
-for(MA_VAR in c("MA_pop2007_theta1_log", "MA_pop2007_theta5_log")){
+for(MA_VAR in c("MA_pop2007_theta1_log", "MA_pop2007_theta5_log",
+                "MA_pop2007_theta1_exclude100km_log", "MA_pop2007_theta5_exclude100km_log")){
   
   data$MA_VAR <- data[[MA_VAR]]
   
