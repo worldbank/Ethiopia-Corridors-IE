@@ -1,6 +1,7 @@
 # Travel Time
 
 RESOLUTION_KM <- 3
+WALKING_SPEED <- 5
 
 # Load Data --------------------------------------------------------------------
 roads <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
@@ -37,6 +38,7 @@ calc_travel_time <- function(year, roads, woreda_points){
   #### Create speed variable for year
   speed_var <- paste0("Speed", year)
   roads$SpeedYYYY <- roads[[speed_var]]
+  roads$SpeedYYYY[roads$SpeedYYYY %in% 0] <- WALKING_SPEED
   
   #### Sory by Speed
   # If multiple polylines interesect with a cell, velox uses the last polygon from
@@ -48,7 +50,7 @@ calc_travel_time <- function(year, roads, woreda_points){
   roads_r <- r
   roads_r[] <- 0
   roads_r_vx <- velox(roads_r)
-  roads_r_vx$rasterize(roads, field="SpeedYYYY", background=4) # background should be walking speed (5km/hr); https://en.wikipedia.org/wiki/Preferred_walking_speed
+  roads_r_vx$rasterize(roads, field="SpeedYYYY", background=WALKING_SPEED) # background should be walking speed (5km/hr); https://en.wikipedia.org/wiki/Preferred_walking_speed
   roads_r <- roads_r_vx$as.RasterLayer()
   
   #### Make Transition Layer

@@ -2,10 +2,11 @@
 
 # Analysis of market access at woreda level.
 
-
 data <- readRDS(file.path(finaldata_file_path, "woreda_panel_hdx_csa", "merged_datasets", "grid_data_clean.Rds"))
 
 MA_VAR <- "MA_pop2007_theta5_log"
+
+
 
 for(MA_VAR in c("MA_pop2007_theta1_log", "MA_pop2007_theta5_log",
                 "MA_pop2007_theta1_exclude100km_log", "MA_pop2007_theta5_exclude100km_log")){
@@ -47,10 +48,10 @@ for(MA_VAR in c("MA_pop2007_theta1_log", "MA_pop2007_theta5_log",
             dep.var.labels.include = T,
             dep.var.labels = c("DMSP-OLS (Log)", "DMSP-OLS Above Median", "Globcover: Urban", "Globcover: Cropland"),
             dep.var.caption = "",
-            covariate.labels = c("MA",
-                                 "MA X DMSP Low",
-                                 "MA X DMSP High",
-                                 "MA X Dense Region"),
+            covariate.labels = c("log(MA)",
+                                 "log(MA) X DMSP Low",
+                                 "log(MA) X DMSP High",
+                                 "log(MA) X Dense Region"),
             omit.stat = c("f","ser"),
             align=TRUE,
             no.space=TRUE,
@@ -65,12 +66,23 @@ for(MA_VAR in c("MA_pop2007_theta1_log", "MA_pop2007_theta5_log",
 
 
 
+# MA Change --------------------------------------------------------------------
+data_group <- data %>%
+  group_by(year, dmspols_1996_group) %>%
+  summarise(dmspols = mean(dmspols, na.rm=T),
+             dmspols_zhang_ihs = mean(dmspols_zhang_ihs),
+             MA_pop2007_theta1_log = mean(MA_pop2007_theta1_log, na.rm=T),
+             MA_pop2007_theta5_log = mean(MA_pop2007_theta5_log, na.rm=T),
+             
+             MA_pop2007_theta1_exclude100km_log = mean(MA_pop2007_theta1_exclude100km_log, na.rm=T),
+             MA_pop2007_theta5_exclude100km_log = mean(MA_pop2007_theta5_exclude100km_log, na.rm=T))
 
 
 
 
-
-
+ggplot(data_group[data_group$dmspols_1996_group %in% 1,]) +
+  #geom_line(aes(x=year, y=dmspols_zhang_ihs)) +
+  geom_line(aes(x=year, y=MA_pop2007_theta1_log/200))
 
 
 
