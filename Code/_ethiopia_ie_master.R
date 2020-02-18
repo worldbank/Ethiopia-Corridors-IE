@@ -66,14 +66,15 @@ source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functi
 
 # Run Scripts ------------------------------------------------------------------
 ##### Extract Data to Grids
-grid_scripts <- c("02a_extract_gadm.R", 
-                  "02b_extract_ndvi.R",
-                  "02b_extract_viirs.R",
-                  "02c_extract_distance_improved_roads_by_speedlimit_after.R",
-                  "02c_extract_distance_improved_roads_by_speedlimit_before.R",
-                  "02c_extract_distance_roads_by_phase.R",
-                  "02c_extract_distance_roads_by_speedlimit.R",
-                  "02d_distance_cities.R",
+if(F){
+grid_scripts <- c(#"02a_extract_gadm.R", 
+                  #"02b_extract_ndvi.R",
+                  #"02b_extract_viirs.R",
+                  #"02c_extract_distance_improved_roads_by_speedlimit_after.R",
+                  #"02c_extract_distance_improved_roads_by_speedlimit_before.R",
+                  #"02c_extract_distance_roads_by_phase.R",
+                  #"02c_extract_distance_roads_by_speedlimit.R",
+                  #"02d_distance_cities.R",
                   "02e_extract_globcover.R",
                   "02f_extract_dmspols_intercalibrated_zhang2016_method.R",
                   "04b_merge_datasets_dmspols.R", 
@@ -82,7 +83,7 @@ for(script_i in grid_scripts){
   print(paste(script_i, "----------------------------------------------------"))
   source(file.path(code_file_path, "create_clean_datasets", "02_create_gridded_datasets", script_i))
 } 
-  
+}
 
 
 

@@ -30,25 +30,27 @@ min_NAifAllNA <- function(x){
 
 }
 
-data$distance_road <- apply(data[,paste0("distance_road_speed_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_NAifAllNA)
-data$distance_road_50above <- apply(data[,paste0("distance_road_speed_",c(50,70,120))], 1, FUN = min_NAifAllNA)
-data$distance_road_below50 <- apply(data[,paste0("distance_road_speed_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
+#data$distance_road <- apply(data[,paste0("distance_road_speed_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_NAifAllNA)
+#data$distance_road_50above <- apply(data[,paste0("distance_road_speed_",c(50,70,120))], 1, FUN = min_NAifAllNA)
+#data$distance_road_below50 <- apply(data[,paste0("distance_road_speed_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 
 data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improvedroad_speedafter_",c(50,70,120))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
-data$distance_improvedroad_50abovebefore <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(50))], 1, FUN = min_NAifAllNA)
-data$distance_improvedroad_below50before <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
+#data$distance_improvedroad_50abovebefore <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(50))], 1, FUN = min_NAifAllNA)
+#data$distance_improvedroad_below50before <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa") data$distance_improvedroad_50abovebefore <- data$distance_improvedroad_below50before
 
-data$distance_improvedroad_below45after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35))], 1, FUN = min_NAifAllNA)
-data$distance_improvedroad_below35after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30))], 1, FUN = min_NAifAllNA)
+#data$distance_improvedroad_below45after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35))], 1, FUN = min_NAifAllNA)
+#data$distance_improvedroad_below35after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30))], 1, FUN = min_NAifAllNA)
 
 # Near Roads -------------------------------------------------------------------
-for(var in c("distance_road", "distance_road_50above", "distance_road_below50",
-             "distance_road_speed_50")){
-  data[[str_replace_all(var, "distance_", "near_")]] <- data[[var]] < NEAR_CUTOFF
-}
+#for(var in c("distance_road", 
+#             "distance_road_50above", 
+#             "distance_road_below50")){
+#  print(var)
+#  data[[str_replace_all(var, "distance_", "near_")]] <- data[[var]] < NEAR_CUTOFF
+#}
 
 # Years Since / Post Improved Variables ----------------------------------------
 generate_road_improved_variables <- function(road_var, data){
@@ -89,12 +91,14 @@ generate_road_improved_variables <- function(road_var, data){
   return(data)
 }
 
+#"distance_improvedroad_50abovebefore", 
+#"distance_improvedroad_below50before",
+#"distance_improvedroad_speedbefore_50",
+#"distance_improvedroad_below45after",
+#"distance_improvedroad_below35after"
 roadimproved_df <- lapply(c("distance_improvedroad", 
-                            "distance_improvedroad_50aboveafter", "distance_improvedroad_below50after",
-                            "distance_improvedroad_50abovebefore", "distance_improvedroad_below50before",
-                            "distance_improvedroad_speedbefore_50",
-                            "distance_improvedroad_below45after",
-                            "distance_improvedroad_below35after"),
+                            "distance_improvedroad_50aboveafter", 
+                            "distance_improvedroad_below50after"),
        generate_road_improved_variables, data) %>% bind_cols()
 
 data <- bind_cols(data, roadimproved_df)
@@ -110,10 +114,7 @@ data <- data %>%
   
   # Baseline variables
   mutate(dmspols_1996 = dmspols[year == 1996],
-         dmspols_zhang_1996 = dmspols_zhang[year == 1996],
-         globcover_cropland_1996 = globcover_cropland[year == 1996],
-         globcover_urban_1996 = globcover_urban[year == 1996],
-         near_road_speed_50_1996 = near_road_speed_50[year == 1996]) %>%
+         dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
   
   ungroup() %>%
   
@@ -138,6 +139,7 @@ data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
 
 # Geographic Regions -----------------------------------------------------------
 data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
+data$GADM_ID_1 <- NULL
 
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   data$R_NAME <- data$R_NAME %>% as.character()
@@ -177,6 +179,31 @@ if(grepl("grid", DATASET_TYPE)){
   
 }
 
+# Remove Stuff Don't Need ------------------------------------------------------
+if(DATASET_TYPE %in% "dmspols_grid_dataset_nearroad"){
+  data$distance_city_popsize_3groups_g1 <- NULL
+  data$distance_city_popsize_3groups_g2 <- NULL
+  data$distance_city_popsize_3groups_g3 <- NULL
+  data$distance_city_all <- NULL
+  
+  data$distance_improvedroad_speedafter_20 <- NULL
+  data$distance_improvedroad_speedafter_25 <- NULL
+  data$distance_improvedroad_speedafter_30 <- NULL
+  data$distance_improvedroad_speedafter_35 <- NULL
+  data$distance_improvedroad_speedafter_45 <- NULL
+  data$distance_improvedroad_speedafter_50 <- NULL
+  data$distance_improvedroad_speedafter_70 <- NULL
+  data$distance_improvedroad_speedafter_120 <- NULL
+  
+  data$globcover_cropland_rainfed <- NULL
+  data$globcover_cropland_irrigated <- NULL
+  data$globcover_cropland_mosaic <- NULL
+  
+  #data$year_improvedroad <- NULL
+}
+
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
+
+
 

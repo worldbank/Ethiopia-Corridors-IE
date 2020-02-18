@@ -7,14 +7,14 @@ data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", 
 
 #data$globcover_cropland %>% is.na %>% table()
 
-data <- data[!is.na(data$globcover_cropland),]
-data <- data %>%
-  group_by(cell_id) %>%
-  mutate(globcover_cropland_1996 = globcover_cropland[year == 1996]) %>%
-  mutate(globcover_cropland_2016 = globcover_cropland[year == 2016]) %>%
-  ungroup()
+#data <- data[!is.na(data$globcover_cropland),]
+#data <- data %>%
+#  group_by(cell_id) %>%
+#  mutate(globcover_cropland_1996 = globcover_cropland[year == 1996]) %>%
+#  mutate(globcover_cropland_2016 = globcover_cropland[year == 2016]) %>%
+#  ungroup()
 
-felm(ndvi ~ years_since_improvedroad_below45after | year + cell_id | 0 | woreda_hdx_w_uid, data=data[(data$globcover_cropland_1996 >= .5) & (data$globcover_cropland_2016 >= .5),]) %>% summary()
+#felm(ndvi ~ years_since_improvedroad_below45after | year + cell_id | 0 | woreda_hdx_w_uid, data=data[(data$globcover_cropland_1996 >= .5) & (data$globcover_cropland_2016 >= .5),]) %>% summary()
 
 # Functions --------------------------------------------------------------------
 lm_confint_tidy <- function(lm, years_since_variable){
@@ -36,7 +36,7 @@ if(F){
   addis_distance <- "All"
   phase <- "phase_all"
   dv <- "dmspols_zhang_ihs"
-  ntl_group <- "2"
+  ntl_group <- "All"
 }
 
 
@@ -95,6 +95,7 @@ for(region_type in c("All", "Dense", "Sparse")){
           }, error=function(e) data.frame(NULL))
           
           results_df <- bind_rows(results_df, results_df_temp)
+          print(nrow(results_df))
           
         }
       }

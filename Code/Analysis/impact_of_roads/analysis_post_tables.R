@@ -22,34 +22,8 @@
 
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
-data$region_type <- data$region_type %>% as.character() %>% factor(levels = c("Sparse", "Dense"))
 
-
-data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
 data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
-
-data_w <- data %>% 
-  group_by(GADM_ID_3, year, region_type) %>%
-  summarise(dmspols_zhang_ihs = mean(dmspols_zhang_ihs, na.rm=T),
-            globcover_urban = mean(globcover_urban, na.rm=T),
-            globcover_cropland = mean(globcover_cropland, na.rm=T),
-            post_improvedroad = max(post_improvedroad, na.rm=T),
-            post_improvedroad_50aboveafter = max(post_improvedroad_50aboveafter, na.rm=T),
-            post_improvedroad_below50after = max(post_improvedroad_below50after, na.rm=T),
-            dmspols_zhang_1996 = mean(dmspols_zhang_1996, na.rm=T),
-            dmspols_zhang_6 = mean(dmspols_zhang_6, na.rm=T),
-            far_addis = max(far_addis, na.rm=T)) %>%
-  ungroup() 
-
-dmspols_zhang_1996_median <- data_w$dmspols_zhang_1996[data_w$dmspols_zhang_1996 > 0] %>% median(na.rm=T) 
-data_w$dmspols_zhang_1996_group <- 1
-data_w$dmspols_zhang_1996_group[data_w$dmspols_zhang_1996 > 0] <- 2
-data_w$dmspols_zhang_1996_group[data_w$dmspols_zhang_1996 >= dmspols_zhang_1996_median] <- 3
-data_w$dmspols_zhang_1996_group <- data_w$dmspols_zhang_1996_group %>% as.factor()
-
-for(var in names(data_w)){
-  data_w[[var]][data_w[[var]] %in% c(Inf, -Inf)] <- NA
-}
 
 # Export Results ---------------------------------------------------------------
 if(F){
@@ -61,16 +35,17 @@ if(F){
 for(dv in c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland")){
   for(addis_distance in c("All", "Far")){
     for(unit in c("cell")){ # "cell", "woreda"
+      
+      print(paste(dv, addis_distance, unit, "--------------------------------"))
         
       data$dv <- data[[dv]]
-      data_w$dv <- data_w[[dv]]
-      
+
       if(addis_distance %in% "Far"){
         data_temp <- data[data$far_addis %in% 1,]
-        data_w_temp <- data_w[data_w$far_addis %in% 1,]
+#        data_w_temp <- data_w[data_w$far_addis %in% 1,]
       } else{
         data_temp <- data
-        data_w_temp <- data_w
+#        data_w_temp <- data_w
       }
       
       if(dv %in% "dmspols_zhang_ihs") dep_var_label <- "DMSP OLS (Log)"
