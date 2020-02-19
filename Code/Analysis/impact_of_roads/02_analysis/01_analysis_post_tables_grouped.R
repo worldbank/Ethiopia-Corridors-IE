@@ -20,10 +20,6 @@
 # 1. Post-treatment
 # 2. Coef-plots. In same plot. All cells and (for hetro), below/above cutoffs (median / quartiles). Super important to see pre-trends.
 
-#geojson_filepath <- "C:/Users/wb521633/Dropbox/geojsons"
-#files_all <- list.files(geojson_filepath, full.names=T, pattern="*.geojson")
-#routes_all_df <- lapply(files_all, function(file_i) st_read(file_i)) %>% do.call(what="rbind")
-
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
 
