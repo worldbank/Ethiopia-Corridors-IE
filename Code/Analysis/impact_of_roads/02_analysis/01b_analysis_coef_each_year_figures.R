@@ -48,7 +48,7 @@ for(addis_distance in c("All", "Far")){
                title = dv_title) +
           theme_minimal() +
           theme(plot.title = element_text(face="bold", hjust=.5)) +
-          facet_wrap(~region, scales="fixed", nrow=1)
+          facet_wrap(~region, scales="free", nrow=1)
         
         if(i == length(dv_list)){
           p <- p + labs(x="Years Since Improved Road Constructed")

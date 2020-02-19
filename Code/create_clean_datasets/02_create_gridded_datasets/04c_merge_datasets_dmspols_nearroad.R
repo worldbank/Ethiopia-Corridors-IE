@@ -40,6 +40,7 @@ for(dataset in DATASETS_TIME_INVARIANT){
 }
 
 # Export -----------------------------------------------------------------------
+#### Remove Unneeded variables
 points_all$GADM_GID_1 <- NULL
 points_all$GADM_GID_2 <- NULL
 points_all$GADM_GID_3 <- NULL

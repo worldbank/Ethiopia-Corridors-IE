@@ -83,6 +83,11 @@ generate_road_improved_variables <- function(road_var, data){
   data <- data %>%
     dplyr::select(year_roadTEMP, years_since_roadTEMP, post_roadTEMP)
   
+  # +/- 10 years aggregate
+  data$years_since_roadTEMP[data$years_since_roadTEMP >= 10] <- 10
+  data$years_since_roadTEMP[data$years_since_roadTEMP <= -10] <- -10
+  
+  # Prep variables
   data$years_since_roadTEMP <- data$years_since_roadTEMP %>% as.factor() %>% relevel("-1")
   data$post_roadTEMP <- data$post_roadTEMP %>% as.numeric()
   
@@ -180,6 +185,7 @@ if(grepl("grid", DATASET_TYPE)){
 }
 
 # Remove Stuff Don't Need ------------------------------------------------------
+#### Remove variabled don't need
 if(DATASET_TYPE %in% "dmspols_grid_dataset_nearroad"){
   data$distance_city_popsize_3groups_g1 <- NULL
   data$distance_city_popsize_3groups_g2 <- NULL
@@ -201,6 +207,18 @@ if(DATASET_TYPE %in% "dmspols_grid_dataset_nearroad"){
   
   #data$year_improvedroad <- NULL
 }
+
+#### Remove cells not in analysis
+data$distance_improvedroad_TEMP <- data$distance_improvedroad
+data$distance_improvedroad_TEMP[is.na(data$distance_improvedroad_TEMP)] <- 9999*1000
+
+data <- data %>%
+  group_by(cell_id) %>%
+  mutate(distance_improvedroad_TEMP_min = min(distance_improvedroad_TEMP)) %>%
+  ungroup()
+data <- data[data$distance_improvedroad_TEMP_min <= NEAR_CUTOFF,]
+data$distance_improvedroad_TEMP <- NULL
+data$distance_improvedroad_TEMP_min <- NULL
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))

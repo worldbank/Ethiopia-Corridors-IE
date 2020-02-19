@@ -35,7 +35,7 @@ if(F){
   region_type <- "All"
   addis_distance <- "All"
   phase <- "phase_all"
-  dv <- "dmspols_zhang_ihs"
+  dv <- "globcover_urban"
   ntl_group <- "All"
 }
 

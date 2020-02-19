@@ -67,14 +67,14 @@ source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functi
 # Run Scripts ------------------------------------------------------------------
 ##### Extract Data to Grids
 if(F){
-grid_scripts <- c(#"02a_extract_gadm.R", 
+grid_scripts <- c("02a_extract_gadm.R", 
                   #"02b_extract_ndvi.R",
                   #"02b_extract_viirs.R",
-                  #"02c_extract_distance_improved_roads_by_speedlimit_after.R",
+                  "02c_extract_distance_improved_roads_by_speedlimit_after.R",
                   #"02c_extract_distance_improved_roads_by_speedlimit_before.R",
                   #"02c_extract_distance_roads_by_phase.R",
                   #"02c_extract_distance_roads_by_speedlimit.R",
-                  #"02d_distance_cities.R",
+                  "02d_distance_cities.R",
                   "02e_extract_globcover.R",
                   "02f_extract_dmspols_intercalibrated_zhang2016_method.R",
                   "04b_merge_datasets_dmspols.R", 

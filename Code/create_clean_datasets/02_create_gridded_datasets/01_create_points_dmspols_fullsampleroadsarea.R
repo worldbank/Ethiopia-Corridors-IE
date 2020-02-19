@@ -47,7 +47,7 @@ cells_to_keep <- cells_to_keep & !is.na(points_OVER_gadm$NAME_0)
 
 #### Restrict to Near Road
 # Restrict roads to consider
-roads <- roads[roads$Complete_G >= 1997,]
+#roads <- roads[roads$Complete_G >= 1997,]
 
 # Simplify roads to make buffering go faster
 roads_s <- gSimplify(roads, tol=.001)
