@@ -36,18 +36,20 @@ if(F){
   cluster_var <- "woreda_hdx_w_uid"
 }
 
-# woreda_hdx_z_code
+# All Phases Together ----------------------------------------------------------
 for(dv in c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland")){
   for(addis_distance in c("All", "Far")){
     for(unit in c("cell")){ # "cell", "woreda"
       for(cluster_var in c("woreda_hdx_w_uid", "woreda_hdx_z_code")){
-      
+
         gc()
         print(paste(dv, addis_distance, unit, cluster_var, "-----------------"))
           
+        #### Define Dependent Variable and Cluster Variable
         data$dv <- data[[dv]]
         data$cluster_var <- data[[cluster_var]]
   
+        #### Subset by Addis Distance
         if(addis_distance %in% "Far"){
           data_temp <- data[data$far_addis %in% 1,]
           #data_w_temp <- data_w[data_w$far_addis %in% 1,]
@@ -56,8 +58,16 @@ for(dv in c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcove
           #data_w_temp <- data_w
         }
         
-        if(dv %in% "dmspols_zhang_ihs") dep_var_label <- "DMSP OLS (Log)"
-        if(dv %in% "dmspols_zhang_6") dep_var_label <- "Above Median DMSP OLS"
+        #### Subsetting by Phase
+        if(phase %in% "phase_all") phase_years <- 1997:2016
+        if(phase %in% "phase_1")   phase_years <- 1997:2002
+        if(phase %in% "phase_2")   phase_years <- 2003:2007
+        if(phase %in% "phase_3")   phase_years <- 2008:2010
+        if(phase %in% "phase_4")   phase_years <- 2011:2016
+        
+        #### Create Dependent Variable Label
+        if(dv %in% "dmspols_zhang_ihs") dep_var_label <- "DMSP-OLS: IHS"
+        if(dv %in% "dmspols_zhang_6") dep_var_label <- "DMSP-OLS: Above Median"
         if(dv %in% "globcover_urban") dep_var_label <- "Globcover: Urban"
         if(dv %in% "globcover_cropland") dep_var_label <- "Globcover: Cropland"
         
@@ -122,13 +132,15 @@ for(dv in c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcove
                   column.sep.width="-15pt",
                   digits=2,
                   add.lines = list(
-                    c("Cell FE", rep("Y", 9)),
-                    c("Year FE", rep("Y", 9))),
+                    c("Cell FE", rep("Y", 6)),
+                    c("Year FE", rep("Y", 6))),
                   out = file.path(tables_file_path, paste0("results_did_grouped_",dv,"_addisdistance",addis_distance,"_clustervar",cluster_var,"_unit",unit,".tex")))
       }
     }
   }
 }
+
+# By Phase ---------------------------------------------------------------------
 
 
 

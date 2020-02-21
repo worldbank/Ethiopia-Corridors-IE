@@ -35,7 +35,7 @@ if(F){
   region_type <- "All"
   addis_distance <- "All"
   phase <- "phase_all"
-  dv <- "globcover_urban"
+  dv <- "dmspols_zhang_ihs"
   ntl_group <- "All"
 }
 
@@ -76,6 +76,12 @@ for(region_type in c("All", "Dense", "Sparse")){
           data_temp_improvedroad_50aboveafter <- data_temp[data_temp$year_improvedroad_50aboveafter %in% phase_years,]
           data_temp_improvedroad_below50after <- data_temp[data_temp$year_improvedroad_below50after %in% phase_years,]
           
+          
+          a <- felm(dv ~ years_since_improvedroad | 0 | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad) %>%
+            lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All")
+          ggplot() +
+            geom_line(data=a, aes(x=years_since_improved, y=b))
+          
           #### Estimate Models // GADM_ID_3
           results_df_temp <- tryCatch({     
             bind_rows(
@@ -105,4 +111,10 @@ for(region_type in c("All", "Dense", "Sparse")){
 
 # Export Results ---------------------------------------------------------------
 saveRDS(results_df, file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
+
+
+
+
+
+
 

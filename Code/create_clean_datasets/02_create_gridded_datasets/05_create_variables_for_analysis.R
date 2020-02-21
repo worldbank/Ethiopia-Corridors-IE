@@ -84,8 +84,8 @@ generate_road_improved_variables <- function(road_var, data){
     dplyr::select(year_roadTEMP, years_since_roadTEMP, post_roadTEMP)
   
   # +/- 10 years aggregate
-  data$years_since_roadTEMP[data$years_since_roadTEMP >= 10] <- 10
-  data$years_since_roadTEMP[data$years_since_roadTEMP <= -10] <- -10
+  #data$years_since_roadTEMP[data$years_since_roadTEMP >= 10] <- 10
+  #data$years_since_roadTEMP[data$years_since_roadTEMP <= -10] <- -10
   
   # Prep variables
   data$years_since_roadTEMP <- data$years_since_roadTEMP %>% as.factor() %>% relevel("-1")
