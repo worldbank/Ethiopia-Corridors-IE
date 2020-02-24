@@ -3,10 +3,16 @@
 # Makes figures based on dataframe of results
 
 p_dodge_width <- .5
-dv_list <- c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland")
+dv_list <- c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland", "ndvi", "ndvi_cropland")
 
 # Load Data --------------------------------------------------------------------
 results_df <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
+
+if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
+  unit <- "_woreda"
+} else{
+  unit <- ""
+}
 
 # Facet over region type -------------------------------------------------------
 for(addis_distance in c("All", "Far")){
@@ -31,6 +37,8 @@ for(addis_distance in c("All", "Far")){
         if(dv == "dmspols_zhang_ihs")  dv_title <- "NTL - DMSPOLS (Log)"
         if(dv == "dmspols_zhang_2")    dv_title <- "DMSPOLS >= 2"
         if(dv == "dmspols_zhang_6")    dv_title <- "DMSPOLS >= 6"
+        if(dv == "ndvi")               dv_title <- "NDVI"
+        if(dv == "ndvi_cropland")      dv_title <- "NDVI: Cropland Areas"
         
         p <- ggplot(data = results_df[(results_df$dv %in% dv) & 
                                         (results_df$addis_distance %in% addis_distance) & 
@@ -63,11 +71,13 @@ for(addis_distance in c("All", "Far")){
                 figures_list[[2]],
                 figures_list[[3]],
                 figures_list[[4]],
-                nrow = 4,
+                figures_list[[5]],
+                figures_list[[6]],
+                nrow = 6,
                 common.legend = T,
                 legend = "right")
 
-      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_regionfacet_addis",addis_distance,"_",phase,"_ntl",ntl_group,".png")),
+      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_regionfacet_addis",addis_distance,"_",phase,"_ntl",ntl_group,unit,".png")),
              height = 14, width =11)
       
     }
@@ -107,6 +117,8 @@ for(addis_distance in c("All", "Far")){
         if(dv == "dmspols_zhang_ihs")  dv_title <- "NTL - DMSPOLS (Log)"
         if(dv == "dmspols_zhang_2")    dv_title <- "DMSPOLS >= 2"
         if(dv == "dmspols_zhang_6")    dv_title <- "DMSPOLS >= 6"
+        if(dv == "ndvi")               dv_title <- "NDVI"
+        if(dv == "ndvi_cropland")      dv_title <- "NDVI: Cropland Areas"
         
         p <- ggplot(data = results_df[(results_df$ntl_group %in% c("Zero", "Below Median", "Above Median")) &
                                         (results_df$dv %in% dv) & 
@@ -142,11 +154,13 @@ for(addis_distance in c("All", "Far")){
                          figures_list[[2]],
                          figures_list[[3]],
                          figures_list[[4]],
-                         nrow = 4,
+                         figures_list[[5]],
+                         figures_list[[6]],
+                         nrow = 6,
                          common.legend = T,
                          legend = "right")
       
-      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_",phase,"_region",region,".png")),
+      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_",phase,"_region",region,unit,".png")),
              height = 14, width =11)
       
     }

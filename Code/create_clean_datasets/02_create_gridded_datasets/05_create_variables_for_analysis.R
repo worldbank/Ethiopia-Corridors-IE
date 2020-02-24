@@ -39,10 +39,23 @@ data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improved
 data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 #data$distance_improvedroad_50abovebefore <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(50))], 1, FUN = min_NAifAllNA)
 #data$distance_improvedroad_below50before <- apply(data[,paste0("distance_improvedroad_speedbefore_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
-if(DATASET_TYPE %in% "woreda_panel_hdx_csa") data$distance_improvedroad_50abovebefore <- data$distance_improvedroad_below50before
+#if(DATASET_TYPE %in% "woreda_panel_hdx_csa") data$distance_improvedroad_50abovebefore <- data$distance_improvedroad_below50before
 
 #data$distance_improvedroad_below45after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35))], 1, FUN = min_NAifAllNA)
 #data$distance_improvedroad_below35after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30))], 1, FUN = min_NAifAllNA)
+
+# Remove cells not in analysis -------------------------------------------------
+# Include unit if near an improved road at some point during the analysis
+data$distance_improvedroad_TEMP <- data$distance_improvedroad
+data$distance_improvedroad_TEMP[is.na(data$distance_improvedroad_TEMP)] <- 9999*1000
+
+data <- data %>%
+  group_by(cell_id) %>%
+  mutate(distance_improvedroad_TEMP_min = min(distance_improvedroad_TEMP)) %>%
+  ungroup()
+data <- data[data$distance_improvedroad_TEMP_min <= NEAR_CUTOFF,]
+data$distance_improvedroad_TEMP <- NULL
+data$distance_improvedroad_TEMP_min <- NULL
 
 # Near Roads -------------------------------------------------------------------
 #for(var in c("distance_road", 
@@ -84,8 +97,8 @@ generate_road_improved_variables <- function(road_var, data){
     dplyr::select(year_roadTEMP, years_since_roadTEMP, post_roadTEMP)
   
   # +/- 10 years aggregate
-  #data$years_since_roadTEMP[data$years_since_roadTEMP >= 10] <- 10
-  #data$years_since_roadTEMP[data$years_since_roadTEMP <= -10] <- -10
+  data$years_since_roadTEMP[data$years_since_roadTEMP >= 10] <- 10
+  data$years_since_roadTEMP[data$years_since_roadTEMP <= -10] <- -10
   
   # Prep variables
   data$years_since_roadTEMP <- data$years_since_roadTEMP %>% as.factor() %>% relevel("-1")
@@ -179,8 +192,11 @@ if(grepl("grid", DATASET_TYPE)){
 
 } else{
   # Add same variable names to woreda to make analysis script work for both
-  data$dmspols_zhang_1996_group_woreda <- data$dmspols_zhang_1996
+  data$dmspols_zhang_1996_group_woreda <- data$dmspols_zhang_1996_group
   data$dmspols_1996_group_woreda       <- data$dmspols_1996_group
+  
+  data$woreda_hdx_w_uid       <- data$uid
+  data$woreda_hdx_z_code       <- data$Z_CODE
   
 }
 
@@ -208,17 +224,7 @@ if(DATASET_TYPE %in% "dmspols_grid_dataset_nearroad"){
   #data$year_improvedroad <- NULL
 }
 
-#### Remove cells not in analysis
-data$distance_improvedroad_TEMP <- data$distance_improvedroad
-data$distance_improvedroad_TEMP[is.na(data$distance_improvedroad_TEMP)] <- 9999*1000
 
-data <- data %>%
-  group_by(cell_id) %>%
-  mutate(distance_improvedroad_TEMP_min = min(distance_improvedroad_TEMP)) %>%
-  ungroup()
-data <- data[data$distance_improvedroad_TEMP_min <= NEAR_CUTOFF,]
-data$distance_improvedroad_TEMP <- NULL
-data$distance_improvedroad_TEMP_min <- NULL
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))

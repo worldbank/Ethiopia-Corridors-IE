@@ -10,8 +10,8 @@ points_all <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_da
 #### Names of datasets to merge in
 # Separate by time invarient (merge by cell_id) and time varying (merge by cell_id 
 # and year)
-#DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds", "points_distance_rsdp_phases.Rds")
-DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds")
+DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds", "points_distance_rsdp_phases.Rds")
+#DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds")
 
 #DATASETS_TIME_VARYING <- c("points_viirs.Rds",
 #                           "points_ndvi.Rds",
@@ -21,6 +21,7 @@ DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", "points_distance_cities.Rds")
 #                           "points_distance_improved_roads_byspeed_before.Rds",
 #                           "points_distance_improved_roads_byspeed_after.Rds")
 DATASETS_TIME_VARYING <- c("points_globcover.Rds",
+                           "points_ndvi.Rds",
                            "points_dmspols_zhang2016.Rds",
                            "points_distance_improved_roads_byspeed_after.Rds")
 
@@ -51,6 +52,15 @@ points_all$woreda_hdx_z_name <- NULL
 points_all$woreda_hdx_w_name <- NULL
 points_all$woreda_hdx_w_pop2007 <- NULL
 points_all$woreda_hdx_w_density <- NULL
+
+points_all$distance_city_popsize_3groups_g1 <- NULL
+points_all$distance_city_popsize_3groups_g2 <- NULL
+points_all$distance_city_popsize_3groups_g3 <- NULL
+points_all$distance_city_all <- NULL
+
+points_all$globcover_cropland_rainfed <- NULL
+points_all$globcover_cropland_irrigated <- NULL
+points_all$globcover_cropland_mosaic <- NULL
 
 saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
 

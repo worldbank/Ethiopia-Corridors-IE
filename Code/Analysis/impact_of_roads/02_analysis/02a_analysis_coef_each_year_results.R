@@ -45,7 +45,7 @@ results_df <- data.frame(NULL)
 for(region_type in c("All", "Dense", "Sparse")){
   for(addis_distance in c("All", "Far")){
     for(phase in c("phase_all", "phase_1", "phase_2", "phase_3", "phase_4")){
-      for(dv in c("globcover_urban","globcover_cropland", "ndvi", "dmspols_ihs", "dmspols_zhang_ihs", "dmspols_zhang_2", "dmspols_zhang_6")){
+      for(dv in c("globcover_urban","globcover_cropland", "dmspols_ihs", "dmspols_zhang_ihs", "dmspols_zhang_2", "dmspols_zhang_6", "ndvi", "ndvi_cropland")){
         for(ntl_group in c("All", "1", "2", "3")){
           
           # Printing so know where we be!
@@ -76,12 +76,6 @@ for(region_type in c("All", "Dense", "Sparse")){
           data_temp_improvedroad_50aboveafter <- data_temp[data_temp$year_improvedroad_50aboveafter %in% phase_years,]
           data_temp_improvedroad_below50after <- data_temp[data_temp$year_improvedroad_below50after %in% phase_years,]
           
-          
-          a <- felm(dv ~ years_since_improvedroad | 0 | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad) %>%
-            lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All")
-          ggplot() +
-            geom_line(data=a, aes(x=years_since_improved, y=b))
-          
           #### Estimate Models // GADM_ID_3
           results_df_temp <- tryCatch({     
             bind_rows(
@@ -102,6 +96,12 @@ for(region_type in c("All", "Dense", "Sparse")){
           
           results_df <- bind_rows(results_df, results_df_temp)
           print(nrow(results_df))
+          
+          gc()
+          rm(data_temp_improvedroad); gc()
+          rm(data_temp_improvedroad_50aboveafter); gc()
+          rm(data_temp_improvedroad_below50after); gc()
+          gc()
           
         }
       }
