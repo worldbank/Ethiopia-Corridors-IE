@@ -102,30 +102,7 @@ for(dv in c("ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "gl
                                post_improvedroad_50aboveafter*region_type -
                                region_type +
                                TempAvg + TempMin + TempMax + precipitation| cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        cov_labels <- c("Near Improved Rd.",
-                        
-                        "Near Improved Rd. $<$50km/hr",
-                        "Near Improved Rd. $>=$50km/hr",
-                        
-                        "Temp: Avg",
-                        "Temp: Min",
-                        "Temp: Max",
-                        "Precipitation",
-                        
-                        "Near Improved Rd. X DMSP Low",
-                        "Near Improved Rd. X DMSP High",
-                        "Near Improved Rd. X Dense Region",
-                        
-                        "Near Improved Rd. $<$50km/hr X DMSP Low",
-                        "Near Improved Rd. $<$50km/hr X DMSP High",
-                        
-                        "Near Improved Rd. $>=$50km/hr X DMSP Low",
-                        "Near Improved Rd. $>=$50km/hr X DMSP High",
-                        
-                        "Near Improved Rd. $>=$50km/hr X Dense Region",
-                        "Near Improved Rd. $<$50km/hr X Dense Region")
-        
+      
       } else{
         lm <- felm(dv ~ post_improvedroad | cell_id + year | 0 | cluster_var, data=data_temp)
         lm_baselineNTL <- felm(dv ~ post_improvedroad + post_improvedroad*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda | cell_id + year | 0 | cluster_var, data=data_temp)
@@ -142,23 +119,6 @@ for(dv in c("ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "gl
                                post_improvedroad_below50after*region_type +
                                post_improvedroad_50aboveafter*region_type -
                                region_type | cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        cov_labels <- c("Near Improved Rd.",
-                        "Near Improved Rd. X DMSP Low",
-                        "Near Improved Rd. X DMSP High",
-                        "Near Improved Rd. X Dense Region",
-                        
-                        "Near Improved Rd. $<$50km/hr",
-                        "Near Improved Rd. $>=$50km/hr",
-                        
-                        "Near Improved Rd. $<$50km/hr X DMSP Low",
-                        "Near Improved Rd. $<$50km/hr X DMSP High",
-                        
-                        "Near Improved Rd. $>=$50km/hr X DMSP Low",
-                        "Near Improved Rd. $>=$50km/hr X DMSP High",
-                        
-                        "Near Improved Rd. $>=$50km/hr X Dense Region",
-                        "Near Improved Rd. $<$50km/hr X Dense Region")
       }
       
       rm(data_temp)
@@ -172,7 +132,29 @@ for(dv in c("ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "gl
                 dep.var.labels.include = T,
                 dep.var.labels = c(dep_var_label),
                 dep.var.caption = "",
-                covariate.labels = cov_labels,
+                covariate.labels =   c("Near Improved Rd.",
+                                       "Near Improved Rd. X DMSP Low",
+                                       "Near Improved Rd. X DMSP High",
+                                       "Near Improved Rd. X Dense Region",
+                                       
+                                       "Near Improved Rd. $<$50km/hr",
+                                       "Near Improved Rd. $<$50km/hr X DMSP Low",
+                                       "Near Improved Rd. $<$50km/hr X DMSP High",
+                                       "Near Improved Rd. $<$50km/hr X Dense Region",
+                                       
+                                       "Near Improved Rd. $>=$50km/hr",
+                                       "Near Improved Rd. $>=$50km/hr X DMSP Low",
+                                       "Near Improved Rd. $>=$50km/hr X DMSP High",
+                                       "Near Improved Rd. $>=$50km/hr X Dense Region"),
+                keep = c("post_improvedroad",
+                         "post_improvedroad:dmspols_zhang_1996_group_woreda",
+                         "post_improvedroad:region_type",
+                         "post_improvedroad_below50after",
+                         "post_improvedroad_below50after:dmspols_zhang_1996_group_woreda",
+                         "post_improvedroad_below50after:region_type",
+                         "post_improvedroad_50aboveafter",
+                         "post_improvedroad_50aboveafter:dmspols_zhang_1996_group_woreda",
+                         "post_improvedroad_50aboveafter:region_type"),
                 omit.stat = c("f","ser"),
                 align=TRUE,
                 no.space=TRUE,
