@@ -45,7 +45,7 @@ data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improved
 #data$distance_improvedroad_below35after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30))], 1, FUN = min_NAifAllNA)
 
 # Remove cells not in analysis -------------------------------------------------
-# Include unit if near an improved road at some point during the analysis
+#### Include unit if near an improved road at some point during the analysis
 data$distance_improvedroad_TEMP <- data$distance_improvedroad
 data$distance_improvedroad_TEMP[is.na(data$distance_improvedroad_TEMP)] <- 9999*1000
 
@@ -57,6 +57,11 @@ data <- data[data$distance_improvedroad_TEMP_min <= NEAR_CUTOFF,]
 data$distance_improvedroad_TEMP <- NULL
 data$distance_improvedroad_TEMP_min <- NULL
 
+#### Remove Cells intersect road
+data <- data[data$distance_anyroad2016 >= 1000,]
+data$distance_anyroad2016 <- NULL
+
+for(i in 1:5) gc()
 # Near Roads -------------------------------------------------------------------
 #for(var in c("distance_road", 
 #             "distance_road_50above", 
