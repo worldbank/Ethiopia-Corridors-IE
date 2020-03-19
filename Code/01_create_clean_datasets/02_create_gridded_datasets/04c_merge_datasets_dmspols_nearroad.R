@@ -26,7 +26,8 @@ DATASETS_TIME_VARYING <- c("points_globcover.Rds",
                            "points_dmspols_zhang2016.Rds",
                            "points_distance_improved_roads_byspeed_after.Rds",
                            "points_temperature.Rds",
-                           "points_precipitation.Rds")
+                           "points_precipitation.Rds",
+                           "points_viirs.Rds")
 
 # Merge ------------------------------------------------------------------------
 for(dataset in DATASETS_TIME_VARYING){

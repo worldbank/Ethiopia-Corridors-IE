@@ -16,12 +16,12 @@ woreda$uid <- 1:nrow(woreda)
 # Add Data ---------------------------------------------------------------------
 points_OVER_gadm <- sp::over(points, eth_adm3)
 points$GADM_ID_1 <- points_OVER_gadm$NAME_1 %>% as.factor()
-points$GADM_ID_2 <- points_OVER_gadm$NAME_2 %>% as.factor() 
-points$GADM_ID_3 <- points_OVER_gadm$NAME_3 %>% as.factor()
+#points$GADM_ID_2 <- points_OVER_gadm$NAME_2 %>% as.factor() 
+#points$GADM_ID_3 <- points_OVER_gadm$NAME_3 %>% as.factor()
 
-points$GADM_GID_1 <- points_OVER_gadm$GID_1 %>% as.factor()
-points$GADM_GID_2 <- points_OVER_gadm$GID_2 %>% as.factor() 
-points$GADM_GID_3 <- points_OVER_gadm$GID_3 %>% as.factor()
+#points$GADM_GID_1 <- points_OVER_gadm$GID_1 %>% as.factor()
+#points$GADM_GID_2 <- points_OVER_gadm$GID_2 %>% as.factor() 
+#points$GADM_GID_3 <- points_OVER_gadm$GID_3 %>% as.factor()
 
 # Add Other Woreda Data --------------------------------------------------------
 points_OVER_woreda <- sp::over(points, woreda)

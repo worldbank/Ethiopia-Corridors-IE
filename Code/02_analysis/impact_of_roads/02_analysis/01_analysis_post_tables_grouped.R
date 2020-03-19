@@ -28,11 +28,6 @@ data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
 data$post_improvedroad_50aboveafter[is.na(data$post_improvedroad_50aboveafter) & !is.na(data$post_improvedroad)] <- 0
 data$post_improvedroad_below50after[is.na(data$post_improvedroad_below50after) & !is.na(data$post_improvedroad)] <- 0
 
-data <- data %>%
-  dplyr::rename("TempAvg" = "temp_avg",
-                "TempMin" = "temp_min",
-                "TempMax" = "temp_max")
-
 # Export Results ---------------------------------------------------------------
 if(F){
   dv <- "ndvi"
@@ -42,7 +37,7 @@ if(F){
 }
 
 # All Phases Together ----------------------------------------------------------
-for(dv in c("ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland")){ 
+for(dv in c("viirs", "ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland")){ 
   for(addis_distance in c("All", "Far")){
     for(cluster_var in c("woreda_hdx_w_uid", "woreda_hdx_z_code")){
 
@@ -82,47 +77,33 @@ for(dv in c("ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "gl
       if(dv %in% "ndvi") dep_var_label <- "NDVI"
       if(dv %in% "ndvi_cropland") dep_var_label <- "NDVI in Cropland Areas"
       
-      #### Models
-      if(grepl("ndvi", dv)){
-        
-        lm <- felm(dv ~ post_improvedroad + TempAvg + TempMin + TempMax + precipitation | cell_id + year | 0 | cluster_var, data=data_temp)
-        lm_baselineNTL <- felm(dv ~ post_improvedroad + post_improvedroad*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda + TempAvg + TempMin + TempMax + precipitation | cell_id + year | 0 | cluster_var, data=data_temp)
-        lm_region <- felm(dv ~ post_improvedroad + post_improvedroad*region_type - region_type + TempAvg + TempMin + TempMax + precipitation | cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        lm_50 <- felm(dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter + TempAvg + TempMin + TempMax + precipitation | cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        lm_50_baselineNTL <- felm(dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter +
-                                    post_improvedroad_below50after*dmspols_zhang_1996_group_woreda + 
-                                    post_improvedroad_50aboveafter*dmspols_zhang_1996_group_woreda -
-                                    dmspols_zhang_1996_group_woreda +
-                                    TempAvg + TempMin + TempMax + precipitation| cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        lm_50_region <- felm(dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter +
-                               post_improvedroad_below50after*region_type +
-                               post_improvedroad_50aboveafter*region_type -
-                               region_type +
-                               TempAvg + TempMin + TempMax + precipitation| cell_id + year | 0 | cluster_var, data=data_temp)
-      
+      if(dv %in% c("ndvi", "ndvi_cropland")){
+        control_vars <- "+ temp_avg + precipitation"
       } else{
-        lm <- felm(dv ~ post_improvedroad | cell_id + year | 0 | cluster_var, data=data_temp)
-        lm_baselineNTL <- felm(dv ~ post_improvedroad + post_improvedroad*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda | cell_id + year | 0 | cluster_var, data=data_temp)
-        lm_region <- felm(dv ~ post_improvedroad + post_improvedroad*region_type - region_type | cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        lm_50 <- felm(dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter | cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        lm_50_baselineNTL <- felm(dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter +
-                                    post_improvedroad_below50after*dmspols_zhang_1996_group_woreda + 
-                                    post_improvedroad_50aboveafter*dmspols_zhang_1996_group_woreda -
-                                    dmspols_zhang_1996_group_woreda | cell_id + year | 0 | cluster_var, data=data_temp)
-        
-        lm_50_region <- felm(dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter +
-                               post_improvedroad_below50after*region_type +
-                               post_improvedroad_50aboveafter*region_type -
-                               region_type | cell_id + year | 0 | cluster_var, data=data_temp)
+        control_vars <- ""
       }
       
-      rm(data_temp)
+      #### Models
+      lm             <- felm(as.formula(paste0("dv ~ post_improvedroad ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+      lm_baselineNTL <- felm(as.formula(paste0("dv ~ post_improvedroad + post_improvedroad*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+      lm_region      <- felm(as.formula(paste0("dv ~ post_improvedroad + post_improvedroad*region_type - region_type ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+      
+      lm_50          <- felm(as.formula(paste0("dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+      
+      lm_50_baselineNTL <- felm(as.formula(paste0("dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter +
+                                  post_improvedroad_below50after*dmspols_zhang_1996_group_woreda + 
+                                  post_improvedroad_50aboveafter*dmspols_zhang_1996_group_woreda -
+                                  dmspols_zhang_1996_group_woreda ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+      
+      lm_50_region <- felm(as.formula(paste0("dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter +
+                             post_improvedroad_below50after*region_type +
+                             post_improvedroad_50aboveafter*region_type -
+                             region_type ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
 
+      
+      rm(data_temp)
+      gc()
+      
       stargazer(lm,
                 lm_baselineNTL,
                 lm_region,
@@ -132,6 +113,15 @@ for(dv in c("ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "gl
                 dep.var.labels.include = T,
                 dep.var.labels = c(dep_var_label),
                 dep.var.caption = "",
+                keep = c("post_improvedroad",
+                         "post_improvedroad:dmspols_zhang_1996_group_woreda",
+                         "post_improvedroad:region_type",
+                         "post_improvedroad_below50after",
+                         "post_improvedroad_below50after:dmspols_zhang_1996_group_woreda",
+                         "post_improvedroad_below50after:region_type",
+                         "post_improvedroad_50aboveafter",
+                         "post_improvedroad_50aboveafter:dmspols_zhang_1996_group_woreda",
+                         "post_improvedroad_50aboveafter:region_type"),
                 covariate.labels =   c("Near Improved Rd.",
                                        "Near Improved Rd. X DMSP Low",
                                        "Near Improved Rd. X DMSP High",
@@ -146,15 +136,7 @@ for(dv in c("ndvi_cropland", "ndvi", "dmspols_zhang_ihs", "dmspols_zhang_6", "gl
                                        "Near Improved Rd. $>=$50km/hr X DMSP Low",
                                        "Near Improved Rd. $>=$50km/hr X DMSP High",
                                        "Near Improved Rd. $>=$50km/hr X Dense Region"),
-                keep = c("post_improvedroad",
-                         "post_improvedroad:dmspols_zhang_1996_group_woreda",
-                         "post_improvedroad:region_type",
-                         "post_improvedroad_below50after",
-                         "post_improvedroad_below50after:dmspols_zhang_1996_group_woreda",
-                         "post_improvedroad_below50after:region_type",
-                         "post_improvedroad_50aboveafter",
-                         "post_improvedroad_50aboveafter:dmspols_zhang_1996_group_woreda",
-                         "post_improvedroad_50aboveafter:region_type"),
+
                 omit.stat = c("f","ser"),
                 align=TRUE,
                 no.space=TRUE,
