@@ -4,7 +4,7 @@
 
 #### Settings
 p_dodge_width <- .5
-dv_list <- c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland", "ndvi", "ndvi_cropland")
+dv_list <- c("dmspols_zhang_ihs", "dmspols_zhang_2", "globcover_urban", "globcover_cropland", "ndvi", "ndvi_cropland")
 
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   unit <- "_woreda"

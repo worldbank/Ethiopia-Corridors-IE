@@ -59,6 +59,9 @@ TYPE <- c("DMSPOLS") # globcover, DMSPOLS
 UTM_ETH <- '+init=epsg:20138'
 DIST_THRESH <- 2
 
+GRID_DATASET <- grepl("grid", DATASET_TYPE)
+
+
 # Packages ---------------------------------------------------------------------
 library(rgdal)
 library(raster)
@@ -116,6 +119,19 @@ lm_post_confint_tidy <- function(lm){
   lm_confint$pvalue <- summary(lm)$coefficients[,4] %>% as.vector()
   
   return(lm_confint)
+}
+
+pause_gc <- function(GRID_DATASET){
+  if(GRID_DATASET){
+    Sys.sleep(1)
+    gc()
+    Sys.sleep(1)
+    gc()
+    Sys.sleep(1)
+    gc()
+    Sys.sleep(1)
+  } 
+  return(NULL)
 }
 
 

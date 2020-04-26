@@ -32,6 +32,8 @@ for(road_years_group in c("all",
     for(addis_distance in c("All", "Far")){ # "All", "Far"
       for(cluster_var in c("woreda_hdx_w_uid")){      
         
+        pause_gc(GRID_DATASET)
+        
         #### Skip some cases
         # If in viirs time period, skip dmspols variables - and vice-versa
         if(road_years_group %in% "viirs"){
@@ -115,6 +117,9 @@ for(road_years_group in c("all",
                              post_improvedroad_50aboveafter*region_type -
                              region_type ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
         
+        rm(data_temp)
+        pause_gc(GRID_DATASET)
+        
         lm_results_df <- bind_rows(
           lm_post_confint_tidy(lm) %>% mutate(model_type = "lm"),
           lm_post_confint_tidy(lm_baselineNTL) %>% mutate(model_type = "lm_baselineNTL"),
@@ -129,9 +134,6 @@ for(road_years_group in c("all",
                  road_years_group = road_years_group)
         
         lm_results_all_df <- bind_rows(lm_results_all_df, lm_results_df)
-
-        rm(data_temp)
-        gc()
         
         stargazer(lm,
                   lm_baselineNTL,
