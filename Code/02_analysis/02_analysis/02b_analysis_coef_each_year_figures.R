@@ -148,7 +148,7 @@ for(road_years_group in c("all",
         if(dv == "viirs_max")          dv_title <- "VIIRS: Max"
         if(dv == "viirs_mean_above1")  dv_title <- "VIIRS: Mean Above 1"
         
-        p <- ggplot(data = results_df[(results_df$ntl_group %in% c("Zero", "Below Median", "Above Median")) &
+        p <- ggplot(data = results_df[(results_df$ntl_group %in% c("All", "Zero", "Below Median", "Above Median")) &
                                         (results_df$dv %in% dv) & 
                                         (results_df$addis_distance %in% addis_distance) & 
                                         (results_df$region %in% region),], 
@@ -187,9 +187,9 @@ for(road_years_group in c("all",
                          common.legend = T,
                          legend = "right")
       
-      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_region",region,"_",unit,"_yeargroup",road_years_group,".png")),
-             height = 14, width =11)
-      print(file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_region",region,"_",unit,"_yeargroup",road_years_group,".png")))
+      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_region",region,unit,"_yeargroup",road_years_group,".png")),
+             height = 14, width =14)
+      print(file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_region",region,unit,"_yeargroup",road_years_group,".png")))
       
     }
   }
