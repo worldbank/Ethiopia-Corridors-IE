@@ -14,12 +14,15 @@ finaldata_file_path <- file.path(project_file_path, "Data", "FinalData")
 figures_file_path <- file.path(project_file_path,"Outputs", "Results", "Figures")
 tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 
+# In order to source a script as a local job, include this at top of script
+# source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
+
 # Parameters -------------------------------------------------------------------
 
 # dmspols_grid_dataset_nearroad
 #DATASET_TYPE <- "dmspols_grid_dataset_randomsample"
-#DATASET_TYPE <- "woreda_panel_hdx_csa"
-DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
+DATASET_TYPE <- "woreda_panel_hdx_csa"
+#DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
 
 if(DATASET_TYPE %in% c("woreda_panel_hdx_csa")){
   CHUNK_SIZE_DIST_ROADS <- 3
@@ -55,6 +58,7 @@ library(ggplot2)
 library(data.table)
 library(coefplot)
 library(stringr)
+library(spdep)
 library(doBy)
 library(stargazer)
 library(scales)

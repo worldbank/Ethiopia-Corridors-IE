@@ -16,9 +16,13 @@ DATASETS_TIME_VARYING <- c("points_viirs.Rds",
                            "points_globcover.Rds",
                            "points_dmspols_zhang2016.Rds",
                            "points_distance_roads_byspeed.Rds",
-                           "points_distance_improved_roads_byspeed_before.Rds",
                            "points_distance_improved_roads_byspeed_after.Rds",
-                           "woreda_market_access.Rds")
+                           "woreda_market_access.Rds",
+                           "points_roadlength_km.Rds",
+                           "points_precipitation.Rds",
+                           "points_temperature.Rds",
+                           "road_accessibility_scaleAreaTRUE.Rds",
+                           "road_accessibility_scaleAreaFALSE.Rds")
 
 # Merge ------------------------------------------------------------------------
 for(dataset in DATASETS_TIME_VARYING){
@@ -37,6 +41,7 @@ for(dataset in DATASETS_TIME_INVARIANT){
 
 # Export -----------------------------------------------------------------------
 saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
+
 
 
 

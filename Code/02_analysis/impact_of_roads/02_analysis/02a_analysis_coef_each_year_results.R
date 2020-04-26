@@ -2,8 +2,22 @@
 
 # Exports dataframe of results, to be used to make figures
 
+time_period <- "all" # all or viirs_time
+
+time_period_name <- "" 
+if(time_period_name %in% "viirs_time") time_period_name <- "viirs_time"
+
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
+
+if(time_period %in% "viirs_time"){
+  # Restrict to years with VIIRs data
+  data <- data[data$year %in% 2012:2019,]
+  
+  # Restrict based on year improved, making sure at least 1 year
+  # before/after
+  data <- data[data$year_improvedroad %in% 2013:2016,]
+}
 
 #data$globcover_cropland %>% is.na %>% table()
 
@@ -15,6 +29,11 @@ data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", 
 #  ungroup()
 
 #felm(ndvi ~ years_since_improvedroad_below45after | year + cell_id | 0 | woreda_hdx_w_uid, data=data[(data$globcover_cropland_1996 >= .5) & (data$globcover_cropland_2016 >= .5),]) %>% summary()
+
+data$viirs_mean_above1 <- as.numeric(data$viirs_mean >= 1)
+data$viirs_max <- data$viirs_max %>% calc_ihs()
+data$viirs_mean <- data$viirs_mean %>% calc_ihs()
+data$viirs_median <- data$viirs_median %>% calc_ihs()
 
 # Functions --------------------------------------------------------------------
 lm_confint_tidy <- function(lm, years_since_variable){
@@ -42,11 +61,17 @@ if(F){
 
 results_df <- data.frame(NULL)
 
-for(region_type in c("All", "Dense", "Sparse")){
-  for(addis_distance in c("All", "Far")){
-    for(phase in c("phase_all", "phase_1", "phase_2", "phase_3", "phase_4")){
-      for(dv in c("globcover_urban","globcover_cropland", "dmspols_ihs", "dmspols_zhang_ihs", "dmspols_zhang_2", "dmspols_zhang_6", "ndvi", "ndvi_cropland")){
+for(region_type in c("All", "Dense", "Sparse")){ # "All", "Dense", "Sparse"
+  for(addis_distance in c("All", "Far")){ # "All", "Far"
+    for(phase in c("phase_all")){ # "phase_all", "phase_1", "phase_2", "phase_3", "phase_4"
+      for(dv in c("viirs_mean","viirs_median", "viirs_max", "viirs_mean_above1", "globcover_urban","globcover_cropland", "dmspols_ihs", "dmspols_zhang_ihs", "dmspols_zhang_2", "dmspols_zhang_6", "ndvi", "ndvi_cropland")){
         for(ntl_group in c("All", "1", "2", "3")){
+            
+          # For viirs_time, only consider phase_all
+          if(time_period %in% "viirs_time"){
+            if(phase != "phase_all") next
+            if(grepl("dmsp", dv)) next
+          }
           
           # Printing so know where we be!
           print(paste(region_type, addis_distance, phase, dv, ntl_group))
@@ -71,6 +96,17 @@ for(region_type in c("All", "Dense", "Sparse")){
           if(phase %in% "phase_2")   phase_years <- 2003:2007
           if(phase %in% "phase_3")   phase_years <- 2008:2010
           if(phase %in% "phase_4")   phase_years <- 2011:2016
+          
+
+          #### VIIRS Restrict Analysis
+          if(grepl("viirs", dv) | (time_period %in% "viirs_time")){
+            # Restrict to years with VIIRs data
+            data_temp <- data_temp[data_temp$year %in% 2012:2019,]
+            
+            # Restrict based on year improved, making sure at least 1 year
+            # before/after
+            data_temp <- data_temp[data_temp$year_improvedroad %in% 2013:2016,]
+          }
     
           data_temp_improvedroad              <- data_temp[data_temp$year_improvedroad              %in% phase_years,]
           data_temp_improvedroad_50aboveafter <- data_temp[data_temp$year_improvedroad_50aboveafter %in% phase_years,]
@@ -79,13 +115,13 @@ for(region_type in c("All", "Dense", "Sparse")){
           #### Estimate Models // GADM_ID_3
           results_df_temp <- tryCatch({     
             bind_rows(
-              felm(dv ~ years_since_improvedroad | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad) %>%
+              felm(dv ~ years_since_improvedroad+ temp_avg + precipitation | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad) %>%
                 lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
               
-              felm(dv ~ years_since_improvedroad_50aboveafter | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad_50aboveafter) %>%
+              felm(dv ~ years_since_improvedroad_50aboveafter + temp_avg + precipitation | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad_50aboveafter) %>%
                 lm_confint_tidy("years_since_improvedroad_50aboveafter") %>% mutate(var = "50 Above"),
               
-              felm(dv ~ years_since_improvedroad_below50after | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad_below50after) %>%
+              felm(dv ~ years_since_improvedroad_below50after + temp_avg + precipitation | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad_below50after) %>%
                 lm_confint_tidy("years_since_improvedroad_below50after") %>% mutate(var = "Below 50")
             ) %>% mutate(region = region_type,
                          addis_distance = addis_distance,
@@ -97,20 +133,21 @@ for(region_type in c("All", "Dense", "Sparse")){
           results_df <- bind_rows(results_df, results_df_temp)
           print(nrow(results_df))
           
-          gc()
-          rm(data_temp_improvedroad); gc()
-          rm(data_temp_improvedroad_50aboveafter); gc()
-          rm(data_temp_improvedroad_below50after); gc()
-          gc()
+          #gc()
+          #rm(data_temp_improvedroad); gc()
+          #rm(data_temp_improvedroad_50aboveafter); gc()
+          #rm(data_temp_improvedroad_below50after); gc()
+          #gc()
           
         }
       }
     }
   }
-}
+  }
+
 
 # Export Results ---------------------------------------------------------------
-saveRDS(results_df, file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
+saveRDS(results_df, file.path(finaldata_file_path, DATASET_TYPE, "results", paste0("results_coef_each_year",time_period_name,".Rds")))
 
 
 

@@ -1,4 +1,4 @@
-# Extract GADM to Points
+# Extract DMSP-OLS to Points
 
 # Load Data --------------------------------------------------------------------
 points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))

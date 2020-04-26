@@ -46,12 +46,12 @@ for(dataset in DATASETS_TIME_INVARIANT){
 
 # Export -----------------------------------------------------------------------
 #### Remove Unneeded variables
-points_all$GADM_GID_1 <- NULL
-points_all$GADM_GID_2 <- NULL
-points_all$GADM_GID_3 <- NULL
+#points_all$GADM_GID_1 <- NULL
+#points_all$GADM_GID_2 <- NULL
+#points_all$GADM_GID_3 <- NULL
 #points_all$GADM_ID_1 <- NULL
-points_all$GADM_ID_2 <- NULL
-points_all$GADM_ID_3 <- NULL
+#points_all$GADM_ID_2 <- NULL
+#points_all$GADM_ID_3 <- NULL
 points_all$woreda_hdx_z_name <- NULL
 points_all$woreda_hdx_w_name <- NULL
 points_all$woreda_hdx_w_pop2007 <- NULL

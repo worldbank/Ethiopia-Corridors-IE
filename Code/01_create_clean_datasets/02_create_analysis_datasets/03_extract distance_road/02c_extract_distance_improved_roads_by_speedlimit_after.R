@@ -14,7 +14,7 @@
 # than WGS84.
 
 #### Load points
-points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
+points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points_all.Rds"))
 if(grepl("grid", DATASET_TYPE)){
   coordinates(points) <- ~long+lat
   crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
@@ -29,9 +29,8 @@ roads_sdf <- roads_sdf %>% spTransform(CRS(UTM_ETH))
 # Calculate Distance -----------------------------------------------------------
 determine_distance_to_points <- function(year, points, roads){
   
-  print("* -------------------------")
-  print(year)
-  
+  print(paste(year, "--------------------------------------------------------"))
+
   # Grab roads for relevant year
   roads_yyyy <- roads[roads[[paste0("Speed",year)]] > 0,]
   
@@ -42,8 +41,7 @@ determine_distance_to_points <- function(year, points, roads){
   # Loop through speeds. Subset road based on that speed. Add that speed to the
   # points dataframe
   for(speed in sort(unique(roads_yyyy[[paste0("Speed", year)]]))){
-    print("* -------------------------")
-    print(paste(speed, year))
+    print(paste(speed, year, "-----------------------------------------------"))
     
     roads_subset <- roads_yyyy[roads_yyyy[[paste0("Speed", year)]] %in% speed,] %>% raster::aggregate(by="id")
     points[[paste0("distance_improvedroad_speedafter_", speed)]] <- gDistance_chunks(points, roads_subset, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS) 

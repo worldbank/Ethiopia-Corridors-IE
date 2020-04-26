@@ -6,7 +6,7 @@
 # NOTE: This script may take about an hour to run.
 
 # Load Polygon Data ------------------------------------------------------------
-polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons.Rds"))
+polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons_all.Rds"))
 
 # Determine Constant Cropland Areas --------------------------------------------
 # Start with cropland in baseline year calling it cropland_constant. Then, loop 

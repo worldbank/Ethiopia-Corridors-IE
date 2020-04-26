@@ -11,10 +11,6 @@
 
 # NOTE: This script takes about 20 minutes to run.
 
-set.seed(42)
-
-PROPORTION_SAMPLE <- 0.05
-
 # Load Data --------------------------------------------------------------------
 dmspols <- raster(file.path(rawdata_file_path, "Nighttime Lights", "DMSP_OLS","Stacked", "eth_dmspols_allyears.tif"),1)
 roads <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))

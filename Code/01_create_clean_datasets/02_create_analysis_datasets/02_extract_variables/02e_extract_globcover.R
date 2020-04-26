@@ -1,5 +1,7 @@
 # Extract Globcover to Points
 
+source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
+
 # Load Data --------------------------------------------------------------------
 polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons.Rds"))
 
@@ -46,6 +48,15 @@ extract_globcover <- function(year){
   polygons$globcover_cropland_rainfed <- velox(globcover_cropland_rainfed)$extract(polygons, fun=mean)
   polygons$globcover_cropland_irrigated <- velox(globcover_cropland_irrigated)$extract(polygons, fun=mean)
   polygons$globcover_cropland_mosaic <- velox(globcover_cropland_mosaic)$extract(polygons, fun=mean)
+  
+  # If not a grid dataset, also take the sum
+  if(!grepl("gred", DATASET_TYPE)){
+    polygons$globcover_urban_sum <- velox(globcover_urban)$extract(polygons, fun=sum)
+    polygons$globcover_cropland_sum <- velox(globcover_cropland)$extract(polygons, fun=sum)
+    polygons$globcover_cropland_rainfed_sum <- velox(globcover_cropland_rainfed)$extract(polygons, fun=sum)
+    polygons$globcover_cropland_irrigated_sum <- velox(globcover_cropland_irrigated)$extract(polygons, fun=sum)
+    polygons$globcover_cropland_mosaic_sum <- velox(globcover_cropland_mosaic)$extract(polygons, fun=sum)
+  }
   
   polygons$year <- year
   

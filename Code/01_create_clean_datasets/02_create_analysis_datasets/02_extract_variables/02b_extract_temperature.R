@@ -1,7 +1,7 @@
 # Extract GADM to Points
 
 # Load Data --------------------------------------------------------------------
-points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
+points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points_all.Rds"))
 
 if(grepl("grid", DATASET_TYPE)){
   coordinates(points) <- ~long+lat
@@ -24,6 +24,24 @@ extract_precip_to_points <- function(year, points){
     points$temp_avg <- velox(temp_avg)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
     points$temp_min <- velox(temp_min)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
     points$temp_max <- velox(temp_max)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
+    
+    #### If NA, use centroid
+    points_NA <- points[is.na(points$temp_avg),] 
+    points_NA <- coordinates(points_NA) %>%
+      as.data.frame() %>%
+      dplyr::rename(long = V1,
+                    lat = V2)
+    coordinates(points_NA) <- ~long+lat
+    crs(points_NA) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+    
+    points_NA$temp_avg <- raster::extract(temp_avg, points_NA, fun = mean)
+    points_NA$temp_min <- raster::extract(temp_min, points_NA, fun = mean)
+    points_NA$temp_max <- raster::extract(temp_max, points_NA, fun = mean)
+    
+    points$temp_avg[is.na(points$temp_avg)] <- points_NA$temp_avg
+    points$temp_min[is.na(points$temp_avg)] <- points_NA$temp_min
+    points$temp_max[is.na(points$temp_avg)] <- points_NA$temp_max
+
   }
   
   points$year <- year
