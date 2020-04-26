@@ -13,6 +13,10 @@
 #     level nighttime lights and market access
 # (2) All distance variables are in meteres.
 
+# TODO
+# (1) If still memory issues, can loop over cell_id (split into 4?), then append
+#     in another script?
+
 # Parameters -------------------------------------------------------------------
 # Distance threshold to be used to be counted as treated. Differs for grid level
 # versus the woreda level.
@@ -23,7 +27,7 @@ GRID_DATASET <- grepl("grid", DATASET_TYPE)
 
 if(GRID_DATASET){
   NEAR_CUTOFF <- 5 * 1000
-  ALL_YEARS_IMPROVED_VAR <- F
+  ALL_YEARS_IMPROVED_VAR <- T
 } else{
   NEAR_CUTOFF <- 0
   ALL_YEARS_IMPROVED_VAR <- T # creates variable showing all years road was built, 
@@ -31,12 +35,17 @@ if(GRID_DATASET){
   # year.
 }
 
-
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
 
+data$distance_rsdp_phase1 <- NULL
+data$distance_rsdp_phase2 <- NULL
+data$distance_rsdp_phase3 <- NULL
+data$distance_rsdp_phase4 <- NULL
+
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa") data$cell_id <- data$uid
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Distance to aggregate road categories ----------------------------------------
 # We calculate distance to roads by speed limit. Here we calculate distance
 # to any road, road 50 km/hr and above and roads less than 50 km/hr
@@ -56,7 +65,16 @@ data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speedaft
 data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improvedroad_speedafter_",c(50,70,120))], 1, FUN = min_NAifAllNA)
 data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
 
-for(i in 1:5) gc()
+data$distance_improvedroad_speedafter_20 <- NULL
+data$distance_improvedroad_speedafter_25 <- NULL
+data$distance_improvedroad_speedafter_30 <- NULL
+data$distance_improvedroad_speedafter_35 <- NULL
+data$distance_improvedroad_speedafter_45 <- NULL
+data$distance_improvedroad_speedafter_50 <- NULL
+data$distance_improvedroad_speedafter_70 <- NULL
+data$distance_improvedroad_speedafter_120 <- NULL
+
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5) # TODO: create "rest" function, with GRID as input (Where no rest for woredas)
 # Remove cells not in analysis -------------------------------------------------
 
 #### Include unit if near an improved road at some point during the analysis
@@ -84,7 +102,7 @@ if(GRID_DATASET){
   data$distance_anyroad2016 <- NULL
 }
 
-for(i in 1:5) gc()
+gc(); Sys.sleep(.5); gc()
 # Years Since / Post Improved Variables ----------------------------------------
 generate_road_improved_variables <- function(road_var, 
                                              data,
@@ -162,8 +180,21 @@ roadimproved_df <- lapply(c("distance_improvedroad",
 
 data <- bind_cols(data, roadimproved_df)
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
+# Lagged treatment -------------------------------------------------------------
+data$pre_improvedroad_neg2_5 <- as.numeric(data$years_since_improvedroad %in% -2:-5) %>% as.numeric()
+data$pre_improvedroad_neg6_10 <- as.numeric(data$years_since_improvedroad %in% -6:-10) %>% as.numeric()
+
+data$pre_improvedroad_50aboveafter_neg2_5 <- as.numeric(data$years_since_improvedroad_50aboveafter %in% -2:-5) %>% as.numeric()
+data$pre_improvedroad_50aboveafter_neg6_10 <- as.numeric(data$years_since_improvedroad_50aboveafter %in% -6:-10) %>% as.numeric()
+
+data$pre_improvedroad_below50after_neg2_5 <- as.numeric(data$years_since_improvedroad_below50after %in% -2:-5) %>% as.numeric()
+data$pre_improvedroad_below50after_neg6_10 <- as.numeric(data$years_since_improvedroad_below50after %in% -6:-10) %>% as.numeric()
+
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Variables for treated time 2, 3, etc -----------------------------------------
-if(ALL_YEARS_IMPROVED_VAR){
+# TODO: This should go in year group (06_) script
+if(!GRID_DATASET){
   data <- data %>%
     dplyr::mutate(near_improvedroad_all_years_t1 = near_improvedroad_all_years %>% substring(1,4) %>% as.numeric(),
                   near_improvedroad_all_years_t2 = near_improvedroad_all_years %>% substring(6,9) %>% as.numeric(),
@@ -198,6 +229,7 @@ if(ALL_YEARS_IMPROVED_VAR){
 
 }
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Dependent Variable Transformations -------------------------------------------
 # Inverse Hyperbolic Since Transformation 
 # This is used by Mitnik et. al. due to lots of zeros in DMSP-OLS 
@@ -215,6 +247,9 @@ data <- data %>%
   
   # IHS
   mutate(dmspols_ihs = calc_ihs(dmspols),
+         viirs_mean_ihs = calc_ihs(viirs_mean),
+         viirs_median_ihs = calc_ihs(viirs_median),
+         viirs_max_ihs = calc_ihs(viirs_max),
          dmspols_zhang_ihs = calc_ihs(dmspols_zhang),
          dmspols_1996_ihs = calc_ihs(dmspols_1996),
          dmspols_zhang_1996_ihs = calc_ihs(dmspols_zhang_1996))
@@ -237,6 +272,15 @@ data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
 data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
 data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
 
+data$viirs_mean_2 <- data$viirs_mean >= 2
+data$viirs_mean_6 <- data$viirs_mean >= 6
+
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
+# Other variable transformations -----------------------------------------------
+data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
+data$distance_city_addisababa <- NULL
+
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Geographic Regions -----------------------------------------------------------
 data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
 data$GADM_ID_1 <- NULL
@@ -246,6 +290,7 @@ if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   data$region_type <- ifelse(data$R_NAME %in% c("Afar", "Benishangul Gumuz", "SOMALI REGION"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
 } 
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Log market access ------------------------------------------------------------
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   
@@ -255,6 +300,7 @@ if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   
 }
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Road length & density --------------------------------------------------------
 if(!GRID_DATASET){
   
@@ -284,6 +330,7 @@ if(!GRID_DATASET){
   
 }
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # For grid dataset, merge and prep select woreda-level variables ---------------
 if(GRID_DATASET){
   woreda_data <- readRDS(file.path(finaldata_file_path, "woreda_panel_hdx_csa", "merged_datasets", "grid_data_clean.Rds"))
@@ -307,6 +354,7 @@ if(GRID_DATASET){
   
 }
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Remove Stuff Don't Need ------------------------------------------------------
 # Reduces dataset size if grid dataset where need to trim size of dataset
 if(GRID_DATASET){
@@ -327,11 +375,11 @@ if(GRID_DATASET){
   data$globcover_cropland_rainfed <- NULL
   data$globcover_cropland_irrigated <- NULL
   data$globcover_cropland_mosaic <- NULL
-  
 }
 
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Export -----------------------------------------------------------------------
-saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
+saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean_all.Rds"))
 
 
 

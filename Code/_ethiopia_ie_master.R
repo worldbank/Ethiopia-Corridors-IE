@@ -28,7 +28,10 @@ tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 # --"dmspols_grid_dataset_randomsample": DMSP-OLS level dataset; random sample
 # --"woreda_panel_hdx_csa": Woreda level
 
+<<<<<<< HEAD
 #DATASET_TYPE <- "dmspols_grid_dataset_randomsample"
+=======
+>>>>>>> 4534d50709e40439be1aa9a9eee808e02ac5a529
 DATASET_TYPE <- "woreda_panel_hdx_csa"
 #DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
 
@@ -43,6 +46,16 @@ if(DATASET_TYPE %in% c("woreda_panel_hdx_csa")){
 } else{
   CHUNK_SIZE_DIST_ROADS <- 1250
 }
+
+#### YEAR SUBSETS
+road_year <- list(all = 1996:2016,     
+                  dmspols = 1996:2012, 
+                  viirs = 2013:2016,  
+                  phase1 = 1997:2002, # 1997:2002
+                  phase2 = 2002:2007, # 2002:2007
+                  phase3 = 2007:2010, # 2007:2010
+                  phase4 = 2010:2016) # 2010:2015
+
 
 # Parameters for Grid Analysis
 MCCORS_DIST_ROADS <- 1
@@ -80,6 +93,35 @@ library(ggpubr)
 library(readr)
 library(gdistance)
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
+
+# Common Functions -------------------------------------------------------------
+lm_confint_tidy <- function(lm, years_since_variable){
+  lm_confint <- confint(lm) %>% 
+    as.data.frame
+  names(lm_confint) <- c("p025", "p975")
+  lm_confint$b <- (lm_confint$p025 + lm_confint$p975)/2
+  lm_confint$variable <- row.names(lm_confint)
+  
+  lm_confint <- lm_confint[!grepl("cluster_id)|year)|Intercept)", lm_confint$variable),]
+  lm_confint$years_since_improved <- gsub(years_since_variable, "", lm_confint$variable) %>% as.numeric
+  
+  return(lm_confint)
+}
+
+lm_post_confint_tidy <- function(lm){
+  
+  lm_confint <- confint(lm) %>% 
+    as.data.frame
+  names(lm_confint) <- c("p025", "p975")
+  lm_confint$b <- (lm_confint$p025 + lm_confint$p975)/2
+  lm_confint$variable <- row.names(lm_confint)
+  
+  lm_confint$tvalue <- summary(lm)$coefficients[,3] %>% as.vector()
+  lm_confint$pvalue <- summary(lm)$coefficients[,4] %>% as.vector()
+  
+  return(lm_confint)
+}
+
 
 # Run Scripts ------------------------------------------------------------------
 ##### Extract Data to Grids
