@@ -1,6 +1,7 @@
 # Subset Main Dataset to Time Periods
 
-for(road_years_group in c("dmspols",
+for(road_years_group in c("all",
+                          "dmspols",
                           "viirs",
                           "phase1",
                           "phase2",
@@ -9,7 +10,7 @@ for(road_years_group in c("dmspols",
   
   print(paste(road_years_group, "--------------------------------------------"))
   
-  data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean_all.Rds"))
+  data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
   
   #### Prep Road variables
   # Restrict to roads improved in time period
@@ -22,6 +23,9 @@ for(road_years_group in c("dmspols",
   all_years <- 1996:2016
   road_years_remove <- all_years[!(all_years %in% road_years_i)] %>%
     paste(collapse="|")
+  
+  # when "all", this is empty and doesnt work in str_replace_all
+  if(nchar(road_years_remove) %in% 0) road_years_remove <- "DUMMYTEXT"
   
   #### Years Since Improved & Post Improved
   ## All Roads
@@ -91,6 +95,26 @@ for(road_years_group in c("dmspols",
   
   if(road_years_group %in% "dmspols"){
     data <- data[data$year %in% 1992:2012,]
+  }
+  
+  #### Remove Variables Not Needed
+  # Clean up dataframe so it's smaller to avoid memory issues.
+  
+  #### Remove individual variables
+  data$temp_max <- NULL
+  data$temp_min <- NULL
+  data$dmspols_1996_ihs <- NULL
+  data$dmspols_zhang_1996_ihs <- NULL
+  data$dmspols_1996_group <- NULL
+  data$dmspols_zhang_1996_group <- NULL
+  improvedroad_year <- NULL
+  improvedroad_below50after_year <- NULL
+  improvedroad_50aboveafter_year <- NULL
+  
+  #### Remove categories of variables
+  vars_delete <- names(data)[grepl("^year_improved|^years_since|^near_improvedroad|^distance_improved", names(data))]
+  for(var in vars_delete){
+    data[[var]] <- NULL
   }
   
   #### Export

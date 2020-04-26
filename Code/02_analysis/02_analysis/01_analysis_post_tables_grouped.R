@@ -4,6 +4,9 @@
 # kinda random throughout their years. Here that's not the case, but maybe
 # can assume that within an RDSP phase?
 
+#Sys.setenv('R_MAX_VSIZE'=32000000000)
+#source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
+
 road_years_group <- "all"
 dv <- "viirs_mean"
 addis_distance <- "Far"
@@ -26,7 +29,7 @@ for(road_years_group in c("all",
   
   #### Load year_group dataset
   data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", paste0("grid_data_clean_",road_years_group,".Rds")))
-
+  
   # All Phases Together ----------------------------------------------------------
   for(dv in c("viirs_mean_ihs", "viirs_mean_2","ndvi_cropland", "ndvi", "globcover_urban", "globcover_cropland", "dmspols_zhang_ihs", "dmspols_zhang_2")){ 
     for(addis_distance in c("All", "Far")){ # "All", "Far"
