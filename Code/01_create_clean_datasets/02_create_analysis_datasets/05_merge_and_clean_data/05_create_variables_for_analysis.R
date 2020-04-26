@@ -268,12 +268,16 @@ data$dmspols_zhang_1996_group[data$dmspols_zhang_1996 >= dmspols_zhang_1996_medi
 data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
 data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
 
-# Binary variables for above NTL threshold
-data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
-data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
-
-data$viirs_mean_2 <- data$viirs_mean >= 2
-data$viirs_mean_6 <- data$viirs_mean >= 6
+#### Binary variables for above NTL threshold
+# For woreda/non-grid dataset, this is done in the extraction phase, so this
+# represents the proportion of cells. 
+if(GRID_DATASET){
+  data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
+  data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
+  
+  data$viirs_mean_2 <- data$viirs_mean >= 2
+  data$viirs_mean_6 <- data$viirs_mean >= 6
+}
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Other variable transformations -----------------------------------------------

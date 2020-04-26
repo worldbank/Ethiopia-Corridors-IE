@@ -83,7 +83,7 @@ for(road_years_group in c("all",
                                                          "Urban",
                                                          "Cropland",
                                                          "NDVI",
-                                                         "NDVI - Cropland Area") %>% rev())
+                                                         "NDVI - Cropland Area"))
     
     #### Rename Independent Variables
     results_df$variable[results_df$variable %in% "pre_improvedroad_neg6_10"] <- "Imp. Road [6-10 yr lag]"
