@@ -28,7 +28,6 @@ tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 # --"dmspols_grid_dataset_randomsample": DMSP-OLS level dataset; random sample
 # --"woreda_panel_hdx_csa": Woreda level
 
-#DATASET_TYPE <- "dmspols_grid_dataset_randomsample"
 #DATASET_TYPE <- "woreda_panel_hdx_csa"
 DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
 
@@ -43,6 +42,16 @@ if(DATASET_TYPE %in% c("woreda_panel_hdx_csa")){
 } else{
   CHUNK_SIZE_DIST_ROADS <- 1250
 }
+
+#### YEAR SUBSETS
+road_year <- list(all = 1996:2016,     
+                  dmspols = 1996:2012, 
+                  viirs = 2013:2016,  
+                  phase1 = 1997:2002, # 1997:2002
+                  phase2 = 2002:2007, # 2002:2007
+                  phase3 = 2007:2010, # 2007:2010
+                  phase4 = 2010:2016) # 2010:2015
+
 
 # Parameters for Grid Analysis
 MCCORS_DIST_ROADS <- 1
