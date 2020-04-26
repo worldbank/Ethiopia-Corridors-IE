@@ -28,7 +28,7 @@ for(road_years_group in c("all",
   data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", paste0("grid_data_clean_",road_years_group,".Rds")))
 
   # All Phases Together ----------------------------------------------------------
-  for(dv in c("viirs_mean_ihs","viirs_median_ihs", "viirs_max_ihs", "viirs_mean_2","viirs_mean_6","ndvi_cropland", "ndvi", "globcover_urban", "globcover_cropland", "dmspols_zhang_ihs", "dmspols_zhang_6")){ 
+  for(dv in c("viirs_mean_ihs","viirs_median_ihs", "viirs_max_ihs", "viirs_mean_2","viirs_mean_6","ndvi_cropland", "ndvi", "globcover_urban", "globcover_cropland", "dmspols_zhang_ihs", "dmspols_zhang_6", "dmspols_zhang_2")){ 
     for(addis_distance in c("All", "Far")){ # "All", "Far"
       for(cluster_var in c("woreda_hdx_w_uid")){      
         

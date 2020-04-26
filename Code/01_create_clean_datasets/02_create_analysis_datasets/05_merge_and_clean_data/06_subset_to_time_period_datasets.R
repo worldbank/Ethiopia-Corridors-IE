@@ -23,7 +23,8 @@ for(road_years_group in c("dmspols",
   road_years_remove <- all_years[!(all_years %in% road_years_i)] %>%
     paste(collapse="|")
   
-  ## Years Since Improved & Post Improved
+  #### Years Since Improved & Post Improved
+  ## All Roads
   data$improvedroad_year <- data$near_improvedroad_all_years %>%
     str_replace_all(road_years_remove, "") %>%
     str_replace_all(";", "") %>%
@@ -31,11 +32,15 @@ for(road_years_group in c("dmspols",
     as.numeric()
   data$near_improvedroad_all_years <- NULL
   data$years_since_improvedroad <- data$year - data$improvedroad_year
-  data$post_improvedroad <- data$years_since_improvedroad %in% 0:100 # use 0:100, not >0, so NA-->0
+  data$post_improvedroad <- as.numeric(data$years_since_improvedroad %in% 0:100) # use 0:100, not >0, so NA-->0
+  
+  data$years_since_improvedroad[data$years_since_improvedroad > 10] <- 10
+  data$years_since_improvedroad[data$years_since_improvedroad < -10] <- -10
   
   # Restrict to observations where road improved
   data <- data[!is.na(data$years_since_improvedroad),]
   
+  ## <50 Roads
   data$improvedroad_below50after_year <- data$near_improvedroad_below50after_all_years %>%
     str_replace_all(road_years_remove, "") %>%
     str_replace_all(";", "") %>%
@@ -43,8 +48,13 @@ for(road_years_group in c("dmspols",
     as.numeric()
   data$near_improvedroad_below50after_all_years <- NULL
   data$years_since_improvedroad_below50after <- data$year - data$improvedroad_below50after_year
-  data$post_improvedroad_below50after <- data$years_since_improvedroad_below50after %in% 0:100
+  data$post_improvedroad_below50after <- as.numeric(data$years_since_improvedroad_below50after %in% 0:100)
   
+  data$years_since_improvedroad_below50after[data$years_since_improvedroad_below50after > 10] <- 10
+  data$years_since_improvedroad_below50after[data$years_since_improvedroad_below50after < -10] <- -10
+  
+  
+  ## >=50 Roads
   data$improvedroad_50aboveafter_year <- data$near_improvedroad_50aboveafter_all_years %>%
     str_replace_all(road_years_remove, "") %>%
     str_replace_all(";", "") %>%
@@ -52,7 +62,10 @@ for(road_years_group in c("dmspols",
     as.numeric()
   data$near_improvedroad_50aboveafter_all_years <- NULL
   data$years_since_improvedroad_50aboveafter <- data$year - data$improvedroad_50aboveafter_year
-  data$post_improvedroad_50aboveafter <- data$years_since_improvedroad_50aboveafter %in% 0:100
+  data$post_improvedroad_50aboveafter <- as.numeric(data$years_since_improvedroad_50aboveafter %in% 0:100)
+  
+  data$years_since_improvedroad_50aboveafter[data$years_since_improvedroad_50aboveafter > 10] <- 10
+  data$years_since_improvedroad_50aboveafter[data$years_since_improvedroad_50aboveafter < -10] <- -10
   
   #### Lagged treatment
   data$pre_improvedroad_neg2_5 <- as.numeric(data$years_since_improvedroad %in% -2:-5) %>% as.numeric()
@@ -63,6 +76,13 @@ for(road_years_group in c("dmspols",
   
   data$pre_improvedroad_below50after_neg2_5 <- as.numeric(data$years_since_improvedroad_below50after %in% -2:-5) %>% as.numeric()
   data$pre_improvedroad_below50after_neg6_10 <- as.numeric(data$years_since_improvedroad_below50after %in% -6:-10) %>% as.numeric()
+  
+  #### Years Since a Factor
+  # Needs to come after lagged treatment variable construction as that relies
+  # on the variable being numeric
+  data$years_since_improvedroad <- data$years_since_improvedroad %>% as.factor() %>% relevel("-1")
+  data$years_since_improvedroad_below50after <- data$years_since_improvedroad_below50after %>% as.factor() %>% relevel("-1")
+  data$years_since_improvedroad_50aboveafter <- data$years_since_improvedroad_50aboveafter %>% as.factor() %>% relevel("-1")
   
   #### Restrict Years of Analysis
   if(road_years_group %in% "viirs"){

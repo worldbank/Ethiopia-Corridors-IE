@@ -28,10 +28,6 @@ tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 # --"dmspols_grid_dataset_randomsample": DMSP-OLS level dataset; random sample
 # --"woreda_panel_hdx_csa": Woreda level
 
-<<<<<<< HEAD
-#DATASET_TYPE <- "dmspols_grid_dataset_randomsample"
-=======
->>>>>>> 4534d50709e40439be1aa9a9eee808e02ac5a529
 DATASET_TYPE <- "woreda_panel_hdx_csa"
 #DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
 

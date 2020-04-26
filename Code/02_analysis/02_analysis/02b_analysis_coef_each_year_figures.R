@@ -2,12 +2,9 @@
 
 # Makes figures based on dataframe of results
 
+#### Settings
 p_dodge_width <- .5
-dv_list <- c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland", "ndvi", "ndvi_cropland", "viirs_mean")
-
-# Load Data --------------------------------------------------------------------
-results_df <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "results", "results_coef_each_year.Rds"))
-results_df <- results_df[!(results_df$variable %in% c("temp_avg", "precipitation")),]
+dv_list <- c("dmspols_zhang_ihs", "dmspols_zhang_6", "globcover_urban", "globcover_cropland", "ndvi", "ndvi_cropland")
 
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   unit <- "_woreda"
@@ -15,25 +12,37 @@ if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   unit <- ""
 }
 
-# Facet over region type -------------------------------------------------------
-#for(addis_distance in c("All", "Far")){
-#  for(phase in c("phase_all",  "phase_1", "phase_2", "phase_3", "phase_4")){
-#    for(ntl_group in c("All", "1", "2", "3")){
-
-for(addis_distance in c("All", "Far")){
-  for(phase in c("phase_all")){
+# Load Data --------------------------------------------------------------------
+for(road_years_group in c("all", 
+                          "dmspols",
+                          "viirs",
+                          "phase1",
+                          "phase2",
+                          "phase3",
+                          "phase4")){
+  
+  results_df <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "results", paste0("results_coef_each_year_yeargroup",road_years_group,".Rds")))
+  results_df <- results_df[!(results_df$variable %in% c("temp_avg", "precipitation")),]
+  
+  # Facet over region type -------------------------------------------------------
+  for(addis_distance in c("All", "Far")){
     for(ntl_group in c("All")){    
       
-      # Skip some that don't need results for
-      if((phase != "phase_all")  & (ntl_group != "All")) next
-      if((addis_distance == "Far") & (phase != "phase_all")) next
-      if((addis_distance == "Far") & (ntl_group != "All")) next
+      print(paste(ntl_group, addis_distance))
       
-      print(paste(ntl_group, addis_distance, phase))
-
       figures_list <- list()
       i <- 1
       for(dv in dv_list){
+        
+        #### Depending on year group, use DMSP or VIIRS
+        # Defaults to DMSP, so make switch for VIIRS
+        if(road_years_group %in% c("viirs", "phase4")){
+          if(dv %in% "dmspols_zhang_ihs") dv <- "viirs_mean_ihs"
+          if(dv %in% "dmspols_zhang_2")   dv <- "viirs_mean_2"
+          if(dv %in% "dmspols_zhang_6")   dv <- "viirs_mean_6"
+          
+        }
+        
         
         if(dv == "globcover_urban")    dv_title <- "Globcover: Urban"
         if(dv == "globcover_cropland") dv_title <- "Globcover: Cropland"
@@ -45,14 +54,16 @@ for(addis_distance in c("All", "Far")){
         if(dv == "ndvi")               dv_title <- "NDVI"
         if(dv == "ndvi_cropland")      dv_title <- "NDVI: Cropland Areas"
         
+        if(dv == "viirs_mean_ihs")      dv_title <- "VIIRS: Mean (Log)"
+        if(dv == "viirs_median")      dv_title <- "VIIRS: Median"
         if(dv == "viirs_mean")      dv_title <- "VIIRS: Mean"
         if(dv == "viirs_median")      dv_title <- "VIIRS: Median"
         if(dv == "viirs_max")      dv_title <- "VIIRS: Max"
-        if(dv == "viirs_mean_above1")      dv_title <- "VIIRS: Mean Above 1"
+        if(dv == "viirs_mean_2")      dv_title <- "VIIRS: Mean Above 2"
+        if(dv == "viirs_mean_6")      dv_title <- "VIIRS: Mean Above 6"
         
         p <- ggplot(data = results_df[(results_df$dv %in% dv) & 
                                         (results_df$addis_distance %in% addis_distance) & 
-                                        (results_df$phase %in% phase) & 
                                         (results_df$ntl_group %in% ntl_group),], 
                     aes(x=years_since_improved, y=b, ymin=p025, ymax=p975,
                         group = var, color = var)) + 
@@ -78,40 +89,29 @@ for(addis_distance in c("All", "Far")){
       }
       
       p_all <- ggarrange(figures_list[[1]],
-                figures_list[[2]],
-                figures_list[[3]],
-                figures_list[[4]],
-                figures_list[[5]],
-                figures_list[[6]],
-                figures_list[[7]],
-                nrow = 7,
-                common.legend = T,
-                legend = "right")
-
-      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_regionfacet_addis",addis_distance,"_",phase,"_ntl",ntl_group,unit,".png")),
+                         figures_list[[2]],
+                         figures_list[[3]],
+                         figures_list[[4]],
+                         figures_list[[5]],
+                         figures_list[[6]],
+                         nrow = 6,
+                         common.legend = T,
+                         legend = "right")
+      
+      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_regionfacet_addis",addis_distance,"_ntl",ntl_group,unit,"_yeargroup",road_years_group,".png")),
              height = 14, width =11)
+      print(file.path(figures_file_path, paste0("regressions_eachyear_regionfacet_addis",addis_distance,"_ntl",ntl_group,unit,"_yeargroup",road_years_group,".png")))
       
     }
   }
-}
-
-
-# Facet over ntl group (excluding all) -----------------------------------------
-#for(addis_distance in c("All", "Far")){
-#  for(phase in c("phase_all",  "phase_1", "phase_2", "phase_3", "phase_4")){
-#    for(region in c("All", "Sparse", "Dense")){ 
-      
-for(addis_distance in c("All")){
-  for(phase in c("phase_all")){
+  
+  
+  # Facet over ntl group (excluding all) -----------------------------------------
+  for(addis_distance in c("All", "Far")){
     for(region in c("All")){ 
       
-      # Skip some that don't need results for
-      if((phase != "phase_all")  & (region != "All")) next
-      if((addis_distance == "Far") & (phase != "phase_all")) next
-      if((addis_distance == "Far") & (region != "All")) next
+      print(paste(region, addis_distance))
       
-      print(paste(region, addis_distance, phase))
-
       results_df$ntl_group[results_df$ntl_group %in% "1"] <- "Zero"
       results_df$ntl_group[results_df$ntl_group %in% "2"] <- "Below Median"
       results_df$ntl_group[results_df$ntl_group %in% "3"] <- "Above Median"
@@ -125,6 +125,15 @@ for(addis_distance in c("All")){
       figures_list <- list()
       i <- 1
       for(dv in dv_list){
+        
+        
+        #### Depending on year group, use DMSP or VIIRS
+        # Defaults to DMSP, so make switch for VIIRS
+        if(road_years_group %in% c("viirs", "phase4")){
+          if(dv %in% "dmspols_zhang_ihs") dv <- "viirs_mean_ihs"
+          if(dv %in% "dmspols_zhang_6")   dv <- "viirs_mean_2"
+        }
+        
         if(dv == "globcover_urban")    dv_title <- "Globcover: Urban"
         if(dv == "globcover_cropland") dv_title <- "Globcover: Cropland"
         if(dv == "ndvi")               dv_title <- "NDVI"
@@ -142,7 +151,6 @@ for(addis_distance in c("All")){
         p <- ggplot(data = results_df[(results_df$ntl_group %in% c("Zero", "Below Median", "Above Median")) &
                                         (results_df$dv %in% dv) & 
                                         (results_df$addis_distance %in% addis_distance) & 
-                                        (results_df$phase %in% phase) & 
                                         (results_df$region %in% region),], 
                     aes(x=years_since_improved, y=b, ymin=p025, ymax=p975,
                         group = var, color = var)) + 
@@ -175,17 +183,21 @@ for(addis_distance in c("All")){
                          figures_list[[4]],
                          figures_list[[5]],
                          figures_list[[6]],
-                         figures_list[[7]],
-                         nrow = 7,
+                         nrow = 6,
                          common.legend = T,
                          legend = "right")
       
-      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_",phase,"_region",region,unit,".png")),
+      ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_region",region,"_",unit,"_yeargroup",road_years_group,".png")),
              height = 14, width =11)
+      print(file.path(figures_file_path, paste0("regressions_eachyear_ntlfacet_addis",addis_distance,"_region",region,"_",unit,"_yeargroup",road_years_group,".png")))
       
     }
   }
+  
+  
+  
 }
+
 
 
 
