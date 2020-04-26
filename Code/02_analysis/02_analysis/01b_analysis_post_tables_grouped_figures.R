@@ -159,19 +159,30 @@ for(road_years_group in c("all",
     fig_lm <- results_i_df %>%
       filter(model_type == "lm") %>%
       make_figure()
+  
+    fig_lm_50 <- results_i_df %>%
+      filter(model_type == "lm_50") %>%
+      make_figure()
+    
+    
     
     fig_lm_baselineNTL <- results_i_df %>%
       filter(model_type == "lm_baselineNTL") %>%
-      make_figure()
-    
-    fig_lm_50 <- results_i_df %>%
-      filter(model_type == "lm_50") %>%
       make_figure()
     
     fig_lm_50_baselineNTL <- results_i_df %>%
       filter(model_type == "lm_50_baselineNTL") %>%
       make_figure()
     
+    fig_lm_region <- results_i_df %>%
+      filter(model_type == "lm_region") %>%
+      make_figure()
+    
+    fig_lm_50_region <- results_i_df %>%
+      filter(model_type == "lm_50_region") %>%
+      make_figure()
+    
+    #### NTL
     p_all <- ggarrange(fig_lm,
               fig_lm_baselineNTL,
               fig_lm_50,
@@ -184,6 +195,21 @@ for(road_years_group in c("all",
     ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_post_addis",addis_distance,"_",unit,"_yeargroup",road_years_group,".png")),
            height = 14, width =11)
     print(paste0("regressions_post_addis",addis_distance,"_",unit,"_yeargroup",road_years_group,".png"))
+    
+    
+    #### Region
+    p_region <- ggarrange(fig_lm,
+                       fig_lm_region,
+                       fig_lm_50,
+                       fig_lm_50_region,
+                       ncol = 1,
+                       common.legend = T,
+                       legend = "bottom",
+                       heights = c(.175, .25, .25, .325))
+    
+    ggsave(p_region, filename = file.path(figures_file_path, paste0("regressions_post_region_addis",addis_distance,"_",unit,"_yeargroup",road_years_group,".png")),
+           height = 14, width =11)
+    print(paste0("regressions_post_region_addis",addis_distance,"_",unit,"_yeargroup",road_years_group,".png"))
     
   }
 }

@@ -131,7 +131,9 @@ for(road_years_group in c("all",
         # Defaults to DMSP, so make switch for VIIRS
         if(road_years_group %in% c("viirs", "phase4")){
           if(dv %in% "dmspols_zhang_ihs") dv <- "viirs_mean_ihs"
-          if(dv %in% "dmspols_zhang_6")   dv <- "viirs_mean_2"
+          if(dv %in% "dmspols_zhang_2")   dv <- "viirs_mean_2"
+          if(dv %in% "dmspols_zhang_6")   dv <- "viirs_mean_6"
+          
         }
         
         if(dv == "globcover_urban")    dv_title <- "Globcover: Urban"
@@ -143,10 +145,14 @@ for(road_years_group in c("all",
         if(dv == "dmspols_zhang_6")    dv_title <- "DMSPOLS >= 6"
         if(dv == "ndvi")               dv_title <- "NDVI"
         if(dv == "ndvi_cropland")      dv_title <- "NDVI: Cropland Areas"
-        if(dv == "viirs_mean")         dv_title <- "VIIRS: Mean"
-        if(dv == "viirs_median")       dv_title <- "VIIRS: Median"
-        if(dv == "viirs_max")          dv_title <- "VIIRS: Max"
-        if(dv == "viirs_mean_above1")  dv_title <- "VIIRS: Mean Above 1"
+        
+        if(dv == "viirs_mean_ihs")      dv_title <- "VIIRS: Mean (Log)"
+        if(dv == "viirs_median")      dv_title <- "VIIRS: Median"
+        if(dv == "viirs_mean")      dv_title <- "VIIRS: Mean"
+        if(dv == "viirs_median")      dv_title <- "VIIRS: Median"
+        if(dv == "viirs_max")      dv_title <- "VIIRS: Max"
+        if(dv == "viirs_mean_2")      dv_title <- "VIIRS: Mean Above 2"
+        if(dv == "viirs_mean_6")      dv_title <- "VIIRS: Mean Above 6"
         
         p <- ggplot(data = results_df[(results_df$ntl_group %in% c("All", "Zero", "Below Median", "Above Median")) &
                                         (results_df$dv %in% dv) & 
