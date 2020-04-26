@@ -10,6 +10,8 @@ addis_distance <- "Far"
 cluster_var <- "woreda_hdx_z_code"
 time_period <- "all"
 
+lm_results_all_df <- data.frame(NULL)
+
 # Load Data --------------------------------------------------------------------
 for(road_years_group in c("all", 
                           "dmspols",
@@ -82,26 +84,52 @@ for(road_years_group in c("all",
         #### Control variables
         control_vars <- "+ temp_avg + precipitation"
         
+        #### Lagged Variables
+        if(road_years_group %in% "viirs"){
+          #lm_lagged <- "pre_improvedroad_neg2_5"
+          #lm_50_lagged <- "pre_improvedroad_50aboveafter_neg2_5 + pre_improvedroad_below50after_neg2_5"
+          lm_lagged <- "pre_improvedroad_neg6_10 + pre_improvedroad_neg2_5"
+          lm_50_lagged <- "pre_improvedroad_50aboveafter_neg2_5 + pre_improvedroad_50aboveafter_neg6_10 + pre_improvedroad_below50after_neg2_5 + pre_improvedroad_below50after_neg6_10"
+        } else {
+          lm_lagged <- "pre_improvedroad_neg6_10 + pre_improvedroad_neg2_5"
+          lm_50_lagged <- "pre_improvedroad_50aboveafter_neg2_5 + pre_improvedroad_50aboveafter_neg6_10 + pre_improvedroad_below50after_neg2_5 + pre_improvedroad_below50after_neg6_10"
+        }
+        
+        
         #### Models
-        lm             <- felm(as.formula(paste0("dv ~ pre_improvedroad_neg6_10 + pre_improvedroad_neg2_5 + post_improvedroad ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
-        lm_baselineNTL <- felm(as.formula(paste0("dv ~ pre_improvedroad_neg6_10 + pre_improvedroad_neg2_5 + post_improvedroad + post_improvedroad*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
-        lm_region      <- felm(as.formula(paste0("dv ~ pre_improvedroad_neg6_10 + pre_improvedroad_neg2_5 + post_improvedroad + post_improvedroad*region_type - region_type ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+        lm             <- felm(as.formula(paste0("dv ~ ",lm_lagged," + post_improvedroad ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+        lm_baselineNTL <- felm(as.formula(paste0("dv ~ ",lm_lagged," + post_improvedroad + post_improvedroad*dmspols_zhang_1996_group_woreda - dmspols_zhang_1996_group_woreda ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+        lm_region      <- felm(as.formula(paste0("dv ~ ",lm_lagged," + post_improvedroad + post_improvedroad*region_type - region_type ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
         
-        lm_50          <- felm(as.formula(paste0("dv ~ post_improvedroad_below50after + post_improvedroad_50aboveafter ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
+        lm_50          <- felm(as.formula(paste0("dv ~ ",lm_50_lagged," + post_improvedroad_below50after + post_improvedroad_50aboveafter ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
         
-        lm_50_baselineNTL <- felm(as.formula(paste0("dv ~ pre_improvedroad_50aboveafter_neg2_5 + pre_improvedroad_50aboveafter_neg6_10 + pre_improvedroad_below50after_neg2_5 + pre_improvedroad_below50after_neg6_10 + 
+        lm_50_baselineNTL <- felm(as.formula(paste0("dv ~ ",lm_50_lagged," + 
                                   post_improvedroad_below50after + post_improvedroad_50aboveafter +
                                   post_improvedroad_below50after*dmspols_zhang_1996_group_woreda + 
                                   post_improvedroad_50aboveafter*dmspols_zhang_1996_group_woreda -
                                   dmspols_zhang_1996_group_woreda ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
         
-        lm_50_region <- felm(as.formula(paste0("dv ~ pre_improvedroad_50aboveafter_neg2_5 + pre_improvedroad_50aboveafter_neg6_10 + pre_improvedroad_below50after_neg2_5 + pre_improvedroad_below50after_neg6_10 + 
+        lm_50_region <- felm(as.formula(paste0("dv ~ ",lm_50_lagged," + 
                              post_improvedroad_below50after + post_improvedroad_50aboveafter +
                              post_improvedroad_below50after*region_type +
                              post_improvedroad_50aboveafter*region_type -
                              region_type ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
         
+        lm_results_df <- bind_rows(
+          lm_post_confint_tidy(lm) %>% mutate(model_type = "lm"),
+          lm_post_confint_tidy(lm_baselineNTL) %>% mutate(model_type = "lm_baselineNTL"),
+          lm_post_confint_tidy(lm_region) %>% mutate(model_type = "lm_region"),
+          lm_post_confint_tidy(lm_50) %>% mutate(model_type = "lm_50"),
+          lm_post_confint_tidy(lm_50_baselineNTL) %>% mutate(model_type = "lm_50_baselineNTL"),
+          lm_post_confint_tidy(lm_50_region) %>% mutate(model_type = "lm_50_region")
+        ) %>%
+          mutate(dv = dv,
+                 addis_distance = addis_distance,
+                 cluster_var = cluster_var,
+                 road_years_group = road_years_group)
         
+        lm_results_all_df <- bind_rows(lm_results_all_df, lm_results_df)
+
         rm(data_temp)
         gc()
         
@@ -188,6 +216,10 @@ for(road_years_group in c("all",
       }
     }
   }
+  
+  
+  # Export results within year group -------------------------------------------
+  saveRDS(lm_results_all_df, file.path(finaldata_file_path, DATASET_TYPE, "results", paste0("results_coef_post_yeargroup",road_years_group,".Rds")))
 }
 
 

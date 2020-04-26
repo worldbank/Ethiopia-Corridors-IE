@@ -17,6 +17,8 @@ extract_dmspols_to_points <- function(year, points){
     points$dmspols <- extract(dmspols, points)
   } else{
     points$dmspols <- velox(dmspols)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
+    points$dmspols_2 <- velox(dmspols)$extract(sp=points, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
+    points$dmspols_6 <- velox(dmspols)$extract(sp=points, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
   }
   
   points$year <- year

@@ -9,7 +9,7 @@ for(road_years_group in c("dmspols",
   
   print(paste(road_years_group, "--------------------------------------------"))
   
-  data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
+  data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean_all.Rds"))
   
   #### Prep Road variables
   # Restrict to roads improved in time period

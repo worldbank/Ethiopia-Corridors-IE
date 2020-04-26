@@ -24,6 +24,9 @@ extract_viirs_to_points <- function(year, points){
     points$viirs_median <- velox(viirs_median)$extract(sp=points, fun=function(x){median(x, na.rm=T)}) %>% as.numeric
     points$viirs_mean <- velox(viirs_mean)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
     points$viirs_max <- velox(viirs_max)$extract(sp=points, fun=function(x){max(x, na.rm=T)}) %>% as.numeric
+    
+    points$viirs_mean_2 <- velox(viirs_mean)$extract(sp=points, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
+    points$viirs_mean_6 <- velox(viirs_mean)$extract(sp=points, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
   }
   
   points$year <- year

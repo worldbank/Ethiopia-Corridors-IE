@@ -13,6 +13,10 @@
 #     level nighttime lights and market access
 # (2) All distance variables are in meteres.
 
+# TODO
+# (1) If still memory issues, can loop over cell_id (split into 4?), then append
+#     in another script?
+
 # Parameters -------------------------------------------------------------------
 # Distance threshold to be used to be counted as treated. Differs for grid level
 # versus the woreda level.

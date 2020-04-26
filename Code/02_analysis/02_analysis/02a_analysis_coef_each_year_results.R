@@ -2,22 +2,6 @@
 
 # Exports dataframe of results, to be used to make figures
 
-# Load Data --------------------------------------------------------------------
-
-# Functions --------------------------------------------------------------------
-lm_confint_tidy <- function(lm, years_since_variable){
-  lm_confint <- confint(lm) %>% 
-    as.data.frame
-  names(lm_confint) <- c("p025", "p975")
-  lm_confint$b <- (lm_confint$p025 + lm_confint$p975)/2
-  lm_confint$variable <- row.names(lm_confint)
-  
-  lm_confint <- lm_confint[!grepl("cluster_id)|year)|Intercept)", lm_confint$variable),]
-  lm_confint$years_since_improved <- gsub(years_since_variable, "", lm_confint$variable) %>% as.numeric
-  
-  return(lm_confint)
-}
-
 # Overal Results ---------------------------------------------------------------
 if(F){
   region_type <- "All"
@@ -69,7 +53,7 @@ for(road_years_group in c("all",
             #### Estimate Models // GADM_ID_3
             results_df_temp <- tryCatch({     
               bind_rows(
-                felm(dv ~ years_since_improvedroad+ temp_avg + precipitation | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad) %>%
+                felm(dv ~ years_since_improvedroad + temp_avg + precipitation | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad) %>%
                   lm_confint_tidy("years_since_improvedroad") %>% mutate(var = "All"),
                 
                 felm(dv ~ years_since_improvedroad_50aboveafter + temp_avg + precipitation | year + cell_id | 0 | woreda_hdx_w_uid, data=data_temp_improvedroad_50aboveafter) %>%
