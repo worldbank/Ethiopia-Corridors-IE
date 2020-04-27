@@ -12,6 +12,8 @@ for(road_years_group in c("all",
   
   data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
   
+  lm(ndvi_cropland ~ ndvi, data=data) %>% summary()
+  
   #### Prep Road variables
   # Restrict to roads improved in time period
   # 1. Start with list of all year

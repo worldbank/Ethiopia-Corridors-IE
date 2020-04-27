@@ -15,7 +15,7 @@ lm_results_all_df <- data.frame(NULL)
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   unit <- "woreda"
 } else{
-  unit <- ""
+  unit <- "grid"
 }
 
 # Load Data --------------------------------------------------------------------
@@ -187,13 +187,15 @@ for(road_years_group in c("all",
               fig_lm_baselineNTL,
               fig_lm_50,
               fig_lm_50_baselineNTL,
+              fig_lm_region,
+              fig_lm_50_region,
               ncol = 1,
               common.legend = T,
               legend = "bottom",
-              heights = c(.175, .25, .25, .325))
+              heights = c(.175, .25, .25, .325, .25, .25))
     
     ggsave(p_all, filename = file.path(figures_file_path, paste0("regressions_post_addis",addis_distance,"_",unit,"_yeargroup",road_years_group,".png")),
-           height = 14, width =11)
+           height = 16, width =11)
     print(paste0("regressions_post_addis",addis_distance,"_",unit,"_yeargroup",road_years_group,".png"))
     
     

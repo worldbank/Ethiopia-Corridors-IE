@@ -6,7 +6,11 @@
 # NOTE: This script may take about an hour to run.
 
 # Load Polygon Data ------------------------------------------------------------
-polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons_all.Rds"))
+polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons.Rds"))
+
+if(!GRID_DATASET){
+  polygons <- polygons %>% as("Spatial")
+}
 
 # Determine Constant Cropland Areas --------------------------------------------
 # Start with cropland in baseline year calling it cropland_constant. Then, loop 
@@ -51,15 +55,12 @@ extract_ndvi_to_polygons <- function(year, polygons){
   ndvi_resample <- resample(ndvi, cropland_constant)
   ndvi_cropland <- overlay(ndvi_resample, cropland_constant, fun=function(x,y){return(x*y)} )
 
-  polygons$ndvi <- velox(ndvi)$extract(sp=polygons, fun=function(x){mean(x, na.rm=T)})
-  polygons$ndvi_cropland <- velox(ndvi_cropland)$extract(sp=polygons, fun=function(x){mean(x, na.rm=T)})
-  
+  polygons$ndvi <- velox(ndvi)$extract(sp=polygons, fun=function(x){mean(x, na.rm=T)}) %>% as.vector()
+  polygons$ndvi_cropland <- velox(ndvi_cropland)$extract(sp=polygons, fun=function(x){mean(x, na.rm=T)}) %>% as.vector()
   
   polygons$year <- year
   
-  polygons$geometry <- NULL
-  
-  return(polygons)
+  return(polygons@data)
 }
 
 polygons_ndvi <- lapply(1992:2018, extract_ndvi_to_polygons, polygons) %>% bind_rows
