@@ -9,7 +9,6 @@ dv <- "dmspols_zhang_ihs"
 ntl_group <- "All"
 road_years_group <- "all"
 
-
 for(road_years_group in c("all", 
                           "dmspols",
                           "viirs",
@@ -28,11 +27,11 @@ for(road_years_group in c("all",
   
   for(region_type in c("All", "Dense", "Sparse")){ # "All", "Dense", "Sparse"
     for(addis_distance in c("All", "Far")){ # "All", "Far"
-      for(dv in c("viirs_mean_ihs", "viirs_mean_2", "viirs_mean_6", "globcover_urban","globcover_cropland", "dmspols_ihs", "dmspols_zhang_ihs", "dmspols_zhang_2", "dmspols_zhang_6", "ndvi", "ndvi_cropland")){
+      for(dv in c("viirs_mean_ihs", "viirs_mean_2", "globcover_urban","globcover_cropland", "dmspols_ihs", "dmspols_zhang_ihs", "dmspols_zhang_2", "ndvi", "ndvi_cropland")){
         for(ntl_group in c("All", "1", "2", "3")){
           
           #### Where are we?
-          print(paste(region_type, addis_distance, phase, dv, ntl_group))
+          print(paste(region_type, addis_distance, dv, ntl_group))
           
           #### Temp data and subset
           data_temp <- data

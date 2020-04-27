@@ -112,7 +112,7 @@ for(road_years_group in c("all",
   improvedroad_50aboveafter_year <- NULL
   
   #### Remove categories of variables
-  vars_delete <- names(data)[grepl("^year_improved|^years_since|^near_improvedroad|^distance_improved", names(data))]
+  vars_delete <- names(data)[grepl("^year_improved|^near_improvedroad|^distance_improved", names(data))]
   for(var in vars_delete){
     data[[var]] <- NULL
   }

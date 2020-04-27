@@ -35,8 +35,6 @@ for(road_years_group in c("all",
     for(addis_distance in c("All", "Far")){ # "All", "Far"
       for(cluster_var in c("woreda_hdx_w_uid")){      
         
-        pause_gc(GRID_DATASET)
-        
         #### Skip some cases
         # If in viirs time period, skip dmspols variables - and vice-versa
         if(road_years_group %in% "viirs"){
@@ -121,7 +119,7 @@ for(road_years_group in c("all",
                              region_type ",control_vars," | cell_id + year | 0 | cluster_var")), data=data_temp)
         
         rm(data_temp)
-        pause_gc(GRID_DATASET)
+        gc()
         
         lm_results_df <- bind_rows(
           lm_post_confint_tidy(lm) %>% mutate(model_type = "lm"),
