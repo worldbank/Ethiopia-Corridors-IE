@@ -1,34 +1,60 @@
 # Travel Time
 
+source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
+
 RESOLUTION_KM <- 3
 WALKING_SPEED <- 5
 
 # Load Data --------------------------------------------------------------------
 roads <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
-woreda_wgs84 <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
-#woreda_wgs84 <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "woreda_details.Rds"))
+woreda_wgs84 <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_all.Rds"))
+gpw <- raster(file.path(rawdata_file_path, "gpw-v4-population-density-2000", "gpw-v4-population-density_2000.tif"))
+gpw <- gpw %>% crop(woreda_wgs84)
+
+# Location with largest population with woreda ---------------------------------
+woreda_points <- lapply(1:nrow(woreda_wgs84), function(i){
+  
+  print(i)
+  
+  gpw_i <- gpw %>% 
+    crop(woreda_wgs84[i,]) %>%
+    mask(woreda_wgs84[i,])
+  
+  df <- gpw_i %>% coordinates() %>% as.data.frame()
+  df$pop <- gpw_i[]
+  
+  loc_df <- df[which.max(df$pop),] %>%
+    dplyr::select(x,y)
+  
+  if(nrow(loc_df) %in% 0){
+    loc_df <- coordinates(woreda_wgs84[i,]) %>%
+      as.data.frame() %>%
+      dplyr::rename(x= V1,
+                    y= V2)
+  }
+  
+  
+  return(loc_df)
+  
+}) %>% bind_rows()
+
+woreda_points$uid <- woreda_wgs84$uid
+coordinates(woreda_points) <- ~x+y
+crs(woreda_points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
 # Reproject to Ethiopia Projection ---------------------------------------------
 # Reproject to UTM. Better for distance calculations (eg, for setting grid cell size)
 roads <- spTransform(roads, UTM_ETH)
+woreda_points <- spTransform(woreda_points, UTM_ETH)
 woreda <- spTransform(woreda_wgs84, UTM_ETH)
-
-# Point Locations in Woreda ----------------------------------------------------
-coords_df <- coordinates(woreda) %>%
-  as.data.frame() %>%
-  dplyr::rename(long = V1,
-                lat = V2) 
-woreda_points <- bind_cols(coords_df, woreda@data)
-coordinates(woreda_points) <- ~long+lat
-crs(woreda_points) <- CRS(UTM_ETH)
 
 # Crete Raster BaseLayer -------------------------------------------------------
 r <- raster(xmn=woreda@bbox[1,1], 
-           xmx=woreda@bbox[1,2], 
-           ymn=woreda@bbox[2,1], 
-           ymx=woreda@bbox[2,2], 
-       crs=UTM_ETH, 
-       resolution = 3*1000)
+            xmx=woreda@bbox[1,2], 
+            ymn=woreda@bbox[2,1], 
+            ymx=woreda@bbox[2,2], 
+            crs=UTM_ETH, 
+            resolution = RESOLUTION_KM*1000)
 
 # Function for Travel Times ----------------------------------------------------
 calc_travel_time <- function(year, roads, woreda_points){
@@ -105,7 +131,7 @@ distance_df <- lapply(1:nrow(woreda_points), function(i){
   
   distance <- gDistance(woreda_points[i,],
                         woreda_points,
-                  byid=T) %>% 
+                        byid=T) %>% 
     as.vector()
   
   df_out <- data.frame(dest_uid = woreda_points$uid,

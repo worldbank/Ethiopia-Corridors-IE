@@ -298,10 +298,21 @@ gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Log market access ------------------------------------------------------------
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   
+  #### Log market access
   for(var in names(data)[grepl("^MA_", names(data))]){
     data[[paste0(var,"_log")]] <- log(data[[var]])
   }
   
+  #### Baseline market access
+  MA_vars <- names(data)[grepl("^MA_", names(data))]
+  data_MA_1996 <- data[data$year %in% 1996 , c("uid", MA_vars)]
+  
+  names(data_MA_1996) <- paste0(names(data_MA_1996), "_1996")
+  data_MA_1996 <- data_MA_1996 %>%
+    dplyr::rename(uid = uid_1996)
+  
+  data <- merge(data, data_MA_1996, by="uid")
+
 }
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
@@ -324,12 +335,29 @@ if(!GRID_DATASET){
   
   #### Create road_length_[speed]over: length of road of speed and above
   for(speed_i in road_lengths){
+    print(speed_i)
     
     road_lengths_speedi_over <- road_lengths[road_lengths >= speed_i]
     
+    data_sub <- data %>%
+      dplyr::select(paste0("road_length_",road_lengths_speedi_over))
+    
     data[[paste0("road_length_", speed_i, "over")]] <- 
-      apply(data[,paste0("road_length_",road_lengths_speedi_over)], 1, FUN = sum)
+      apply(data_sub, 1, FUN = sum)
+    
   }
+  
+  #### Add variable
+  data$road_length_X_speed <- data$road_length_10 * 10 + 
+    data$road_length_15 * 15 + 
+    data$road_length_20 * 20 + 
+    data$road_length_25 * 25 +
+    data$road_length_30 * 30 +
+    data$road_length_35 * 35 +
+    data$road_length_45 * 45 + 
+    data$road_length_50 * 50 + 
+    data$road_length_70 * 70 + 
+    data$road_length_120 * 120 
   
   
 }

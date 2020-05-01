@@ -9,7 +9,7 @@ dv_list <- c("dmspols_zhang_ihs", "dmspols_zhang_2", "globcover_urban", "globcov
 if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
   unit <- "_woreda"
 } else{
-  unit <- ""
+  unit <- "_grid"
 }
 
 # Load Data --------------------------------------------------------------------

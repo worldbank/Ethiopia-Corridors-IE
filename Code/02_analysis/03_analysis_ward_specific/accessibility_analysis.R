@@ -1,7 +1,7 @@
 # Number of Projects Near
 
 # Load Data --------------------------------------------------------------------
-data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
+data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean_all.Rds"))
 
 #### Add variable
 data$road_length_X_speed <- data$road_length_10 * 10 + 
