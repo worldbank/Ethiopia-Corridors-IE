@@ -1,0 +1,55 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Impact of Roads on Land Use, Multinomial Logit Model}
+\begin{tabular}{l*{3}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}\\
+                    &\multicolumn{1}{c}{landcover class}&\multicolumn{1}{c}{landcover class}&\multicolumn{1}{c}{landcover class}\\
+\hline
+vegetation          &                     &                     &                     \\
+log dist to any road&           0         &                     &                     \\
+                    &         (.)         &                     &                     \\
+[1em]
+log dist to trunk road&                     &           0         &                     \\
+                    &                     &         (.)         &                     \\
+[1em]
+log MA cost-dist    &                     &                     &           0         \\
+                    &                     &                     &         (.)         \\
+[1em]
+Constant            &           0         &           0         &           0         \\
+                    &         (.)         &         (.)         &         (.)         \\
+\hline
+cropland            &                     &                     &                     \\
+log dist to any road&      -0.473\sym{***}&                     &                     \\
+                    &    (0.0101)         &                     &                     \\
+[1em]
+log dist to trunk road&                     &      -0.602\sym{***}&                     \\
+                    &                     &    (0.0132)         &                     \\
+[1em]
+log MA cost-dist    &                     &                     &       1.939\sym{***}\\
+                    &                     &                     &    (0.0341)         \\
+[1em]
+Constant            &       4.158\sym{***}&       5.198\sym{***}&      -3.256\sym{***}\\
+                    &     (0.159)         &     (0.164)         &     (0.204)         \\
+\hline
+urban               &                     &                     &                     \\
+log dist to any road&      -0.989\sym{***}&                     &                     \\
+                    &     (0.147)         &                     &                     \\
+[1em]
+log dist to trunk road&                     &      -1.056\sym{***}&                     \\
+                    &                     &     (0.134)         &                     \\
+[1em]
+log MA cost-dist    &                     &                     &       7.037\sym{***}\\
+                    &                     &                     &     (1.018)         \\
+[1em]
+Constant            &      -1.630         &       0.901         &      -31.32\sym{***}\\
+                    &     (1.920)         &     (2.250)         &     (4.183)         \\
+\hline
+Observations        &      787593         &      787593         &      787082         \\
+Adjusted \(R^{2}\)  &                     &                     &                     \\
+\hline\hline
+\multicolumn{4}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{4}{l}{\footnotesize Dates are for 1992 through 2017. Multinomial logit model with standard errors clustered at the parcel/unit level. The dependent variable is the land cover category, aggregated to urban, cropland or vegetation based on majority share in 10km by 10km units. All regressions control for average daily maximum temperature and soil moisture.}\\
+\multicolumn{4}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+\end{table}

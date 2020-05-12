@@ -1,0 +1,28 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Impact of Roads on Agricultural Area, OLS Model}
+\begin{tabular}{l*{3}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}&\multicolumn{1}{c}{(3)}\\
+                    &\multicolumn{1}{c}{\% Cropland}&\multicolumn{1}{c}{\% Cropland}&\multicolumn{1}{c}{\% Cropland}\\
+\hline
+log dist to any road&   -0.000888\sym{***}&                     &                     \\
+                    &  (0.000142)         &                     &                     \\
+[1em]
+log dist to trunk road&                     &           0         &                     \\
+                    &                     &         (.)         &                     \\
+[1em]
+log MA cost-dist    &                     &                     &     0.00173\sym{***}\\
+                    &                     &                     &  (0.000237)         \\
+[1em]
+Constant            &       0.160\sym{***}&       0.157\sym{***}&       0.157\sym{***}\\
+                    &  (0.000817)         &  (0.000745)         &  (0.000768)         \\
+\hline
+Observations        &      816276         &      816276         &      815765         \\
+Adjusted \(R^{2}\)  &       0.001         &       0.000         &       0.001         \\
+\hline\hline
+\multicolumn{4}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{4}{l}{\footnotesize Dates are for 1992 through 2017. OLS model with fixed effects and robust standard errors. The dependent variable is the percent of land devoted to growing crops (in 10km by 10km units). All regressions control for average daily maximum temperature and soil moisture.}\\
+\multicolumn{4}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+\end{table}

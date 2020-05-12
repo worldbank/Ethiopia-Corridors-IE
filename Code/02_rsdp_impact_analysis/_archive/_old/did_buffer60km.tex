@@ -1,0 +1,28 @@
+\begin{table}[htbp]\centering
+\def\sym#1{\ifmmode^{#1}\else\(^{#1}\)\fi}
+\caption{Impact of Roads on Land Use, 60km Expressway Buffer}
+\begin{tabular}{l*{2}{c}}
+\hline\hline
+                    &\multicolumn{1}{c}{(1)}&\multicolumn{1}{c}{(2)}\\
+                    &\multicolumn{1}{c}{\% Cropland}&\multicolumn{1}{c}{\% Urban}\\
+\hline
+Post                &    -0.00190         &    0.000783\sym{**} \\
+                    &    (0.0138)         &  (0.000283)         \\
+[1em]
+Treated             &     -0.0174\sym{***}&      0.0123\sym{***}\\
+                    &   (0.00356)         &  (0.000758)         \\
+[1em]
+DiD                 &    -0.00618         &      0.0127\sym{*}  \\
+                    &    (0.0175)         &   (0.00553)         \\
+[1em]
+Constant            &       0.544\sym{***}&    0.000188\sym{***}\\
+                    &   (0.00281)         & (0.0000228)         \\
+\hline
+Observations        &       19080         &       19080         \\
+Adjusted \(R^{2}\)  &       0.001         &       0.013         \\
+\hline\hline
+\multicolumn{3}{l}{\footnotesize Standard errors in parentheses}\\
+\multicolumn{3}{l}{\footnotesize Data is for 2009 and 2015 (the Addis Ababa-Adama expressway was built between 2010 and 2014). Post is defined as 2015, the treatment group are land parcels within an inner (20km buffer) of the expressway and the control group are land parcels within an outer (20-40km) buffer of the expressway. The dependent variable is the percentage of land devoted to growing crops (in 10km by 10km units).}\\
+\multicolumn{3}{l}{\footnotesize \sym{*} \(p<0.05\), \sym{**} \(p<0.01\), \sym{***} \(p<0.001\)}\\
+\end{tabular}
+\end{table}
