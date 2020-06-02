@@ -1,9 +1,9 @@
 # Extract GADM to Points
 
-source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
+#source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
 
 # Load Data --------------------------------------------------------------------
-polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_all.Rds"))
+polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
 polygons <- spTransform(polygons, CRS(UTM_ETH))
 
 roads <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))

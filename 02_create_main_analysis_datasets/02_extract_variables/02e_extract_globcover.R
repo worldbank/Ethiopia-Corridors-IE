@@ -1,6 +1,6 @@
 # Extract Globcover to Points
 
-source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
+#source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
 
 # Load Data --------------------------------------------------------------------
 polygons <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "polygons.Rds"))

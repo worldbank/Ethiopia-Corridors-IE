@@ -14,7 +14,7 @@
 # than WGS84.
 
 #### Load points
-points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points_all.Rds"))
+points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
 if(grepl("grid", DATASET_TYPE)){
   coordinates(points) <- ~long+lat
   crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")

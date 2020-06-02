@@ -1,7 +1,7 @@
 # Extract GADM to Points
 
 # Load Data --------------------------------------------------------------------
-points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points_all.Rds"))
+points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
 
 if(grepl("grid", DATASET_TYPE)){
   coordinates(points) <- ~long+lat
