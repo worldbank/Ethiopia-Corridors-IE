@@ -1,44 +1,47 @@
 # Number of Projects Near
 
 MA_var_i <- "MA_pop2000_theta1_log"
-time_period <- "all"
+time_period <- "All"
+addis_distance <- "All"
 
 control_vars <- "+ temp_avg + precipitation"
 
-#for(lm_type in c("level", "level_X_base")){
-for(MA_var_i in c("MA_pop2000_theta1_log", "MA_pop2000_theta5_log",
-                  "MA_pop2000_theta1_exclude100km_log", "MA_pop2000_theta5_exclude100km_log")){
+for(MA_var_i in c("MA_pop2000_theta1_log", "MA_pop2000_theta5_log", "MA_pop2000_theta8_log")){
   for(time_period in c("All", "DMSPOLS", "VIIRS")){
     for(addis_distance in c("All", "Far")){
       
-      print(paste(MA_var_i, time_period, "-------------------------------------"))
+      print(paste(MA_var_i, time_period, addis_distance, "-------------------"))
       
       #### Load Data
       data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean_all.Rds"))
-      
+    
       #### Define Independent Variables
       data$MA_var <- data[[MA_var_i]]
-      data$MA_var_1996 <- data[[MA_var_i]] * data[[paste0(MA_var_i, "_1996")]]
       
-      vars_keep <- c("MA_var", "MA_var_1996")
+      # Initial value - demeaned
+      if(time_period %in% "VIIRS"){
+        data <- data %>%
+          group_by(uid) %>%
+          mutate(MA_var_uidmean = mean(MA_var, na.rm=T)) %>%
+          mutate(MA_var_demean = MA_var - MA_var_uidmean) %>%
+          mutate(MA_var_demean_base = MA_var_demean[year == 2012]) %>%
+          ungroup() 
+      } else{
+        data <- data %>%
+          group_by(uid) %>%
+          mutate(MA_var_uidmean = mean(MA_var, na.rm=T)) %>%
+          mutate(MA_var_demean = MA_var - MA_var_uidmean) %>%
+          mutate(MA_var_demean_base = MA_var_demean[year == 1996]) %>%
+          ungroup() 
+      }
+      
+      data$MA_X_MA_base <- data$MA_var * data$MA_var_demean_base
+
+      vars_keep <- c("MA_var", "MA_X_MA_base")
       vars_name <- c("log(MA)", "log(MA) X Baseline log(MA)")
       
       MA_level <- "MA_var"
-      MA_level_base <- "MA_var + MA_var_1996"
-      
-      #if (lm_type %in% "level"){
-      #  MA_var_i <- "MA_var"
-      #  
-      #  vars_keep <- c("MA_var")
-      #  vars_name <- c("MA")
-      #  
-      #} else if (lm_type %in% "level_X_base"){
-      #  data$MA_var_1996 <- data[[MA_var_i]] * data[[paste0(MA_var_i, "_1996")]]
-      #  MA_formula <- "MA_var + MA_var_1996"
-      #  
-      #  vars_keep <- c("MA_var", "MA_var_1996")
-      #  vars_name <- c("MA", "MA X Baseline MA")
-      #}
+      MA_level_base <- "MA_var + MA_X_MA_base"
       
       #### Define NTL Variables
       if(time_period %in% c("All", "DMSPOLS")){

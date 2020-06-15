@@ -30,7 +30,7 @@ roads_1km_buff <- gBuffer_chunks(roads, width=1000, 51)
 roads_5km_buff <- gBuffer_chunks(roads, width=5000, 51)
 
 woreda_clean <- lapply(1:nrow(woreda_blank_utm), function(i){
-  print(i)
+  print(i) # Where are we?
 
   woreda_blank_utm_i <- woreda_blank_utm[i,]
   
@@ -41,16 +41,15 @@ woreda_clean <- lapply(1:nrow(woreda_blank_utm), function(i){
   roads_5km_buff_i <- raster::intersect(roads_5km_buff, woreda_blank_utm_i)
   
   # Catch errors in removing roads from polygons. An error occurs when, through
-  # this process, no part of the woreda is left.
+  # erase/cropping process, no part of the woreda is left. These are small
+  # woredas with lots of roads.
   woreda_blank_utm_i_e <- NULL
   tryCatch({  
     
     if(is.null(roads_1km_buff_i)){
-      woreda_blank_utm_i_e <- woreda_blank_utm_i
+      woreda_blank_utm_i_e <- NULL # If no road intersection, remove; no improved roads.
     } else{
-      
       woreda_blank_utm_i_e <- woreda_blank_utm_i %>% erase(roads_1km_buff_i) %>% crop(roads_5km_buff_i)
-      
     }
 
     return(woreda_blank_utm_i_e)
@@ -65,13 +64,51 @@ woreda_clean <- lapply(1:nrow(woreda_blank_utm), function(i){
   unlist() %>% # remove NULLs
   do.call(what="rbind")
 
+#### Cropped Only, around larger buffer, so still capture roads within
+woreda_cropped_only <- lapply(1:nrow(woreda_blank_utm), function(i){
+  print(i) # Where are we?
+  
+  woreda_blank_utm_i <- woreda_blank_utm[i,]
+  
+  # Cleans up self-intersection issues
+  woreda_blank_utm_i <- gBuffer(woreda_blank_utm_i, byid=T, width=0)
+  
+  #roads_1km_buff_i <- raster::intersect(roads_1km_buff, woreda_blank_utm_i)
+  roads_5km_buff_i <- raster::intersect(roads_5km_buff, woreda_blank_utm_i)
+  
+  # Catch errors in removing roads from polygons. An error occurs when, through
+  # erase/cropping process, no part of the woreda is left. These are small
+  # woredas with lots of roads.
+  woreda_blank_utm_i_e <- NULL
+  tryCatch({  
+    
+    if(is.null(roads_5km_buff_i)){
+      woreda_blank_utm_i_e <- NULL # If no road intersection, remove; no improved roads.
+    } else{
+      woreda_blank_utm_i_e <- woreda_blank_utm_i %>% crop(roads_5km_buff_i)
+    }
+    
+    return(woreda_blank_utm_i_e)
+  }, 
+  error = function(e) return(NULL)
+  )
+  
+  
+  return(woreda_blank_utm_i_e)
+  
+}) %>% 
+  unlist() %>% # remove NULLs
+  do.call(what="rbind")
+
 woreda_clean <- spTransform(woreda_clean, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+woreda_cropped_only <- spTransform(woreda_cropped_only, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
 # Export -----------------------------------------------------------------------
 saveRDS(woreda_clean, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
 saveRDS(woreda_clean %>% st_as_sf(), file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "polygons.Rds"))
 saveRDS(woreda@data, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "woreda_details.Rds"))
 
+saveRDS(woreda_cropped_only, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_cropped_only.Rds"))
 
 
 

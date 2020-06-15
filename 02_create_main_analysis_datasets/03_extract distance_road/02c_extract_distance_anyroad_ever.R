@@ -21,8 +21,10 @@ roads_sdf$id <- 1 # useful to have a variable the same for all obs when aggreagt
 roads_sdf <- roads_sdf %>% spTransform(CRS(UTM_ETH))
 
 # Calculate Distance -----------------------------------------------------------
-roads_sdf$id_agg <- 1
-roads_sdf <- raster::aggregate(roads_sdf, by="id_agg")
+roads_sdf <- roads_sdf %>% st_as_sf() %>% st_combine() %>% as("Spatial")
+roads_sdf$id <- 1
+#roads_sdf <- raster::aggregate(roads_sdf, by="id")
+
 points$distance_anyroad2016 <- gDistance_chunks(points, roads_sdf, CHUNK_SIZE_DIST_ROADS)
 
 # Export -----------------------------------------------------------------------

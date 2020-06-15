@@ -5,6 +5,27 @@ control_vars <- "+ temp_avg + precipitation"
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean_all.Rds"))
 
+data_diff <- data %>%
+  arrange(year) %>%
+  mutate(year = year %>% as.character()) %>%
+  group_by(uid) %>%
+  mutate_if(is.numeric,  function(x) c(NA, diff(x))) %>%
+  mutate(road_length_50over_lag1 = lag(road_length_50over),
+         road_length_50over_lag2 = lag(road_length_50over,2),
+         road_length_50over_lag3 = lag(road_length_50over,3))
+
+lm(dmspols ~ log(road_length_50over+1) + 
+     log(road_length_50over_lag1+1) + 
+     log(road_length_50over_lag2+1) + 
+     log(road_length_50over_lag3+1), 
+   data = data_diff) %>%
+  summary()
+
+ head(data_diff)
+
+
+
+
 data_dmspols <- data %>%
   filter(year %in% c(1996, 2012)) %>%
   mutate(endline = as.numeric(year %in% 2012)) 
@@ -28,7 +49,8 @@ if(F){
     filter(endline %in% 1) # we have repeated values from diff, as not doing c(diff(), NA)
   
   lm(globcover_urban ~ road_length_50over, data=data_temp) %>% summary()
-  lm(globcover_urban ~ road_length_50over_rdsep, data=data_temp) %>% summary()
+  lm(globcover_urban ~ road_length_50over_area, data=data_temp) %>% summary()
+  
 }
 
 

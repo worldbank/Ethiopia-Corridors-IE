@@ -133,11 +133,17 @@ for(addis_dist in c("All", "Far")){
                      heights = c(5,1.5),
                      legend = "right")
       
-      ggsave(p, filename = file.path(figures_file_path, paste0("results_longdiff_first_diff_addisDist",addis_dist,"_iv_suffix",iv_suffix,"_lmType",lm_type,".png")),
+      if(DATASET_TYPE %in% "woreda_panel_hdx_csa_nearroad"){
+        type <- "_nearroad"
+      } else{
+        type <- ""
+      }
+      
+      ggsave(p, filename = file.path(figures_file_path, paste0("results_longdiff_first_diff_addisDist",addis_dist,"_iv_suffix",iv_suffix,"_lmType",lm_type,type,".png")),
              height = HEIGHT,
              width = WIDTH)
       
-      print(paste0("results_longdiff_first_diff_addisDist",addis_dist,"_iv_suffix",iv_suffix,"_lmType",lm_type,".png"))
+      print(paste0("results_longdiff_first_diff_addisDist",addis_dist,"_iv_suffix",iv_suffix,"_lmType",lm_type,type,".png"))
       
     }
   }
@@ -147,3 +153,4 @@ for(addis_dist in c("All", "Far")){
 
 
 
+# DATASET_TYPE <- "woreda_panel_hdx_csa"

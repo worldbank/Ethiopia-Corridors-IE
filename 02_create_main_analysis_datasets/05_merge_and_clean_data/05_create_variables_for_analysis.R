@@ -43,7 +43,7 @@ data$distance_rsdp_phase2 <- NULL
 data$distance_rsdp_phase3 <- NULL
 data$distance_rsdp_phase4 <- NULL
 
-if(DATASET_TYPE %in% "woreda_panel_hdx_csa") data$cell_id <- data$uid
+if(grepl("woreda_panel_hdx_csa",DATASET_TYPE)) data$cell_id <- data$uid
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Distance to aggregate road categories ----------------------------------------
@@ -289,14 +289,14 @@ gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
 data$GADM_ID_1 <- NULL
 
-if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
+if(grepl("woreda_panel_hdx_csa", DATASET_TYPE)){
   data$R_NAME <- data$R_NAME %>% as.character()
   data$region_type <- ifelse(data$R_NAME %in% c("Afar", "Benishangul Gumuz", "SOMALI REGION"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
 } 
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Log market access ------------------------------------------------------------
-if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
+if(grepl("woreda_panel_hdx_csa", DATASET_TYPE)){
   
   #### Log market access
   for(var in names(data)[grepl("^MA_", names(data))]){
@@ -317,7 +317,7 @@ if(DATASET_TYPE %in% "woreda_panel_hdx_csa"){
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Road length & density --------------------------------------------------------
-if(!GRID_DATASET){
+if(!GRID_DATASET & F){ # DONE IN ACCESSIBILITY SCRIPT
   
   #### Variables for (1) road length var and (2) road speed numbers
   road_length_vars <- names(data)[grepl("road_length_", names(data))] 

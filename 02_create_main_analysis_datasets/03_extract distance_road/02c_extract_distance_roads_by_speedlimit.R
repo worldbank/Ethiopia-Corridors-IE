@@ -37,7 +37,11 @@ determine_distance_to_points <- function(year, points, roads){
     print(speed)
     
     # Restrict to roads that are speed limit "speed" and aggregate to one row
-    roads_subset <- roads_yyyy[roads_yyyy[[paste0("Speed", year)]] %in% speed,] %>% raster::aggregate(by="id")
+    roads_subset <- roads_yyyy[roads_yyyy[[paste0("Speed", year)]] %in% speed,] #%>% raster::aggregate(by="id")
+    
+    roads_subset <- roads_subset %>% st_as_sf() %>% st_combine() %>% as("Spatial")
+    roads_subset$id <- 1
+    
     points[[paste0("distance_road_speed_", speed)]] <- gDistance_chunks(points, roads_subset, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS) 
   }
   

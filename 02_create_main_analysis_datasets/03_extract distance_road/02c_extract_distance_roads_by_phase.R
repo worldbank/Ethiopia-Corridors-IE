@@ -21,10 +21,23 @@ roads_sdf$id <- 1 # useful to have a variable the same for all obs when aggreagt
 roads_sdf <- roads_sdf %>% spTransform(CRS(UTM_ETH))
 
 # Separate into Phases ---------------------------------------------------------
-roads_sdf_p1 <- roads_sdf[roads_sdf$rsdp_phase %in% 1,] %>% raster::aggregate(by="id")
-roads_sdf_p2 <- roads_sdf[roads_sdf$rsdp_phase %in% 2,] %>% raster::aggregate(by="id")
-roads_sdf_p3 <- roads_sdf[roads_sdf$rsdp_phase %in% 3,] %>% raster::aggregate(by="id")
-roads_sdf_p4 <- roads_sdf[roads_sdf$rsdp_phase %in% 4,] %>% raster::aggregate(by="id")
+#roads_subset <- roads_subset
+#roads_subset$id <- 1
+
+#roads_sdf_p1 <- roads_sdf[roads_sdf$rsdp_phase %in% 1,] %>% raster::aggregate(by="id")
+#roads_sdf_p2 <- roads_sdf[roads_sdf$rsdp_phase %in% 2,] %>% raster::aggregate(by="id")
+#roads_sdf_p3 <- roads_sdf[roads_sdf$rsdp_phase %in% 3,] %>% raster::aggregate(by="id")
+#roads_sdf_p4 <- roads_sdf[roads_sdf$rsdp_phase %in% 4,] %>% raster::aggregate(by="id")
+
+roads_sdf_p1 <- roads_sdf[roads_sdf$rsdp_phase %in% 1,] %>% st_as_sf() %>% st_combine() %>% as("Spatial")
+roads_sdf_p2 <- roads_sdf[roads_sdf$rsdp_phase %in% 2,] %>% st_as_sf() %>% st_combine() %>% as("Spatial")
+roads_sdf_p3 <- roads_sdf[roads_sdf$rsdp_phase %in% 3,] %>% st_as_sf() %>% st_combine() %>% as("Spatial")
+roads_sdf_p4 <- roads_sdf[roads_sdf$rsdp_phase %in% 4,] %>% st_as_sf() %>% st_combine() %>% as("Spatial")
+
+roads_sdf_p1$id <- 1
+roads_sdf_p2$id <- 1
+roads_sdf_p3$id <- 1
+roads_sdf_p4$id <- 1
 
 # Distance to Phases -----------------------------------------------------------
 points$distance_rsdp_phase1 <- gDistance_chunks(points, roads_sdf_p1, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)

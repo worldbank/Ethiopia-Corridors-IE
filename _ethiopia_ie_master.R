@@ -28,8 +28,8 @@ tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 # --"dmspols_grid_dataset_randomsample": DMSP-OLS level dataset; random sample
 # --"woreda_panel_hdx_csa": Woreda level
 
-#DATASET_TYPE <- "woreda_panel_hdx_csa"
-DATASET_TYPE <- "woreda_panel_hdx_csa_nearroad"
+DATASET_TYPE <- "woreda_panel_hdx_csa"
+#DATASET_TYPE <- "woreda_panel_hdx_csa_nearroad"
 
 #DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
 
@@ -140,7 +140,7 @@ pause_gc <- function(GRID_DATASET){
 
 # Run Scripts ------------------------------------------------------------------
 ##### Extract Data to Grids
-if(T){
+if(F){
   grid_scripts <- c("02b_extract_dmspols.R", 
                     "02b_extract_ndvi.R",
                     "02b_extract_viirs.R",
@@ -156,21 +156,22 @@ if(T){
   } 
 }
 
-if(T){
+if(F){
   grid_scripts <- c("02c_extract_distance_improved_roads_by_speedlimit_after.R",
                     "02c_extract_distance_improved_roads_by_speedlimit_before.R",
                     "02c_extract_distance_roads_by_phase.R",
                     "02c_extract_distance_roads_by_speedlimit.R",
-                    "02c_extract_distance_anyroad_ever.R")
+                    "02c_extract_distance_anyroad_ever.R",
+                    "02d_extract_distance_separate_road_shapefiles.R")
   for(script_i in grid_scripts){
     print(paste(script_i, "----------------------------------------------------"))
     source(file.path(code_file_path, "02_create_main_analysis_datasets", "03_extract distance_road", script_i))
   } 
 }
 
-if(T){
+if(F){
   grid_scripts <- c("03a_woreda_traveltime_dataset.R", 
-                    "03b_computer_market_access.R")
+                    "03b_compute_market_access.R")
   for(script_i in grid_scripts){
     print(paste(script_i, "----------------------------------------------------"))
     source(file.path(code_file_path, "02_create_main_analysis_datasets", "04_compute_market_access", script_i))
