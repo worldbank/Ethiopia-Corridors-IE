@@ -13,6 +13,8 @@ points_all <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_da
 DATASETS_TIME_INVARIANT <- c("points_gadm.Rds", 
                              "points_distance_cities.Rds", 
                              "points_distance_rsdp_phases.Rds",
+                             "points_distance_least_cost_path_mst.Rds",
+                             "points_distance_anyroad_improved_ever.Rds",
                              "points_distance_anyroad2016.Rds")
 
 DATASETS_TIME_VARYING <- c("points_globcover.Rds",

@@ -37,6 +37,7 @@ if(GRID_DATASET){
 
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
+data <- data[data$distance_anyimproved_ever <= NEAR_CUTOFF,]
 
 data$distance_rsdp_phase1 <- NULL
 data$distance_rsdp_phase2 <- NULL
@@ -74,35 +75,8 @@ data$distance_improvedroad_speedafter_50 <- NULL
 data$distance_improvedroad_speedafter_70 <- NULL
 data$distance_improvedroad_speedafter_120 <- NULL
 
-gc(); Sys.sleep(.5); gc(); Sys.sleep(.5) # TODO: create "rest" function, with GRID as input (Where no rest for woredas)
-# Remove cells not in analysis -------------------------------------------------
+gc(); Sys.sleep(.5); gc(); Sys.sleep(.5) 
 
-#### Include unit if near an improved road at some point during the analysis
-# 1. Create a temporary improved road variable and make NA values very large as a
-# dummy indicator of the road being super far award.
-# 2. Check whether minimum distance of road within a cell is within threshold value.
-# 3. Them remove temporary variables
-
-data$distance_improvedroad_TEMP <- data$distance_improvedroad
-data$distance_improvedroad_TEMP[is.na(data$distance_improvedroad_TEMP)] <- 9999*1000
-
-data <- data %>%
-  group_by(cell_id) %>%
-  mutate(distance_improvedroad_TEMP_min = min(distance_improvedroad_TEMP)) %>%
-  ungroup()
-data <- data[data$distance_improvedroad_TEMP_min <= NEAR_CUTOFF,]
-
-data$distance_improvedroad_TEMP <- NULL
-data$distance_improvedroad_TEMP_min <- NULL
-
-#### Remove Cells intersect road at any point
-# Don't need "distance_anyroad2016" any more; remove to save memory
-if(GRID_DATASET){
-  data <- data[data$distance_anyroad2016 >= 1000,]
-  data$distance_anyroad2016 <- NULL
-}
-
-gc(); Sys.sleep(.5); gc()
 # Years Since / Post Improved Variables ----------------------------------------
 generate_road_improved_variables <- function(road_var, 
                                              data,
@@ -181,6 +155,7 @@ roadimproved_df <- lapply(c("distance_improvedroad",
 data <- bind_cols(data, roadimproved_df)
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
+
 # Lagged treatment -------------------------------------------------------------
 data$pre_improvedroad_neg2_5 <- as.numeric(data$years_since_improvedroad %in% -2:-5) %>% as.numeric()
 data$pre_improvedroad_neg6_10 <- as.numeric(data$years_since_improvedroad %in% -6:-10) %>% as.numeric()
@@ -410,8 +385,17 @@ if(GRID_DATASET){
 }
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
+
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
 
+
+
+
+
+data$near_improvedroad_all_years %>% table() %>% View()
+
+lm(dmspols ~ years_since_improvedroad, data=data) %>%
+  summary()
 
 

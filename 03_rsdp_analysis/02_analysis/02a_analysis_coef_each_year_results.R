@@ -47,7 +47,7 @@ for(road_years_group in c("all",
           
           ## Add dependent variable as temp variable
           data_temp$dv <- data_temp[[dv]]
-          
+
           #### Estimate Models // GADM_ID_3
           results_df_temp <- tryCatch({     
             bind_rows(
