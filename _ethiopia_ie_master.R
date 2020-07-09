@@ -65,6 +65,9 @@ GRID_DATASET <- grepl("grid", DATASET_TYPE)
 
 
 # Packages ---------------------------------------------------------------------
+library(AER)
+library(estimatr)
+library(clusterSEs)
 library(rgdal)
 library(raster)
 library(velox)

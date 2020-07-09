@@ -2,10 +2,11 @@
 # https://mgimond.github.io/Spatial/raster-operations-in-r.html
 # https://geocompr.robinlovelace.net/spatial-operations.html
 
+library(spatialEco)
 
-dmspols <- raster(file.path(project_file_path, "Data", "RawData", "Nighttime Lights", "DMSP_OLS", "Individual Files", "eth_dmspols_2012.tif"))
-dmspols_z <- raster(file.path(project_file_path, "Data", "RawData", "Nighttime Lights", "DMSP_OLS_INTERCALIBRATED_ZHANG2016", "F102012.tif"))
-viirs <- raster(file.path(project_file_path, "Data", "RawData", "Nighttime Lights", "VIIRS", "Annual", "mean", "eth_viirs_mean_2012.tif"))
+dmspols <- raster(file.path(project_file_path, "Data", "RawData", "Nighttime Lights", "DMSP_OLS", "Individual Files", "eth_dmspols_2013.tif"))
+#dmspols_z <- raster(file.path(project_file_path, "Data", "RawData", "Nighttime Lights", "DMSP_OLS_INTERCALIBRATED_ZHANG2016", "F102012.tif"))
+viirs <- raster(file.path(project_file_path, "Data", "RawData", "Nighttime Lights", "VIIRS", "Annual", "max", "eth_viirs_max_2012.tif"))
 
 # viirs_pts <- rasterToPoints(viirs, spatial=T) 
 # viirs_crd <- viirs_pts %>% coordinates() %>%
@@ -21,6 +22,8 @@ addis <- gBuffer(addis, width=30/111.12, byid=T)
 viirs <- crop(viirs, addis)
 dmspols <- crop(dmspols, addis)
 
+viirs[] <- viirs[] / max(viirs[], na.rm=T)
+
 plot(viirs)
 plot(dmspols)
 
@@ -33,34 +36,82 @@ plot(dmspols)
 sigma = 2
 n = 5
 gm <- gaussian.kernel(sigma=sigma, n=n)
-gm <- gm * 1/max(gm) # standardize so max is 1
+#gm <- gm * 1/sum(gm) # standardize so sum is 1
 
 # 1. KDE
-viirs_s <- raster::focal(viirs, w = gm, fun = "mean")
+viirs_s <- raster::focal(viirs, w = gm, fun = "sum")
 viirs_s_re <- resample(viirs_s, dmspols)
 
 # 2. Log
-viirs_s_re <- log(viirs_s_re + 1)
+viirs_s_re_ln <- log(viirs_s_re + 1)
 
 # 3. Sigmoid
-sigmoid <- function(x, a, b, c, d){
-  out <- a + b*(1 / (1 + exp(-c*(x-d)) ))
-  return(out)
-}
+# sigmoid <- function(x, a, b, c, d){
+#   #out <- a + b*(1 / (1 + exp(-c*(x-d)) ))
+#   
+#   out <- a + b / (1 + exp(-(x - c) / d))
+#   return(out)
+# }
 
-viirs_s_re_sig <- viirs_s_re
-viirs_s_re_sig[] <- sigmoid(viirs_s_re_sig[], 6.5, 57.4,-1.9,10.8)
+x = seq(from = 0, to=100, by = .1)
+
+#x = 100
+a = 6.5
+b = 57.4
+c = -1.9
+d = 10.8
+
+x = seq(from = 0, to = 20, by=1)
+
+a + b*(1/(1 + exp(-c*(x-d))  ))
+
+
+
+# df_all <- data.frame(NULL)
+# 
+# for(c in seq(from = -2, to  = 2, by = .1)){
+#   for(d in seq(from = -10, to = 10, by = .2)){
+#     print(d)
+#     
+#     sigd <- function(x) a + b*(1/(1 + exp(-c*(x-d))  ))
+#     
+#     viirs_s_re_ln_sig <- viirs_s_re_ln
+#     viirs_s_re_ln_sig[] <- sigd(viirs_s_re_ln[])
+#     
+#     diff <- max(viirs_s_re_ln_sig[] - dmspols[], na.rm=T)
+#     
+#     df_i <- data.frame(diff = diff,
+#                c = d,
+#                d = d)
+#     
+#     df_all <- bind_rows(df_all, df_i)
+#     
+#   }
+# }
+# 
+# df_all[which.min(abs(df_all$diff)),]
+
+
+sigd <- function(x) a + b*(1/(1 + exp(-c*(x-d))  ))
+
+viirs_s_re_ln_sig <- viirs_s_re_ln
+viirs_s_re_ln_sig[] <- sigd(viirs_s_re_ln[])
+
+
 
 
 
 plot(viirs)
 plot(viirs_s)
 plot(viirs_s_re)
-plot(viirs_s_re_sig)
+plot(viirs_s_re_ln)
+plot(viirs_s_re_ln_sig)
 plot(dmspols)
 
 
 
+sigmoid(0.12, 6.5, 57.4,-1.9,10.8)
+viirs[]
 
 gf <- focalWeight(viirs, 2 , type="Gauss")
 viirs_k <- focal(viirs,

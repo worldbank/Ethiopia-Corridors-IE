@@ -15,6 +15,7 @@ DATASETS_TIME_INVARIANT <- c("points_gadm.Rds",
                              "points_distance_rsdp_phases.Rds",
                              "points_distance_least_cost_path_mst.Rds",
                              "points_distance_anyroad_improved_ever.Rds",
+                             "points_distance_improved_bf2013_ever.Rds",
                              "points_distance_anyroad2016.Rds")
 
 DATASETS_TIME_VARYING <- c("points_globcover.Rds",
