@@ -26,61 +26,60 @@ label var precipitation_2013diff "Precip"
 label var temp_avg_2018diff "Temp"
 label var precipitation_2018diff "Precip"
 
+label var temp_avg "Temp"
+label var precipitation "Precip"
+
 label var near_mst "Near Span Tree"
 
 
 * OLS --------------------------------------------------------------------------
-* Second Stage
-reg dmspols_2013diff         near_improved_bf2013_ever   temp_avg_2013diff precipitation_2013diff, vce(cluster woreda_hdx_w_uid)
+reg dmspols_2013diff         near_improved_bf2013_ever   temp_avg precipitation, vce(cluster woreda_hdx_w_uid) 
+
 	outreg2 using "$tables/longdiff_ols.tex",  addtext(Woreda FE, N) tex(frag) label replace
 	
-reg dmspols_ihs_2013diff        near_improved_bf2013_ever    temp_avg_2013diff precipitation_2013diff , vce(cluster woreda_hdx_w_uid)
+reg dmspols_ihs_2013diff        near_improved_bf2013_ever    temp_avg precipitation  , vce(cluster woreda_hdx_w_uid)
 	outreg2 using "$tables/longdiff_ols.tex",   addtext(Woreda FE, N) tex(frag) label append
 	
-reg globcover_urban_2018diff  near_anyimproved_ever  temp_avg_2018diff precipitation_2018diff , vce(cluster woreda_hdx_w_uid)
+reg globcover_urban_2018diff  near_anyimproved_ever  temp_avg precipitation , vce(cluster woreda_hdx_w_uid)
 	outreg2 using "$tables/longdiff_ols.tex",   addtext(Woreda FE, N) tex(frag) label append
 	
-reg globcover_cropland_2018diff near_anyimproved_ever temp_avg_2018diff precipitation_2018diff , vce(cluster woreda_hdx_w_uid)
+reg globcover_cropland_2018diff near_anyimproved_ever temp_avg precipitation , vce(cluster woreda_hdx_w_uid)
 	outreg2 using "$tables/longdiff_ols.tex",   addtext(Woreda FE, N) tex(frag) label append
 	
-reg ndvi_2018diff          near_anyimproved_ever     temp_avg_2018diff precipitation_2018diff , vce(cluster woreda_hdx_w_uid)
+reg ndvi_2018diff          near_anyimproved_ever     temp_avg precipitation , vce(cluster woreda_hdx_w_uid)
 	outreg2 using "$tables/longdiff_ols.tex",   addtext(Woreda FE, N) tex(frag) label append
 	
-reg ndvi_cropland_2018diff     near_anyimproved_ever temp_avg_2018diff precipitation_2018diff, vce(cluster woreda_hdx_w_uid)
+reg ndvi_cropland_2018diff     near_anyimproved_ever temp_avg precipitation, vce(cluster woreda_hdx_w_uid)
 	outreg2 using "$tables/longdiff_ols.tex",   addtext(Woreda FE, N) tex(frag) label append
 
 
 * 2SLS -------------------------------------------------------------------------
+* 
+	
+ * 3.77 near_improved_bf2013_ever
 
-* First Stage
-areg near_improved_bf2013_ever near_mst, absorb(woreda_hdx_w_uid) vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s1.tex", ctitle(Endline 2013) addstat("F test model", e(F)) addtext(Woreda FE, Y) tex(frag) label replace
-reg near_improved_bf2013_ever near_mst,  vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s1.tex", ctitle(Endline 2013) addstat("F test model", e(F)) addtext(Woreda FE, N) tex(frag) label append
-	
-areg near_anyimproved_ever near_mst, absorb(woreda_hdx_w_uid) vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s1.tex", ctitle(Endline 2018) addstat("F test model", e(F)) addtext(Woreda FE, Y) tex(frag) label  append
-reg near_anyimproved_ever near_mst,  vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s1.tex", ctitle(Endline 2018) addstat("F test model", e(F)) addtext(Woreda FE, N) tex(frag) label append
+*ivregress 2sls dmspols_2013diff            temp_avg precipitation i.woreda_hdx_w_uid (near_improved_bf2013_ever = near_mst), vce(cluster woreda_hdx_w_uid) first
+*estat firststage
+
+*ivregress 2sls globcover_urban_2018diff    temp_avg precipitation i.woreda_hdx_w_uid (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
+*estat firststage
+
+ivregress 2sls dmspols_2013diff            temp_avg precipitation i.woreda_hdx_w_uid (near_improved_bf2013_ever = near_mst), vce(cluster woreda_hdx_w_uid)
+	outreg2 using "$tables/iv_s2.tex",  addtext(Woreda FE, Y, First Stage F Stat, 3.97) drop(i.woreda_hdx_w_uid) tex(frag) label replace
 		
+ivregress 2sls dmspols_ihs_2013diff            temp_avg precipitation i.woreda_hdx_w_uid (near_improved_bf2013_ever = near_mst), vce(cluster woreda_hdx_w_uid)
+	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, Y, First Stage F Stat, 3.97) drop(i.woreda_hdx_w_uid) tex(frag) label append
 	
-* Second Stage
-ivregress 2sls dmspols_2013diff            temp_avg_2013diff precipitation_2013diff (near_improved_bf2013_ever = near_mst), vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s2.tex",  addtext(Woreda FE, N) tex(frag) label replace
+ivregress 2sls globcover_urban_2018diff    temp_avg precipitation i.woreda_hdx_w_uid (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
+	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, Y, First Stage F Stat, 2.12) drop(i.woreda_hdx_w_uid) tex(frag) label append
 	
-ivregress 2sls dmspols_ihs_2013diff            temp_avg_2013diff precipitation_2013diff (near_improved_bf2013_ever = near_mst), vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, N) tex(frag) label append
+ivregress 2sls globcover_cropland_2018diff temp_avg precipitation i.woreda_hdx_w_uid (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
+	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, Y, First Stage F Stat, 2.12) drop(i.woreda_hdx_w_uid) tex(frag) label append
 	
-ivregress 2sls globcover_urban_2018diff    temp_avg_2018diff precipitation_2018diff (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, N) tex(frag) label append
+ivregress 2sls ndvi_2018diff               temp_avg precipitation i.woreda_hdx_w_uid (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
+	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, Y, First Stage F Stat, 2.12) drop(i.woreda_hdx_w_uid) tex(frag) label append
 	
-ivregress 2sls globcover_cropland_2018diff temp_avg_2018diff precipitation_2018diff (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, N) tex(frag) label append
-	
-ivregress 2sls ndvi_2018diff               temp_avg_2018diff precipitation_2018diff (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, N) tex(frag) label append
-	
-ivregress 2sls ndvi_cropland_2018diff      temp_avg_2018diff precipitation_2018diff (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
-	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, N) tex(frag) label append
+ivregress 2sls ndvi_cropland_2018diff      temp_avg precipitation i.woreda_hdx_w_uid (near_anyimproved_ever = near_mst), vce(cluster woreda_hdx_w_uid)
+	outreg2 using "$tables/iv_s2.tex",   addtext(Woreda FE, Y, First Stage F Stat, 2.12) drop(i.woreda_hdx_w_uid) tex(frag) label append
 
 

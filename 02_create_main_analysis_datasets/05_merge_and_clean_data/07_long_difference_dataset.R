@@ -34,6 +34,15 @@ data <- data[,c("near_anyimproved_ever",
                 "cell_id",
                 "woreda_hdx_w_uid")]
 
+# Non First Diff ---------------------------------------------------------------
+data_1996 <- data %>%
+  as.data.frame() %>%
+  filter(year == 1996) %>%
+  group_by(cell_id) %>%
+  summarise(temp_avg = mean(temp_avg, na.rm=T),
+         precipitation = mean(precipitation, na.rm = T))
+
+# First difference datasets ----------------------------------------------------
 data_dmspols <- data %>%
   as.data.frame() %>%
   dplyr::filter(year %in% c(1996, 2012)) %>%
@@ -42,7 +51,7 @@ data_dmspols <- data %>%
   mutate(year = year %>% as.character()) %>%
   group_by(cell_id) %>%
   mutate_if(is.numeric, diff) %>%
-  filter(year == "2012") %>%
+  filter(year == "1996") %>%
   dplyr::select(cell_id, woreda_hdx_w_uid, 
                 near_anyimproved_ever, near_improved_bf2013_ever, near_mst,
                 temp_avg, precipitation,
@@ -62,7 +71,7 @@ data_full <- data %>%
   mutate(year = year %>% as.character()) %>%
   group_by(cell_id) %>%
   mutate_if(is.numeric, diff) %>%
-  filter(year == "2018") %>%
+  filter(year == "1996") %>%
   dplyr::rename(globcover_urban_2018diff = globcover_urban,
                 globcover_cropland_2018diff = globcover_cropland,
                 ndvi_cropland_2018diff = ndvi_cropland,
@@ -73,6 +82,7 @@ data_full <- data %>%
 
 ## Merge
 data_all <- merge(data_dmspols, data_full, by = "cell_id")
+data_all <- merge(data_all, data_1996, by = "cell_id")
 
 # Export -----------------------------------------------------------------------
 data_all$woreda_hdx_w_uid <- data_all$woreda_hdx_w_uid %>% as.character() %>% as.numeric()
