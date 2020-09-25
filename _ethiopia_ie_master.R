@@ -15,6 +15,8 @@ if(Sys.info()[["user"]] == "andm2") project_file_path <- "C:/Users/andm2/Dropbox
 
 
 if(Sys.info()[["user"]] == "robmarty") code_file_path <- "~/Documents/Github/Ethiopia-Corridors-IE"
+if(Sys.info()[["user"]] == "andm2") code_file_path <- "G:/Work/Ethiopia/Ethiopia-Corridors-IE"
+
 
 rawdata_file_path <- file.path(project_file_path, "Data", "RawData")
 outputs_for_grid <- file.path(project_file_path, "Data", "IntermediateData", "Outputs for Grid")
