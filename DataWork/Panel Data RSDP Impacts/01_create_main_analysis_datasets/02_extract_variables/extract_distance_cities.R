@@ -1,16 +1,12 @@
-# Extract GADM to Points
+# Extract Distance to Cities
 
 # Load Data --------------------------------------------------------------------
-#### Grid points
-points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
-if(grepl("grid", DATASET_TYPE)){
-  coordinates(points) <- ~long+lat
-  crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-}
+points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
 points <- points %>% spTransform(CRS(UTM_ETH))
 
 #### Cities
-city_data <- read.csv(file.path(finaldata_file_path, "city_population", "city_pop_geocoded.csv"))
+city_data <- read.csv(file.path(data_file_path, "City Population", "FinalData", "city_pop_geocoded.csv"),
+                      stringsAsFactors = F)
 coordinates(city_data) <- ~lon+lat
 crs(city_data) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 city_data <- city_data %>% spTransform(CRS(UTM_ETH))
@@ -18,7 +14,6 @@ city_data$id <- 1
 
 # Aggregating only accepts SpatialPolyons, so buffer by small amount
 city_data <- city_data %>% gBuffer(width=.1, byid=T)
-
 
 # Distance to Cities -----------------------------------------------------------
 #### Specific Cities
@@ -47,7 +42,7 @@ points$distance_city_popsize_3groups_g3 <- gDistance_chunks(points, city_data_po
 points$distance_city_all <- gDistance_chunks(points, city_data_all, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
 
 # Export -----------------------------------------------------------------------
-saveRDS(points@data, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_distance_cities.Rds"))
+saveRDS(points@data, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_cities.Rds"))
 
 
 

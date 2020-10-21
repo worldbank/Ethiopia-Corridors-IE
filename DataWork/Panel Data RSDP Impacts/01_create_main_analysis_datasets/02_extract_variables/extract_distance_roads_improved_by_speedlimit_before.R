@@ -14,23 +14,20 @@
 # than WGS84.
 
 #### Load points
-points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
-if(grepl("grid", DATASET_TYPE)){
-  coordinates(points) <- ~long+lat
-  crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-}
+points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
 points <- points %>% spTransform(CRS(UTM_ETH))
 
 #### Load roads
-roads_sdf <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
+roads_sdf <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 roads_sdf$id <- 1 # useful to have a variable the same for all obs when aggreagting roads later
 roads_sdf <- roads_sdf %>% spTransform(CRS(UTM_ETH))
 
 # Calculate Distance -----------------------------------------------------------
 determine_distance_to_points <- function(year, points, roads){
   
-  print(paste(year, "--------------------------------------------------------"))
-
+  print("* -------------------------")
+  print(year)
+  
   # Grab roads for relevant year
   roads_yyyy <- roads[roads[[paste0("Speed",year)]] > 0,]
   
@@ -40,14 +37,15 @@ determine_distance_to_points <- function(year, points, roads){
   
   # Loop through speeds. Subset road based on that speed. Add that speed to the
   # points dataframe
-  for(speed in sort(unique(roads_yyyy[[paste0("Speed", year)]]))){
-    print(paste(speed, year, "-----------------------------------------------"))
+  for(speed in sort(unique(roads_yyyy[[paste0("Speed", year-1)]]))){
+    print("* -------------------------")
+    print(paste(speed, year))
     
-    roads_subset <- roads_yyyy[roads_yyyy[[paste0("Speed", year)]] %in% speed,] #%>% raster::aggregate(by="id")
+    roads_subset <- roads_yyyy[roads_yyyy[[paste0("Speed", year-1)]] %in% speed,] #%>% raster::aggregate(by="id")
     roads_subset <- roads_subset %>% st_as_sf() %>% st_combine() %>% as("Spatial")
     roads_subset$id <- 1
     
-    points[[paste0("distance_improvedroad_speedafter_", speed)]] <- gDistance_chunks(points, roads_subset, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS) 
+    points[[paste0("distance_improvedroad_speedbefore_", speed)]] <- gDistance_chunks(points, roads_subset, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS) 
   }
   
   points$year <- year
@@ -59,5 +57,5 @@ determine_distance_to_points <- function(year, points, roads){
 points_all <- lapply(1997:2016, determine_distance_to_points, points, roads_sdf) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_distance_improved_roads_byspeed_after.Rds"))
+saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_improved_roads_byspeed_before.Rds"))
 

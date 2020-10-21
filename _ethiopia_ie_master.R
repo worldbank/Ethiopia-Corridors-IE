@@ -1,11 +1,8 @@
 # Ethiopia IE 
 # Master R Script
 
-
 # In order to source a script as a local job, include this at top of script
 # source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
-
-# stuff
 
 # Filepaths --------------------------------------------------------------------
 if(Sys.info()[["user"]] == "WB554990") project_file_path <- "C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE - Merge Budget Data With Shapefile"
@@ -13,18 +10,21 @@ if(Sys.info()[["user"]] == "WB521633") project_file_path <- "C:/Users/wb521633/D
 if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Bank/IEs/Ethiopia IE"
 if(Sys.info()[["user"]] == "andm2") project_file_path <- "C:/Users/andm2/Dropbox/WorldBank/Ethiopia IE"
 
-
 if(Sys.info()[["user"]] == "robmarty") code_file_path <- "~/Documents/Github/Ethiopia-Corridors-IE"
 if(Sys.info()[["user"]] == "andm2") code_file_path <- "G:/Work/Ethiopia/Ethiopia-Corridors-IE"
 
-
 rawdata_file_path <- file.path(project_file_path, "Data", "RawData")
 outputs_for_grid <- file.path(project_file_path, "Data", "IntermediateData", "Outputs for Grid")
-finaldata_file_path <- file.path(project_file_path, "Data", "FinalData")
-figures_file_path <- file.path(project_file_path,"Outputs", "Results", "Figures")
-tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
+data_file_path <- file.path(project_file_path, "Data")
+panel_rsdp_imp_file_path <- file.path(project_file_path, "Data", "Panel Data RSDP Impacts")
+panel_rsdp_imp_data_file_path <- file.path(panel_rsdp_imp_file_path, "Data")
+#figures_file_path <- file.path(project_file_path,"Outputs", "Results", "Figures")
+#tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 
 # Parameters -------------------------------------------------------------------
+
+#### Ethiopia UTM
+UTM_ETH <- '+init=epsg:20138'
 
 #### DATASET
 # Defines dataset to run analysis on. Either at woreda level, grid level, or
@@ -35,9 +35,15 @@ tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 # --"dmspols_grid_dataset_randomsample": DMSP-OLS level dataset; random sample
 # --"woreda_panel_hdx_csa": Woreda level
 
+# NEW
+# --"dmspols_grid_nearroad"
+# --"dmspols_grid_nearroad_randomsample"
+
 #DATASET_TYPE <- "woreda_panel_hdx_csa"
 #DATASET_TYPE <- "woreda_panel_hdx_csa_nearroad"
-DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
+#DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
+DATASET_TYPE <- "dmspols_grid_nearroad_randomsample"
+DATASET_TYPE <- "woreda"
 
 #### CHUNK SIZE
 # For some functions, we break up the dataset into chunks. These are vectorized
@@ -61,15 +67,11 @@ road_year <- list(all = 1996:2016,
                   phase3 = 2008:2010, # 2007:2010
                   phase4 = 2011:2016) # 2010:2015
 
-
-# Parameters for Grid Analysis
+#### Other
 MCCORS_DIST_ROADS <- 1
 TYPE <- c("DMSPOLS") # globcover, DMSPOLS
-UTM_ETH <- '+init=epsg:20138'
 DIST_THRESH <- 2
-
 GRID_DATASET <- grepl("grid", DATASET_TYPE)
-
 
 # Packages ---------------------------------------------------------------------
 library(AER)
@@ -77,6 +79,7 @@ library(estimatr)
 library(clusterSEs)
 library(rgdal)
 library(raster)
+library(terra)
 library(velox)
 library(dplyr)
 library(rgeos)
@@ -104,49 +107,10 @@ library(ggpubr)
 library(readr)
 library(gdistance)
 library(shp2graph)
+
+# Functions
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
-
-# Common Functions -------------------------------------------------------------
-lm_confint_tidy <- function(lm, years_since_variable){
-  lm_confint <- confint(lm) %>% 
-    as.data.frame
-  names(lm_confint) <- c("p025", "p975")
-  lm_confint$b <- (lm_confint$p025 + lm_confint$p975)/2
-  lm_confint$variable <- row.names(lm_confint)
-  
-  lm_confint <- lm_confint[!grepl("cluster_id)|year)|Intercept)", lm_confint$variable),]
-  lm_confint$years_since_improved <- gsub(years_since_variable, "", lm_confint$variable) %>% as.numeric
-  
-  return(lm_confint)
-}
-
-lm_post_confint_tidy <- function(lm){
-  
-  lm_confint <- confint(lm) %>% 
-    as.data.frame
-  names(lm_confint) <- c("p025", "p975")
-  lm_confint$b <- (lm_confint$p025 + lm_confint$p975)/2
-  lm_confint$variable <- row.names(lm_confint)
-  
-  lm_confint$tvalue <- summary(lm)$coefficients[,3] %>% as.vector()
-  lm_confint$pvalue <- summary(lm)$coefficients[,4] %>% as.vector()
-  
-  return(lm_confint)
-}
-
-pause_gc <- function(GRID_DATASET){
-  if(GRID_DATASET){
-    Sys.sleep(1)
-    gc()
-    Sys.sleep(1)
-    gc()
-    Sys.sleep(1)
-    gc()
-    Sys.sleep(1)
-  } 
-  return(NULL)
-}
-
+source(file.path(code_file_path, "Functions", "commonly_used.R"))
 
 # Run Scripts ------------------------------------------------------------------
 ##### Extract Data to Grids

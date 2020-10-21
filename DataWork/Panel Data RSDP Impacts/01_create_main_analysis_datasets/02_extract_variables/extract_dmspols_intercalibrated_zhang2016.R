@@ -1,19 +1,13 @@
 # Extract DMSPOLS-Intercalibrated to Points
 
 # Load Data --------------------------------------------------------------------
-points <- readRDS(file.path(finaldata_file_path, DATASET_TYPE,"individual_datasets", "points.Rds"))
-if(grepl("grid", DATASET_TYPE)){
-  coordinates(points) <- ~long+lat
-  crs(points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-}
+points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
 
 read_ntl <- function(year){
   # Load NTL and crop to points extent. When 2 nigthttime light datasets for a year,
   # average together
   
-  print(year)
-  
-  raster_filepaths <- list.files(file.path(rawdata_file_path, "Nighttime Lights", "DMSP_OLS_INTERCALIBRATED_ZHANG2016"),
+  raster_filepaths <- list.files(file.path(data_file_path, "Nighttime Lights", "DMSPOLS_Intercalibrated", "RawData"),
              pattern=as.character(year),
              full.names = T)
   
@@ -36,13 +30,16 @@ read_ntl <- function(year){
 extract_raster_to_points <- function(year, points){
   print(year)
   dmspols <- read_ntl(year)
+  
+  dmspols_vx <- velox(dmspols)
 
   if(grepl("grid", DATASET_TYPE)){
-    points$dmspols_zhang <- raster::extract(dmspols, points)
+    points$dmspols_zhang <- dmspols_vx$extract_points(sp=points) %>% as.numeric
+    
   } else{
-    points$dmspols_zhang <- velox(dmspols)$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
-    points$dmspols_zhang_2 <- velox(dmspols)$extract(sp=points, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
-    points$dmspols_zhang_6 <- velox(dmspols)$extract(sp=points, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang <- dmspols_vx$extract(sp=points, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_2 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_6 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
     
   }
   
@@ -53,5 +50,5 @@ extract_raster_to_points <- function(year, points){
 points_all <- lapply(1992:2012, extract_raster_to_points, points) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(points_all, file.path(finaldata_file_path, DATASET_TYPE, "individual_datasets", "points_dmspols_zhang2016.Rds"))
+saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "dmspols_zhang.Rds"))
 
