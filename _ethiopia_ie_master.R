@@ -13,7 +13,7 @@
 # --"dmspols_grid_nearroad": Near 10km of any road as of 2016
 # --"dmspols_grid_nearroad_randomsample": Random sample of above
 # --"woreda": Woreda polygons
-DATASET_TYPE <- "dmspols_grid_nearroad"
+DATASET_TYPE <- "woreda"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -53,7 +53,7 @@ DIST_THRESH <- 2
 CREATE_UNIT_LEVEL_DATASETS <- F
 
 EXTRACT_DATA <- T
-OVERWRITE_EXTRACTED_DATA <- T # Checks if data already extracted. If T, re-extracts
+OVERWRITE_EXTRACTED_DATA <- F # Checks if data already extracted. If T, re-extracts
 # data. If F, skips extracting data
 
 # Filepaths --------------------------------------------------------------------
@@ -124,7 +124,7 @@ if(CREATE_UNIT_LEVEL_DATASETS){
   
   for(script_i in scripts){
     print(paste(script_i, "----------------------------------------------------"))
-    source(file.path(code_file_path, "02_create_main_analysis_datasets", "02_extract_variables", script_i))
+    source(file.path(rsdp_impact_prep_data_code_file_path, "01_create_initial_unitlevel_dataset", script_i))
   } 
   
 }
@@ -152,7 +152,7 @@ if(EXTRACT_DATA){
   scripts <- c(scripts_all_units, scripts_unit_specific) %>% sort()
   
   ## Check which data already extracted
-  if(OVERWRITE_EXTRACTED_DATA){
+  if(OVERWRITE_EXTRACTED_DATA %in% F){
     ## List of all datasets to be created
     dataset_names <- scripts %>% 
       str_replace_all(".*/", "") %>% 

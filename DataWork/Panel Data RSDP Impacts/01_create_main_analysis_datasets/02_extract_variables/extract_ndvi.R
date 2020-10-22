@@ -5,7 +5,7 @@
 
 # NOTE: This script takes about an hour to run
 
-INCLUDE_NDVI_ONLY_IN_CROPLAND <- F
+INCLUDE_NDVI_ONLY_IN_CROPLAND <- T
 
 # Load Polygon Data ------------------------------------------------------------
 polygons <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons.Rds"))
@@ -48,15 +48,16 @@ extract_ndvi_to_polygons <- function(year, polygons){
   if(year <= 1998) ndvi <- raster(file.path(data_file_path, "NDVI", "RawData", "Landsat", paste0("eth_ls5_ndvi_annual_",year,".tif")))  
   if(year > 1998)  ndvi <- raster(file.path(data_file_path, "NDVI", "RawData", "Landsat", paste0("eth_ls7_ndvi_annual_",year,".tif")))  
   
-  #### NDVI in Cropland Areas
+  #### Extract NDVI
+  polygons$ndvi <- velox(ndvi)$extract(sp=polygons, fun=function(x){mean(x, na.rm=T)}) %>% as.vector()
+  
+  #### Extract NDVI in Cropland Areas
   if(INCLUDE_NDVI_ONLY_IN_CROPLAND){
     ndvi_resample <- resample(ndvi, cropland_constant)
     ndvi_cropland <- overlay(ndvi_resample, cropland_constant, fun=function(x,y){return(x*y)} )
     polygons$ndvi_cropland <- velox(ndvi_cropland)$extract(sp=polygons, fun=function(x){mean(x, na.rm=T)}) %>% as.vector()
   } 
 
-  polygons$ndvi <- velox(ndvi)$extract(sp=polygons, fun=function(x){mean(x, na.rm=T)}) %>% as.vector()
-  
   polygons$year <- year
   
   return(polygons@data)

@@ -7,14 +7,14 @@ RESOLUTION_KM <- 3
 WALKING_SPEED <- 5
 
 # Load Data --------------------------------------------------------------------
-woreda_wgs84 <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons.Rds"))
+woreda_wgs84 <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons_no_road_cut.Rds"))
 
 gpw <- raster(file.path(data_file_path, "Gridded Population of the World", "RawData", "gpw-v4-population-density_2000.tif"))
 gpw <- gpw %>% crop(woreda_wgs84)
 
-roads_sdf <- readRDS(file.path(data_file_path, "Hypothetical Road Networks", "least_cost_path_mst.Rds"))
-roads_sdf$id <- 1 # useful to have a variable the same for all obs when aggreagting roads later
-roads_sdf <- roads_sdf %>% spTransform(CRS(UTM_ETH))
+roads    <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
+roads$id <- 1 # useful to have a variable the same for all obs when aggreagting roads later
+roads    <- roads %>% spTransform(CRS(UTM_ETH))
 
 # Location with largest population with woreda ---------------------------------
 woreda_points <- lapply(1:nrow(woreda_wgs84), function(i){

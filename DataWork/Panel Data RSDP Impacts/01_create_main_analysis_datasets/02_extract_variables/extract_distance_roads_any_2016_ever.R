@@ -7,7 +7,11 @@
 # Load data and reporject to Ethiopia UTM. UTM better for distance calculations.
 
 #### Load points
-points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
+if(GRID_DATASET){
+  points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
+} else{
+  points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points_no_road_cut.Rds"))
+}
 points <- points %>% spTransform(CRS(UTM_ETH))
 
 #### Load roads

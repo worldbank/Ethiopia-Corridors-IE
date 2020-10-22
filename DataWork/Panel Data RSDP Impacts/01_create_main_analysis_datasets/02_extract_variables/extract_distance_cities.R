@@ -1,7 +1,12 @@
 # Extract Distance to Cities
 
 # Load Data --------------------------------------------------------------------
-points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
+if(GRID_DATASET){
+  points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
+} else{
+  points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points_no_road_cut.Rds"))
+}
+
 points <- points %>% spTransform(CRS(UTM_ETH))
 
 #### Cities

@@ -2,7 +2,11 @@
 
 # Load Data --------------------------------------------------------------------
 #### Load polygons
-polygons <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons.Rds"))
+if(GRID_DATASET){
+  polygons <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons.Rds"))
+} else{
+  polygons <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons_no_road_cut.Rds"))
+}
 polygons <- points %>% spTransform(CRS(UTM_ETH))
 
 #### Load roads
