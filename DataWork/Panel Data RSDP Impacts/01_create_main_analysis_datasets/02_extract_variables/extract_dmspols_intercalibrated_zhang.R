@@ -50,5 +50,5 @@ extract_raster_to_points <- function(year, points){
 points_all <- lapply(1992:2012, extract_raster_to_points, points) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "dmspols_zhang.Rds"))
+saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "dmspols_intercalibrated_zhang.Rds"))
 

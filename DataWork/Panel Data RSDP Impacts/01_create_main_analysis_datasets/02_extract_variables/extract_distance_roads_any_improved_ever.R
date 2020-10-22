@@ -26,5 +26,5 @@ roads_sdf$id <- 1
 points$distance_anyimproved_ever <- gDistance_chunks(points, roads_sdf, CHUNK_SIZE_DIST_ROADS)
 
 # Export -----------------------------------------------------------------------
-saveRDS(points@data, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_anyroad_improved_ever.Rds"))
+saveRDS(points@data, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_roads_any_improved_ever.Rds"))
 

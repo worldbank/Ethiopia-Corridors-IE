@@ -160,7 +160,7 @@ location_traveltimes <- merge(location_traveltimes, distance_df, by=c("orig_uid"
                                                                       "dest_uid"))
 
 # Export -----------------------------------------------------------------------
-saveRDS(location_traveltimes, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "travel_times_woredas.Rds"))
+saveRDS(location_traveltimes, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "ma1_travel_times_for_market_access.Rds"))
 
 
 

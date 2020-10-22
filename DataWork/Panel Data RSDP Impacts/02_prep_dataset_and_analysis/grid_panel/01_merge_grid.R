@@ -5,14 +5,15 @@
 # into this dataset.
 
 #### Load dataset to merge into
-points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
+points <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad_randomsample", "individual_datasets", "points.Rds"))
 
 #### Names of datasets to merge in
 # Separate by:
 #  -- time invarient (merge by cell_id)
 #  -- time varying (merge by cell_id and year)
 
-DATASETS_TIME_INVARIANT <- c("distance_anyroad_improved_ever.Rds",
+DATASETS_TIME_INVARIANT <- c("adm_units.Rds",
+                             "distance_anyroad_improved_ever.Rds",
                              "distance_anyroad2016.Rds",
                              "distance_cities.Rds",
                              "distance_rsdp_phases.Rds",
@@ -60,7 +61,7 @@ points_all$globcover_cropland_rainfed <- NULL
 points_all$globcover_cropland_irrigated <- NULL
 points_all$globcover_cropland_mosaic <- NULL
 
-saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "merged_datasets", "panel_data.Rds"))
+saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad_randomsample", "merged_datasets", "panel_data.Rds"))
 
 
 

@@ -4,6 +4,8 @@
 # In order to source a script as a local job, include this at top of script
 # source("~/Documents/Github/Ethiopia-Corridors-IE/Code/_ethiopia_ie_master.R")
 
+# Parameters -------------------------------------------------------------------
+
 # Filepaths --------------------------------------------------------------------
 if(Sys.info()[["user"]] == "WB554990") project_file_path <- "C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE - Merge Budget Data With Shapefile"
 if(Sys.info()[["user"]] == "WB521633") project_file_path <- "C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE"
@@ -20,6 +22,9 @@ panel_rsdp_imp_file_path <- file.path(project_file_path, "Data", "Panel Data RSD
 panel_rsdp_imp_data_file_path <- file.path(panel_rsdp_imp_file_path, "Data")
 #figures_file_path <- file.path(project_file_path,"Outputs", "Results", "Figures")
 #tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
+
+rsdp_impact_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts")
+rsdp_impact_prep_data_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts", "01_create_main_analysis_datasets")
 
 # Parameters -------------------------------------------------------------------
 
@@ -38,12 +43,9 @@ UTM_ETH <- '+init=epsg:20138'
 # NEW
 # --"dmspols_grid_nearroad"
 # --"dmspols_grid_nearroad_randomsample"
+# --"woreda"
 
-#DATASET_TYPE <- "woreda_panel_hdx_csa"
-#DATASET_TYPE <- "woreda_panel_hdx_csa_nearroad"
-#DATASET_TYPE <- "dmspols_grid_dataset_nearroad"
-DATASET_TYPE <- "dmspols_grid_nearroad_randomsample"
-DATASET_TYPE <- "woreda"
+DATASET_TYPE <- "dmspols_grid_nearroad"
 
 #### CHUNK SIZE
 # For some functions, we break up the dataset into chunks. These are vectorized
@@ -51,7 +53,7 @@ DATASET_TYPE <- "woreda"
 # all of Ethiopia) would take up too much memory. Consequently, we vectorize
 # into manageable chunks. Chunk size differs depending on grid level or woreda
 # level.
-if(DATASET_TYPE %in% c("woreda_panel_hdx_csa",
+if(DATASET_TYPE %in% c("woreda",
                        "woreda_panel_hdx_csa_nearroad")){
   CHUNK_SIZE_DIST_ROADS <- 3
 } else{
@@ -112,45 +114,75 @@ library(shp2graph)
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 source(file.path(code_file_path, "Functions", "commonly_used.R"))
 
-# Run Scripts ------------------------------------------------------------------
-##### Extract Data to Grids
-if(F){
-  grid_scripts <- c("02b_extract_dmspols.R", 
-                    "02b_extract_ndvi.R",
-                    "02b_extract_viirs.R",
-                    "02b_extract_precip.R",
-                    "02b_extract_temperature.R",
-                    "02b_extract_viirs.R",
-                    "02d_distance_cities.R",
-                    "02e_extract_globcover.R",
-                    "02f_extract_dmspols_intercalibrated_zhang2016_method.R")
-  for(script_i in grid_scripts){
+# RUN SCRIPTS ==================================================================
+CREATE_UNIT_LEVEL_DATASETS <- F
+EXTRACT_DATA <- T
+OVERWRITE_EXTRACTED_DATA <- T # Checks if data already extracted. If T, re-extracts
+                              # data. If F, skips extracting data
+#MERGE_CLEAN_DATA <- F
+
+# ** Create Unit Level Datasets ------------------------------------------------
+if(CREATE_UNIT_LEVEL_DATASETS){
+  
+  scripts <- c("create_dmspols_grid_nearroad.R",
+               "create_dmspols_grid_nearroad_randomsample.R",
+               "create_woreda.R")
+  
+  for(script_i in scripts){
     print(paste(script_i, "----------------------------------------------------"))
     source(file.path(code_file_path, "02_create_main_analysis_datasets", "02_extract_variables", script_i))
   } 
+  
 }
 
-if(F){
-  grid_scripts <- c("02c_extract_distance_improved_roads_by_speedlimit_after.R",
-                    "02c_extract_distance_improved_roads_by_speedlimit_before.R",
-                    "02c_extract_distance_roads_by_phase.R",
-                    "02c_extract_distance_roads_by_speedlimit.R",
-                    "02c_extract_distance_anyroad_ever.R",
-                    "02d_extract_distance_separate_road_shapefiles.R")
-  for(script_i in grid_scripts){
+# ** Extract Data to Grids -----------------------------------------------------
+if(EXTRACT_DATA){
+  
+  ## Scripts for all unit types
+  scripts_all_units <- file.path(rsdp_impact_prep_data_code_file_path, 
+                                 "02_extract_variables") %>%
+    list.files(pattern = ".R", full.names = T)
+  
+  ## Scripts specific to units
+  if(GRID_DATASET){
+    scripts_unit_specific <- file.path(rsdp_impact_prep_data_code_file_path, 
+                                   "02_extract_variables_grid_specific") %>%
+      list.files(pattern = ".R", full.names = T)
+  } else{
+    scripts_unit_specific <- file.path(rsdp_impact_prep_data_code_file_path, 
+                              "02_extract_variables_woreda_specific") %>%
+      list.files(pattern = ".R", full.names = T)
+  }
+  
+  ## Merge scripts
+  scripts <- c(scripts_all_units, scripts_unit_specific) %>% sort()
+  
+  ## Check which data already extracted
+  if(OVERWRITE_EXTRACTED_DATA){
+    ## List of all datasets to be created
+    dataset_names <- scripts %>% 
+      str_replace_all(".*/", "") %>% 
+      str_replace_all("extract_", "") %>%
+      paste0("ds") # from .R to .Rds
+    
+    ## List of datasets already extracted
+    extracted_datasets <- file.path(panel_rsdp_imp_data_file_path,
+                                    DATASET_TYPE,
+                                    "individual_datasets") %>%
+      list.files()
+    
+    ## Updated list of scripts to extract
+    scripts <- scripts[!(dataset_names %in% extracted_datasets)]
+  }
+  
+  ## Run scripts
+  for(script_i in scripts){
     print(paste(script_i, "----------------------------------------------------"))
-    source(file.path(code_file_path, "02_create_main_analysis_datasets", "03_extract distance_road", script_i))
+    source(script_i)
   } 
+  
 }
 
-if(F){
-  grid_scripts <- c("03a_woreda_traveltime_dataset.R", 
-                    "03b_compute_market_access.R")
-  for(script_i in grid_scripts){
-    print(paste(script_i, "----------------------------------------------------"))
-    source(file.path(code_file_path, "02_create_main_analysis_datasets", "04_compute_market_access", script_i))
-  } 
-}
 
 
 

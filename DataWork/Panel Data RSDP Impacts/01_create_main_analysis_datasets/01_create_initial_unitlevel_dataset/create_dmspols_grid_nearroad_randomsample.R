@@ -8,7 +8,7 @@ dmspols_poly <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_n
 
 # Random Sample ----------------------------------------------------------------
 keep_cells <- sample(x = c(TRUE, FALSE), 
-                     prob = c(.02, .98),
+                     prob = c(.01, .99),
                      size = nrow(dmspols_points), 
                      replace = T)
 

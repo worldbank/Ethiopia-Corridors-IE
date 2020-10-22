@@ -34,5 +34,5 @@ points$distance_rsdp_phase3 <- gDistance_chunks(points, roads_sdf_p3, CHUNK_SIZE
 points$distance_rsdp_phase4 <- gDistance_chunks(points, roads_sdf_p4, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
 
 # Export -----------------------------------------------------------------------
-saveRDS(points@data, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_rsdp_phases.Rds"))
+saveRDS(points@data, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_roads_by_rsdp_phase.Rds"))
 

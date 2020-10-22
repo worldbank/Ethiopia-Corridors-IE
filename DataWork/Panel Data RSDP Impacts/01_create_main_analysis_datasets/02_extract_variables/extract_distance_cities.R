@@ -35,11 +35,11 @@ city_data_all <- city_data %>% raster::aggregate(by="id")
 # Calculate Distance -----------------------------------------------------------
 points$distance_city_addisababa <- gDistance_chunks(points, city_data_addisababa, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
 
-points$distance_city_popsize_3groups_g1 <- gDistance_chunks(points, city_data_popsize_3groups_g1, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
-points$distance_city_popsize_3groups_g2 <- gDistance_chunks(points, city_data_popsize_3groups_g2, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
-points$distance_city_popsize_3groups_g3 <- gDistance_chunks(points, city_data_popsize_3groups_g3, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
-
-points$distance_city_all <- gDistance_chunks(points, city_data_all, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
+# points$distance_city_popsize_3groups_g1 <- gDistance_chunks(points, city_data_popsize_3groups_g1, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
+# points$distance_city_popsize_3groups_g2 <- gDistance_chunks(points, city_data_popsize_3groups_g2, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
+# points$distance_city_popsize_3groups_g3 <- gDistance_chunks(points, city_data_popsize_3groups_g3, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
+# 
+# points$distance_city_all <- gDistance_chunks(points, city_data_all, CHUNK_SIZE_DIST_ROADS, MCCORS_DIST_ROADS)
 
 # Export -----------------------------------------------------------------------
 saveRDS(points@data, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_cities.Rds"))

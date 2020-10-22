@@ -67,7 +67,7 @@ MA_exclude_100km_df <- location_traveltimes_far[, list(
 MA_all_df <- merge(MA_df, MA_exclude_100km_df, by=c("cell_id" , "year"), all=T)
 
 # Export -----------------------------------------------------------------------
-saveRDS(MA_all_df, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "market_access.Rds"))
+saveRDS(MA_all_df, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "ma2_market_access.Rds"))
 
 
 

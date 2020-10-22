@@ -65,7 +65,7 @@ polygon_roadlength <- lapply(1996:2016, function(year){
 }) %>% bind_rows()
 
 # Export -----------------------------------------------------------------------
-saveRDS(polygon_roadlength, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "road_length_km.Rds"))
+saveRDS(polygon_roadlength, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "road_length.Rds"))
 
 
 

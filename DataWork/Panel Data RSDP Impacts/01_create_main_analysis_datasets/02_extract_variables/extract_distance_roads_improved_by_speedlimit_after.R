@@ -56,5 +56,5 @@ determine_distance_to_points <- function(year, points, roads){
 points_all <- lapply(1997:2016, determine_distance_to_points, points, roads_sdf) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_improved_roads_byspeed_after.Rds"))
+saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "distance_roads_improved_by_speedlimit_after.Rds"))
 
