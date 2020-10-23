@@ -7,7 +7,7 @@ if(GRID_DATASET){
 } else{
   polygons <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons_no_road_cut.Rds"))
 }
-polygons <- points %>% spTransform(CRS(UTM_ETH))
+polygons <- polygons %>% spTransform(CRS(UTM_ETH))
 
 #### Load roads
 roads    <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
