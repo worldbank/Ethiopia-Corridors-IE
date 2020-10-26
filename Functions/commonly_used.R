@@ -1,5 +1,28 @@
 # Commonly used functions across project
 
+sum_na <- function(x){
+  # With sum(x, na.rm=T), if all x values are NA, will return. Here, NA is returned
+  
+  if(length(x) == sum(is.na(x))){
+    out <- NA
+  } else{
+    out <- sum(x, na.rm=T)
+  }
+  
+  return(out)
+}
+
+min_na <- function(x){
+
+  if(length(x) == sum(is.na(x))){
+    out <- NA
+  } else{
+    out <- min(x, na.rm=T)
+  }
+  
+  return(out)
+}
+
 lm_confint_tidy <- function(lm, years_since_variable){
   lm_confint <- confint(lm) %>% 
     as.data.frame

@@ -34,7 +34,6 @@ label var near_mst "Near Span Tree"
 
 * OLS --------------------------------------------------------------------------
 reg dmspols_2013diff         near_improved_bf2013_ever   temp_avg precipitation, vce(cluster woreda_hdx_w_uid) 
-
 	outreg2 using "$tables/longdiff_ols.tex",  addtext(Woreda FE, N) tex(frag) label replace
 	
 reg dmspols_ihs_2013diff        near_improved_bf2013_ever    temp_avg precipitation  , vce(cluster woreda_hdx_w_uid)

@@ -6,17 +6,12 @@ This folder is for data cleaning and analysis for examining the impact of the RS
 
 * __01_create_main_analysis_datasets:__ Prepares datasets for analysis. First, a blank dataset is created that other variables are merged into. There is code for each dataset or variable. For example, code for calculating distance to a road will include include `uid` (unique id), `year` (if panel) and any distance to road variables. Datasets across multiple variables are merged together in a later step. This process is done so that if another dataset needs to be added, only that code and the code for merging needs to be run.
 
-	* __01_create_initial_unitlevel_dataset:__ Creates blank datasets that variables from other datasets are merged into.
-	* __02_extract_variables:__ Extracts variables from other datasets.
-	* __03_extract_distance_road:__ Extracts distance to road variables
-	* __04_compute_market_access:__ Computes market access 
-	* __05_merge_and_clean_data:__ Merges datasets together and cleans variables
+	* __01_create_initial_unitlevel_dataset:__ Creates blank datasets that variables from other datasets are merged into.	* __02_extract_variables:__ Extracts variables from other datasets.	* __03_extract_distance_road:__ Extracts distance to road variables	* __04_compute_market_access:__ Computes market access 	* __05_merge_and_clean_data:__ Merges datasets together and cleans variables
 
 * __02_performs_analysis:__ Performs analysis
 
 	* __phase_summary_stats:__ Summary statistics
-	* __diff_in_diff:__ Difference-in-difference/event study analysis.
-	* __iv_longdiff:__ Instrumental variable approach using a long difference
+	* __diff_in_diff:__ Difference-in-difference/event study analysis.	* __iv_longdiff:__ Instrumental variable approach using a long difference
 	* __analysis_ward_specific:__ Analysis specific to ward-level (NOTE: more exploratory analysis here and files need to be organized/cleaned)
 	
 ## Dropbox Organization

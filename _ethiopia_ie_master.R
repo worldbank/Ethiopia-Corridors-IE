@@ -13,7 +13,7 @@
 # --"dmspols_grid_nearroad": Near 10km of any road as of 2016
 # --"dmspols_grid_nearroad_randomsample": Random sample of above
 # --"woreda": Woreda polygons
-DATASET_TYPE <- "woreda"
+DATASET_TYPE <- "dmspols_grid_nearroad"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -72,11 +72,12 @@ panel_rsdp_imp_data_file_path <- file.path(panel_rsdp_imp_file_path, "Data")
 #tables_file_path <- file.path(project_file_path,"Outputs", "Results", "Tables")
 
 rsdp_impact_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts")
-rsdp_impact_prep_data_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts", "01_create_main_analysis_datasets")
+rsdp_impact_prep_data_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts", "01_extract_data_to_datasets")
 
 # Packages ---------------------------------------------------------------------
 library(AER)
 library(estimatr)
+library(labelled)
 library(clusterSEs)
 library(rgdal)
 library(raster)

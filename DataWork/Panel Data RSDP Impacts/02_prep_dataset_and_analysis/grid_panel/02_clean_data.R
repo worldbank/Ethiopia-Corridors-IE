@@ -1,70 +1,27 @@
 # Create Varibles for Analysis
 
-# DESCRIPTION: Creates a clean dataset to be used for analysis. Takes the dataset
-# with raw variables merged together. This code uses the raw variables to create
-# the variables needed for analysis, and pairs down the variables in the
-# final dataset to only those needed. (Limited the final variables resulting
-# from the dataset is important to reduce dataset size, particularly among
-# the grid level variables).
-
-# NOTES:
-# (1) First run on woreda level before grid level. Some variables from the woreda
-#     level dataset are merged into the grid level dataset. For example, woreda
-#     level nighttime lights and market access
-# (2) All distance variables are in meteres.
-
 # TODO
 # (1) If still memory issues, can loop over cell_id (split into 4?), then append
 #     in another script?
 
-# Parameters -------------------------------------------------------------------
-# Distance threshold to be used to be counted as treated. Differs for grid level
-# versus the woreda level.
-
-# Determines whether a grid dataset or not (eg, vs woreda level). Some different
-# cleaning steps depending on whether grid or now.
-GRID_DATASET <- grepl("grid", DATASET_TYPE)
-
-if(GRID_DATASET){
-  NEAR_CUTOFF <- 5 * 1000
-  ALL_YEARS_IMPROVED_VAR <- T
-} else{
-  NEAR_CUTOFF <- 0
-  ALL_YEARS_IMPROVED_VAR <- T # creates variable showing all years road was built, 
-  # in addition to a variable indicating minimum
-  # year.
-}
+#### Parameters
+NEAR_CUTOFF <- 5 * 1000
+ALL_YEARS_IMPROVED_VAR <- T
 
 # Load Data --------------------------------------------------------------------
-data <- readRDS(file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data.Rds"))
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "panel_data.Rds"))
+
 data <- data[data$distance_anyimproved_ever <= NEAR_CUTOFF,]
-
-data$distance_rsdp_phase1 <- NULL
-data$distance_rsdp_phase2 <- NULL
-data$distance_rsdp_phase3 <- NULL
-data$distance_rsdp_phase4 <- NULL
-
-if(grepl("woreda_panel_hdx_csa",DATASET_TYPE)) data$cell_id <- data$uid
 
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 # Distance to aggregate road categories ----------------------------------------
 # We calculate distance to roads by speed limit. Here we calculate distance
 # to any road, road 50 km/hr and above and roads less than 50 km/hr
 
-# If all NA, then return NA; if one isn't NA, return a value
-min_NAifAllNA <- function(x){
-  
-  if(sum(!is.na(x)) > 0){
-    return(min(x, na.rm=T))
-  } else{
-    return(NA)
-  }
-  
-}
-
-data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_NAifAllNA)
-data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improvedroad_speedafter_",c(50,70,120))], 1, FUN = min_NAifAllNA)
-data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_NAifAllNA)
+## Distance improved road
+data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_na)
+data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improvedroad_speedafter_",c(50,70,120))], 1, FUN = min_na)
+data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_na)
 
 data$distance_improvedroad_speedafter_20 <- NULL
 data$distance_improvedroad_speedafter_25 <- NULL
@@ -75,8 +32,23 @@ data$distance_improvedroad_speedafter_50 <- NULL
 data$distance_improvedroad_speedafter_70 <- NULL
 data$distance_improvedroad_speedafter_120 <- NULL
 
-gc(); Sys.sleep(.5); gc(); Sys.sleep(.5) 
+## Distance road
+data$distance_road <- apply(data[,paste0("distance_road_speed_",c(10,15,20,25,30,35,45,50,70,120))], 1, FUN = min_na)
+data$distance_road_50above <- apply(data[,paste0("distance_road_speed_",c(50,70,120))], 1, FUN = min_na)
+data$distance_road_below50 <- apply(data[,paste0("distance_road_speed_",c(10,15,20,25,30,35,45))], 1, FUN = min_na)
 
+data$distance_road_speed_10 <- NULL
+data$distance_road_speed_15 <- NULL
+data$distance_road_speed_20 <- NULL
+data$distance_road_speed_25 <- NULL
+data$distance_road_speed_30 <- NULL
+data$distance_road_speed_35 <- NULL
+data$distance_road_speed_45 <- NULL
+data$distance_road_speed_50 <- NULL
+data$distance_road_speed_70 <- NULL
+data$distance_road_speed_120 <- NULL
+
+gc()
 # Years Since / Post Improved Variables ----------------------------------------
 generate_road_improved_variables <- function(road_var, 
                                              data,
@@ -387,15 +359,6 @@ if(GRID_DATASET){
 gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
 
 # Export -----------------------------------------------------------------------
-saveRDS(data, file.path(finaldata_file_path, DATASET_TYPE, "merged_datasets", "grid_data_clean.Rds"))
-
-
-
-
-
-data$near_improvedroad_all_years %>% table() %>% View()
-
-lm(dmspols ~ years_since_improvedroad, data=data) %>%
-  summary()
+saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "grid_data_clean.Rds"))
 
 
