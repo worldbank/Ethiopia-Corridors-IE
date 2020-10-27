@@ -47,12 +47,14 @@ for(speed_i in speeds_vec){
 # Select Relevant Variables ----------------------------------------------------
 id_vars <- c("cell_id", "year")
 road_length_vars <- names(data) %>% str_subset("road_length_") %>% str_subset("above")
+road_distance_vars <- c("distance_mst")
 dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% str_subset("above")
 satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
 MA_vars <- names(data) %>% str_subset("MA_")
 
 vars_all <- c(id_vars,
               road_length_vars,
+              road_distance_vars,
               dist_road_speed_vars,
               satellite_vars,
               MA_vars)
@@ -92,6 +94,7 @@ var_label(data$MA_pop2000_theta1_exclude100km) <- "Market Access, excluding wore
 var_label(data$MA_pop2000_theta2_exclude100km) <- "Market Access, excluding woredas within 100km"
 var_label(data$MA_pop2000_theta5_exclude100km) <- "Market Access, excluding woredas within 100km"
 var_label(data$MA_pop2000_theta8_exclude100km) <- "Market Access, excluding woredas within 100km"
+var_label(data$distance_mst) <- "Distance to hypothetical network: min spanning tree (meters)"
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))

@@ -11,10 +11,10 @@ points_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nea
 #  -- time invarient (merge by cell_id)
 #  -- time varying (merge by cell_id and year)
 
-DATASETS_TIME_INVARIANT <- c("distance_roads_by_rsdp_phase.Rds",
+DATASETS_TIME_INVARIANT <- c(#"distance_roads_by_rsdp_phase.Rds",
                              "distance_roads_any_improved_ever.Rds",
                              "distance_roads_any_2016_ever.Rds",
-                             "distance_hypothetical_road_least_cost_mst.Rds",
+                             #"distance_hypothetical_road_least_cost_mst.Rds",
                              "distance_cities.Rds",
                              "adm_units.Rds")
 
@@ -54,13 +54,10 @@ points_all$distance_rsdp_phase3 <- NULL
 points_all$distance_rsdp_phase4 <- NULL
 
 # Subset -----------------------------------------------------------------------
-points_all <- points_all[points_all$distance_anyroad2016 <= 5000,]
+#points_all <- points_all[points_all$distance_anyroad2016 <= 5000,]
+points_all <- points_all[points_all$distance_anyimproved_ever <= 5000,]
 
 # Export -----------------------------------------------------------------------
 saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "panel_data.Rds"))
-
-
-
-
 
 

@@ -10,10 +10,11 @@
 # Defines dataset to run analysis on. Either at woreda level, grid level, or
 # grid subsample:
 # OPTIONS:
+# --"dmspols_grid_ethiopia": Grid in Ethiopia
 # --"dmspols_grid_nearroad": Near 10km of any road as of 2016
 # --"dmspols_grid_nearroad_randomsample": Random sample of above
 # --"woreda": Woreda polygons
-DATASET_TYPE <- "dmspols_grid_nearroad"
+DATASET_TYPE <- "dmspols_grid_ethiopia"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -52,7 +53,7 @@ DIST_THRESH <- 2
 #### RUN SCRIPT PARAMETERS
 CREATE_UNIT_LEVEL_DATASETS <- F
 
-EXTRACT_DATA <- T
+EXTRACT_DATA <- F
 OVERWRITE_EXTRACTED_DATA <- F # Checks if data already extracted. If T, re-extracts
 # data. If F, skips extracting data
 
@@ -168,6 +169,15 @@ if(EXTRACT_DATA){
     
     ## Updated list of scripts to extract
     scripts <- scripts[!(dataset_names %in% extracted_datasets)]
+  }
+  
+  ## Remove select scripts for Ethiopia grid
+  rm_eth_grid <- c("extract_distance_roads_improved_by_speedlimit_after.R",
+                   "extract_distance_roads_improved_by_speedlimit_before.R",
+                   "extract_distance_roads_by_speedlimit.R")
+  if(DATASET_TYPE %in% "dmspols_grid_ethiopia"){
+    rm_eth_grid_rx <- rm_eth_grid %>% paste(collapse = "|")
+    scripts <- scripts[!grepl(rm_eth_grid_rx, scripts)]
   }
   
   ## Run scripts
