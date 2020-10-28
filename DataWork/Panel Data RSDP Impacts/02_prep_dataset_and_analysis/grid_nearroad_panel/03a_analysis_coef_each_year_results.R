@@ -3,7 +3,7 @@
 # Exports dataframe of results, to be used to make figures
 
 #### Parameters
-OVERWRITE_FILES <- F
+OVERWRITE_FILES <- T
 
 #### Default
 dep_var <- "globcover_urban"
@@ -18,9 +18,8 @@ data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad"
 ## Nighttime lights groups
 ntl_non0_med <- data$dmspols_1996_woreda[data$dmspols_1996_woreda > 0] %>% median(na.rm=T)
 data$ntl_group <- NA
-data$ntl_group[data$dmspols_1996_woreda %in% 0] <- "1"
-data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med & data$dmspols_1996_woreda > 0] <- "2"
-data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "3"
+data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med] <- "1"
+data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "2"
 
 ## Check Median NTL Value
 data$dmspols_zhang[data$dmspols_zhang > 0 & data$year %in% 1996] %>% median(na.rm=T)
@@ -34,11 +33,11 @@ for(dep_var in c("ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland"
     #for(controls in c("", "+temp_avg+precipitation")){
     for(controls in c("")){
       
+      #for(addis_distance in c("All", "Far")){
       for(addis_distance in c("All", "Far")){
-      #for(addis_distance in c( "Far")){
         
-        for(ntl_group in c("All", "1", "2", "3")){
-        #for(ntl_group in c("All")){
+        #for(ntl_group in c("All", "1", "2")){
+        for(ntl_group in c("All", "1", "2")){
           
           ## Check if exists          
           filename <- paste0(dep_var, "-", indep_var, "-", controls, "-", addis_distance, "-", ntl_group, ".Rds")

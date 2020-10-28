@@ -42,17 +42,17 @@ data <- data %>%
   ))
 
 # Figures ----------------------------------------------------------------------
-title <- "Impact of Roads"
-
-for(ntl_group_i in c("All", "1", "2", "3")){
-  for(addis_distance_i in c("All", "Far")){
+for(ntl_group_i in c("All", "1", "2")){
+  for(addis_distance_i in c("Far")){
+    
+    title <- "Impact of Roads"
+    
     print(paste(ntl_group_i, addis_distance_i))
     
     if(addis_distance_i %in% "Far") title <- paste0(title, ", Areas >100km Addis Ababa")
-    if(ntl_group_i %in% "1") title <- paste0(title, ", Baseline NTL = 0")
-    if(ntl_group_i %in% "2") title <- paste0(title, ", Baseline NTL Below Median and Above 0")
-    if(ntl_group_i %in% "3") title <- paste0(title, ", Baseline NTL Above Median")
-    
+    if(ntl_group_i %in% "1") title <- paste0(title, ", Baseline NTL Below Median")
+    if(ntl_group_i %in% "2") title <- paste0(title, ", Baseline NTL Above Median")
+
     data %>%
       filter(addis_distance %in% addis_distance_i,
              #dep_var %in% "globcover_urban",
@@ -72,13 +72,14 @@ for(ntl_group_i in c("All", "1", "2", "3")){
       scale_color_manual(values = c("dodgerblue1", "darkorange", "black"),
                          guide = guide_legend(reverse = TRUE)) +
       theme_minimal() +
+      theme(plot.title = element_text(hjust = 0.5, face = "bold")) +
       facet_wrap(~dep_var,
                  scales = "free_y",
                  nrow = 2) +
       ggsave(filename = file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",
                                   "outputs", "figures", 
                                   paste0("gridpanel_coefeachyear_addis",addis_distance_i,"_ntl",ntl_group_i,".png")),
-             height = 5, width = 12)
+             height = 5, width = 14)
     
   }
 }

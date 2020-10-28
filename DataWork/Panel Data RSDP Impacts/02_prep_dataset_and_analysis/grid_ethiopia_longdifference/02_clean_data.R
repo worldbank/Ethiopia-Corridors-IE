@@ -16,7 +16,16 @@ base_end_df <- data.frame(baseline = c(1996, 1996),
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
                           "merged_datasets", "panel_data.Rds"))
 
-# Clean Data -------------------------------------------------------------------
+data <- data[!is.na(data$dmspols),] # check why some NA
+
+# Create Varibles --------------------------------------------------------------
+calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
+
+data <- data %>%
+  mutate(dmspols_ihs = calc_ihs(dmspols),
+         dmspols_zhang_ihs = calc_ihs(dmspols_zhang))
+
+# First Difference -------------------------------------------------------------
 for(i in 1:nrow(base_end_df)){
   print(i)
   
@@ -32,7 +41,7 @@ for(i in 1:nrow(base_end_df)){
     filter(year %in% c(base_year, end_year)) %>%
     
     # Assume NA is 0 (for first difference... eg, road length)
-    mutate_if(is.numeric, ~replace_na(0)) %>%
+    #mutate_if(is.numeric, ~replace_na(0)) %>%
     
     # First difference
     group_by(cell_id) %>%
