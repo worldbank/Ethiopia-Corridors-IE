@@ -4,33 +4,25 @@ This folder is for data cleaning and analysis for examining the impact of the RS
 
 ## Github Organization
 
-* __01_create_main_analysis_datasets:__ Prepares datasets for analysis. First, a blank dataset is created that other variables are merged into. There is code for each dataset or variable. For example, code for calculating distance to a road will include include `uid` (unique id), `year` (if panel) and any distance to road variables. Datasets across multiple variables are merged together in a later step. This process is done so that if another dataset needs to be added, only that code and the code for merging needs to be run.
+* __01_extract_data_to_datasets:__ Creates blank datasets at grid and woreda level and extracts variables to these datasets, saving each variable type as a separate dataset
 
 	* __01_create_initial_unitlevel_dataset:__ Creates blank datasets that variables from other datasets are merged into.
-	* __02_extract_variables:__ Extracts variables from other datasets.
-	* __03_extract_distance_road:__ Extracts distance to road variables
-	* __04_compute_market_access:__ Computes market access 
-	* __05_merge_and_clean_data:__ Merges datasets together and cleans variables
+	* __02_extract_variables:__ Extracts variables to dataset. These variables relevant for both grid and woredas
+	* __02_extract_variables_grid_specific:__ Extracts variables to dataset that are only relevant for grid level datasets
+	* __02_extract_variables_woreda_specific:__ Extracts variables to dataset that are only relevant for woreda level datasets
 
-* __02_performs_analysis:__ Performs analysis
+* __02_prep_dataset_and_analysis:__ For each analysis type, merges datasets from above and preps a dataset for analysis, then runs analysis
 
-	* __phase_summary_stats:__ Summary statistics
-	* __diff_in_diff:__ Difference-in-difference/event study analysis.
-	* __iv_longdiff:__ Instrumental variable approach using a long difference
-	* __analysis_ward_specific:__ Analysis specific to ward-level (NOTE: more exploratory analysis here and files need to be organized/cleaned)
-	
+	* __grid_ethiopia_longdifference:__ 1x1km grid level, using all grids in Ethiopia, using long difference 	* __grid_nearroad_longdifference:__ 1x1km grid level, using grids near a road, using long difference 	* __grid_nearroad_panel:__ 1x1km grid level, using grids near a road, using panel 	* __woreda_longdifference:__ Woreda level long difference 	* __woreda_panel:__ Woreda level panel 
+
 ## Dropbox Organization
 
-The `[Dropbox]/Data/Panel Data RSDP Impacts` folder has the following high level folders: `Data` (for datasets) and `Outputs` (for figures, tables and writeup of results).
-
-#### Data
-
-The data folder is organized by the dataset. There are sometimes multiple datasets with the same unit of analysis. For example, `dmspols_grid_dataset` contains a dataset at the 1x1km level across all of Ethiopia, while `dmspols_grid_dataset_nearroad` also contains a 1x1km level dataset, but where we only include pixels within a certain distance to a road. Each of these folders has the following sub-folders:
+The `[Dropbox]/Data/Panel Data RSDP Impacts/Data` folder has folders for each main unit of analysis and subset. It contains a folder for woredas, grid near roads and grid for all Ethiopia. Data and outputs for each dataset type are contained in these folder. Each of these folders contains the following subfolders:
 
 * __individual_datasets:__ For variable specific datasets (e.g., dataset with distance to road, dataset with nighttime lights, dataset with globcover variables, etc).
-* __merged_datasets:__ For datasets that have merged the above datasets together and for additional processed/cleaned datasets. There are also separate datasets depending on the time period considered. For example, if we only want to consider phase 2 of RSDP, we only incorporate roads improved during that time period. Restricting analysis to phase 2 will impact variables for the long difference (e.g., start and end years) and road improvement variables (e.g., when the variable turns from 0---not near improved road---to 1---near improved road, as we only consider roads in the phase 2 time period). We produce datasets for the entire time period (`_clean_all.Rds`), for each phase (`_clean_phase1.Rds`), for time period with DMSPOLS data, 1992 - 2013 (`_clean_dmspols.Rds`) and for the time period with VIIRS data, 2012 - present (`_clean_viirs.Rds`).
-* __results:__ In some cases, code stores model coefficients and saves them to later generate figures (we store when estimating the models takes a long time, and is useful to have separate code for estimating models and producing figures). These datasets are stored in this folder. 
-
+* __merged_datasets:__ For datasets that have merged the above datasets together and for additional processed/cleaned datasets. These are cleaned datasets used for analysis 
+* __results_datasets:__ In some cases, results are saved into a dataset, where the dataset is later loaded to then produce figures and tables. These "results datasets" go in this folder 
+* __outputs:__ Contains a subfolder for figures, tables and a .tex file where figures and tables are compiled into a write-up.
 
 
 
