@@ -2,13 +2,14 @@
 
 #### Parameters
 # Vector of all baseline and endline years that would later use
-YEARS_USE <- c(1996, 2012, 2106)
+YEARS_USE <- c(1996, 2012, 2016)
 
 # Load Data / Create Dataset Lists -----------------------------------------------
 
 ## Load dataset to merge into
+# Use panel data with all years
 points_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", 
-                                "individual_datasets", "dmspols.Rds")) %>% 
+                                "individual_datasets", "globcover.Rds")) %>% 
   data.table
 
 points_all <- points_all[points_all$year %in% YEARS_USE,]
@@ -29,7 +30,7 @@ DATASETS_TIME_VARYING <- c("viirs.Rds",
                            "temperature.Rds",
                            "precipitation.Rds",
                            "ndvi.Rds",
-                           "globcover.Rds",
+                           "dmspols.Rds",
                            "dmspols_intercalibrated_zhang.Rds")
 
 # Merge ------------------------------------------------------------------------

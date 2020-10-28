@@ -16,7 +16,7 @@ base_end_df <- data.frame(baseline = c(1996, 1996),
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
                           "merged_datasets", "panel_data.Rds"))
 
-data <- data[!is.na(data$dmspols),] # check why some NA
+#data <- data[data$cell_id %in% unique(data$cell_id)[1:5000],] ## for testing
 
 # Create Varibles --------------------------------------------------------------
 calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
