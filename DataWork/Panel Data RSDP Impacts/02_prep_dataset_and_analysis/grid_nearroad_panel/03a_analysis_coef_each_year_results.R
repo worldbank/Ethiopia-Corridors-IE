@@ -6,7 +6,7 @@
 OVERWRITE_FILES <- F
 
 #### Default
-dep_vars <- "dmspols_zhang"
+dep_var <- "globcover_urban"
 indep_var <- "years_since_improvedroad"
 controls <- ""
 addis_distance <- "All"
@@ -24,7 +24,7 @@ data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "3"
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("globcover_urban", "globcover_cropland", "dmspols_ihs", "dmspols", "dmspols_zhang", "dmspols_zhang_ihs", "dmspols_zhang_2", "dmspols_zhang_6")){
+for(dep_var in c("ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
     #for(controls in c("", "+temp_avg+precipitation")){
@@ -33,8 +33,8 @@ for(dep_var in c("globcover_urban", "globcover_cropland", "dmspols_ihs", "dmspol
       #for(addis_distance in c("All", "Far")){
       for(addis_distance in c("Far")){
         
-        #for(ntl_group in c("All", "1", "2", "3")){
-        for(ntl_group in c("All")){
+        for(ntl_group in c("All", "1", "2", "3")){
+        #for(ntl_group in c("All")){
           
           ## Check if exists          
           filename <- paste0(dep_var, "-", indep_var, "-", controls, "-", addis_distance, "-", ntl_group, ".Rds")
@@ -58,7 +58,7 @@ for(dep_var in c("globcover_urban", "globcover_cropland", "dmspols_ihs", "dmspol
             ### Run model
             results_df_temp <- tryCatch({     
               
-              paste(dep_vars, "~", indep_var, controls, "| year + cell_id | 0 | woreda_id") %>%
+              paste(dep_var, "~", indep_var, controls, "| year + cell_id | 0 | woreda_id") %>%
                 as.formula() %>%
                 felm(data = data_temp) %>%
                 lm_confint_tidy(indep_var)%>%
