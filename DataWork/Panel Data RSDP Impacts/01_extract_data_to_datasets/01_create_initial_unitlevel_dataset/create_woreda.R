@@ -5,7 +5,7 @@
 
 # Load Data --------------------------------------------------------------------
 #### Woredas
-woreda <- readOGR(dsn = file.path(data_file_path, "Woreda Population", "RawData"), layer = "Ethioworeda")
+woreda <- readRDS(file.path(project_file_path, "Data", "Woreda Population", "FinalData", "woreda.Rds"))
 woreda <- spTransform(woreda, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 woreda$cell_id <- 1:nrow(woreda)
 

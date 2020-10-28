@@ -6,21 +6,23 @@
 # 3. Add grouped, lagged treatment (dummy for 2-5 & 6-10 years before treatment)
 # 4. Dependent variable transformations
 # 5. Other variable transformations
-# 6. Remove variables don't need
+# 6. Woreda level stats (within woreda + near road; not getting full woreda value)
+# 7. Remove variables don't need
 
 # The code is memory intensive. To prevent from crashing, break the datasets into
 # different chunks, implementing the code on each chunk, the append together.
+# Chunk done by woreda and cell, so that an entire woreda must be contained
+# fully within a chunk
 
 #### Parameters
 NEAR_CUTOFF <- 5 * 1000     # meters distance for "close to road"
 ALL_YEARS_IMPROVED_VAR <- F # add variables indicate 2nd and 3rd year of treatment
-CHUNK_SIZE <- 100000        # number of cells in each chunk
+CHUNK_SIZE <- 200           # number of woredas in each chunk
 
 # Load Data --------------------------------------------------------------------
 data_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "panel_data.Rds"))
 
 # Set Up Loop Over Chunks ------------------------------------------------------
-# Set up for implementing the data in chuncks
 
 ## Delete previous temp files
 file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "temp_datasets") %>%
@@ -28,21 +30,23 @@ file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datase
   lapply(function(file) file.remove(file))
 
 ## Determine chunks
-cell_ids <- unique(data_all$cell_id)
+cell_id_df <- data_all %>%
+  distinct(cell_id, woreda_id)
 
-start_ids <- seq(from = 1, to = length(cell_ids), by=CHUNK_SIZE)
+woreda_ids <- unique(cell_id_df$woreda_id)
+
+start_ids <- seq(from = 1, to = length(woreda_ids), by=CHUNK_SIZE)
 
 for(start_i in start_ids){
-  print(paste(start_i, "/", length(start_ids), "-----------------------------"))
+  print(paste(start_i, "-", length(start_ids), "-----------------------------"))
   
   ## Subset Data
-  end_i <- min(start_i + CHUNK_SIZE - 1, length(cell_ids))
+  end_i <- min(start_i + CHUNK_SIZE - 1, length(woreda_ids))
+  woreda_ids_i <- woreda_ids[start_i:end_i]
   
-  cell_ids_chunk_i <- cell_ids[start_i:end_i]
+  data <- data_all[data_all$woreda_id %in% woreda_ids_i,]
   
-  data <- data_all[data_all$cell_id %in% cell_ids_chunk_i,]
-  
-  # Distance to aggregate road categories ----------------------------------------
+  # Distance to aggregate road categories --------------------------------------
   # We calculate distance to roads by speed limit. Here we calculate distance
   # to any road, road 50 km/hr and above and roads less than 50 km/hr
   
@@ -76,7 +80,7 @@ for(start_i in start_ids){
   data$distance_road_speed_70 <- NULL
   data$distance_road_speed_120 <- NULL
   
-  # Years Since / Post Improved Variables ----------------------------------------
+  # Years Since / Post Improved Variables --------------------------------------
   generate_road_improved_variables <- function(road_var, 
                                                data,
                                                all_years_improved_var,
@@ -146,23 +150,17 @@ for(start_i in start_ids){
   
   roadimproved_df <- lapply(c("distance_improvedroad", 
                               "distance_improvedroad_50aboveafter", 
-                              "distance_improvedroad_below50after"),
+                              "distance_improvedroad_below50after",
+                              "distance_road", 
+                              "distance_road_50above", 
+                              "distance_road_below50"),
                             generate_road_improved_variables, 
                             data, 
                             ALL_YEARS_IMPROVED_VAR,
                             NEAR_CUTOFF) %>% bind_cols()
   data <- bind_cols(data, roadimproved_df)
   
-  road_df <- lapply(c("distance_road", 
-                      "distance_road_50above", 
-                      "distance_road_below50"),
-                    generate_road_improved_variables, 
-                    data, 
-                    ALL_YEARS_IMPROVED_VAR,
-                    NEAR_CUTOFF) %>% bind_cols()
-  data <- bind_cols(data, road_df)
-  
-  # Lagged treatment -------------------------------------------------------------
+  # Lagged treatment -----------------------------------------------------------
   data$pre_improvedroad_neg2_5 <- as.numeric(data$years_since_improvedroad %in% -2:-5) %>% as.numeric()
   data$pre_improvedroad_neg6_10 <- as.numeric(data$years_since_improvedroad %in% -6:-10) %>% as.numeric()
   
@@ -173,7 +171,7 @@ for(start_i in start_ids){
   data$pre_improvedroad_below50after_neg6_10 <- as.numeric(data$years_since_improvedroad_below50after %in% -6:-10) %>% as.numeric()
   
   gc()
-  # Variables for treated time 2, 3, etc -----------------------------------------
+  # Variables for treated time 2, 3, etc ---------------------------------------
   if(ALL_YEARS_IMPROVED_VAR){
     data <- data %>%
       dplyr::mutate(near_improvedroad_all_years_t1 = near_improvedroad_all_years %>% substring(1,4) %>% as.numeric(),
@@ -210,7 +208,7 @@ for(start_i in start_ids){
   }
   
   gc()
-  # Dependent Variable Transformations -------------------------------------------
+  # Dependent Variable Transformations -----------------------------------------
   # Inverse Hyperbolic Since Transformation 
   # This is used by Mitnik et. al. due to lots of zeros in DMSP-OLS 
   calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
@@ -258,11 +256,11 @@ for(start_i in start_ids){
   data$viirs_mean_2 <- data$viirs_mean >= 2
   data$viirs_mean_6 <- data$viirs_mean >= 6
   
-  # Other variable transformations -----------------------------------------------
+  # Other variable transformations ---------------------------------------------
   data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
   data$distance_city_addisababa <- NULL
   
-  # Geographic Regions -----------------------------------------------------------
+  # Geographic Regions ---------------------------------------------------------
   # data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
   # data$GADM_ID_1 <- NULL
   # 
@@ -273,7 +271,14 @@ for(start_i in start_ids){
   # 
   # gc(); Sys.sleep(.5); gc(); Sys.sleep(.5)
   
-  # Remove Stuff Don't Need ------------------------------------------------------
+  # Woreda stats ---------------------------------------------------------------
+  # Taking cells near improved road by woreda
+  data <- data %>%
+    group_by(woreda_id) %>%
+    mutate(dmspols_1996_woreda = mean(dmspols_1996, na.rm = T)) %>%
+    ungroup()
+  
+  # Remove Stuff Don't Need ----------------------------------------------------
   # Reduces dataset size if grid dataset where need to trim size of dataset
   data$distance_city_popsize_3groups_g1 <- NULL
   
@@ -284,7 +289,7 @@ for(start_i in start_ids){
 # Append Together --------------------------------------------------------------
 rm(data)
 rm(data_all)
-gc(); gc()
+gc(); gc(); gc()
 
 data_append <- file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "temp_datasets") %>%
   list.files(full.names = T) %>%
@@ -298,7 +303,3 @@ data_append <- file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",
 # Export -----------------------------------------------------------------------
 saveRDS(data_append, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "grid_data_clean.Rds"))
 
-#### Delete temp files
-file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "temp_datasets") %>%
-  list.files(full.names = T) %>%
-  lapply(function(file) file.remove(file))

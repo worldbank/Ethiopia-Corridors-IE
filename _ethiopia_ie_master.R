@@ -14,7 +14,7 @@
 # --"dmspols_grid_nearroad": Near 10km of any road as of 2016
 # --"dmspols_grid_nearroad_randomsample": Random sample of above
 # --"woreda": Woreda polygons
-DATASET_TYPE <- "dmspols_grid_ethiopia"
+DATASET_TYPE <- "dmspols_grid_nearroad"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script

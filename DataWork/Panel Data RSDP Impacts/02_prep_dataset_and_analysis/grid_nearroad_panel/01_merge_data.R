@@ -48,14 +48,16 @@ for(dataset in DATASETS_TIME_INVARIANT){
 points_all$woreda_pop2007 <- NULL
 points_all$woreda_density2007 <- NULL
 
-points_all$distance_rsdp_phase1 <- NULL
-points_all$distance_rsdp_phase2 <- NULL
-points_all$distance_rsdp_phase3 <- NULL
-points_all$distance_rsdp_phase4 <- NULL
+# points_all$distance_rsdp_phase1 <- NULL
+# points_all$distance_rsdp_phase2 <- NULL
+# points_all$distance_rsdp_phase3 <- NULL
+# points_all$distance_rsdp_phase4 <- NULL
 
 # Subset -----------------------------------------------------------------------
 #points_all <- points_all[points_all$distance_anyroad2016 <= 5000,]
 points_all <- points_all[points_all$distance_anyimproved_ever <= 5000,]
+points_all <- points_all[points_all$distance_anyimproved_ever >= 1000,]
+points_all <- points_all[!is.na(points_all$woreda_id),]
 
 # Export -----------------------------------------------------------------------
 saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "panel_data.Rds"))
