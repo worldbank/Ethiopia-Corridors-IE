@@ -15,11 +15,15 @@ ntl_group <- "All"
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "grid_data_clean.Rds"))
 
+## Nighttime lights groups
 ntl_non0_med <- data$dmspols_1996_woreda[data$dmspols_1996_woreda > 0] %>% median(na.rm=T)
 data$ntl_group <- NA
 data$ntl_group[data$dmspols_1996_woreda %in% 0] <- "1"
-data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med] <- "2"
+data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med & data$dmspols_1996_woreda > 0] <- "2"
 data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "3"
+
+## Check Median NTL Value
+data$dmspols_zhang[data$dmspols_zhang > 0 & data$year %in% 1996] %>% median(na.rm=T)
 
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)

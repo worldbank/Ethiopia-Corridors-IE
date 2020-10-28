@@ -42,40 +42,45 @@ data <- data %>%
   ))
 
 # Figures ----------------------------------------------------------------------
-title <- "Areas >100km Addis Ababa"
+title <- "Impact of Roads"
 
 for(ntl_group_i in c("All", "1", "2", "3")){
-  
-  if(ntl_group_i %in% "1") title <- paste0(title, ", Baseline NTL = 0")
-  if(ntl_group_i %in% "2") title <- paste0(title, ", Baseline NTL Below Median")
-  if(ntl_group_i %in% "3") title <- paste0(title, ", Baseline NTL Above Median")
-  
-  data %>%
-    filter(addis_distance %in% "Far",
-           #dep_var %in% "globcover_urban",
-           ntl_group %in% ntl_group_i,
-           #indep_var %in% "years_since_improvedroad",
-           controls %in% "") %>%
-    ggplot(aes(x = years_since_improved, y = b, ymin = p025, ymax=p975,
-               group = indep_var, color=indep_var)) +
-    geom_point(position = position_dodge(width = p_dodge_width),size=1) + 
-    geom_linerange(position = position_dodge(width = p_dodge_width),size=0.5) +
-    geom_vline(xintercept=0,size=.5,alpha=0.5) +
-    geom_hline(yintercept=0,size=.5,alpha=0.5) +
-    labs(x="Years Since Road Improved",
-         y="Coefficient",
-         color="Road Type",
-         title = title) +
-    scale_color_manual(values = c("dodgerblue1", "darkorange", "black"),
-                       guide = guide_legend(reverse = TRUE)) +
-    theme_minimal() +
-    facet_wrap(~dep_var,
-               scales = "free_y",
-               nrow = 2) +
-    ggsave(filename = file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",
-                                "outputs", "figures", "gridpanel_coefeachyear_addisFar_ntl",ntl_group_i,".png"),
-           height = 5, width = 12)
-  
+  for(addis_distance_i in c("All", "Far")){
+    print(paste(ntl_group_i, addis_distance_i))
+    
+    if(addis_distance_i %in% "Far") title <- paste0(title, ", Areas >100km Addis Ababa")
+    if(ntl_group_i %in% "1") title <- paste0(title, ", Baseline NTL = 0")
+    if(ntl_group_i %in% "2") title <- paste0(title, ", Baseline NTL Below Median and Above 0")
+    if(ntl_group_i %in% "3") title <- paste0(title, ", Baseline NTL Above Median")
+    
+    data %>%
+      filter(addis_distance %in% addis_distance_i,
+             #dep_var %in% "globcover_urban",
+             ntl_group %in% ntl_group_i,
+             #indep_var %in% "years_since_improvedroad",
+             controls %in% "") %>%
+      ggplot(aes(x = years_since_improved, y = b, ymin = p025, ymax=p975,
+                 group = indep_var, color=indep_var)) +
+      geom_point(position = position_dodge(width = p_dodge_width),size=1) + 
+      geom_linerange(position = position_dodge(width = p_dodge_width),size=0.5) +
+      geom_vline(xintercept=0,size=.5,alpha=0.5) +
+      geom_hline(yintercept=0,size=.5,alpha=0.5) +
+      labs(x="Years Since Road Improved",
+           y="Coefficient",
+           color="Road Type",
+           title = title) +
+      scale_color_manual(values = c("dodgerblue1", "darkorange", "black"),
+                         guide = guide_legend(reverse = TRUE)) +
+      theme_minimal() +
+      facet_wrap(~dep_var,
+                 scales = "free_y",
+                 nrow = 2) +
+      ggsave(filename = file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",
+                                  "outputs", "figures", 
+                                  paste0("gridpanel_coefeachyear_addis",addis_distance_i,"_ntl",ntl_group_i,".png")),
+             height = 5, width = 12)
+    
+  }
 }
 
 
