@@ -30,8 +30,8 @@ for(dep_var in c("ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland"
     #for(controls in c("", "+temp_avg+precipitation")){
     for(controls in c("")){
       
-      #for(addis_distance in c("All", "Far")){
-      for(addis_distance in c("Far")){
+      for(addis_distance in c("All", "Far")){
+      #for(addis_distance in c( "Far")){
         
         for(ntl_group in c("All", "1", "2", "3")){
         #for(ntl_group in c("All")){
