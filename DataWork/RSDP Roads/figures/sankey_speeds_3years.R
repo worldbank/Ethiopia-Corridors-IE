@@ -1,21 +1,6 @@
-# Impact of Expressway Expansion
-# Ethiopia IE
+# Road Improvement: Sankey Graph
 
-#for(i in 1:10) gc()
-# Setup ------------------------------------------------------------------------
-if(Sys.info()[["user"]] == "r521633") project_file_path <- "/home/wb521633/IEs/Ethiopia IE"
-if(Sys.info()[["user"]] == "WB521633") project_file_path <- "C:/Users/wb521633/Dropbox/World Bank/IEs/Ethiopia IE"
-if(Sys.info()[["user"]] == "robmarty") project_file_path <- "~/Dropbox/World Bank/IEs/Ethiopia IE"
-
-library(lfe)
-library(stargazer)
-library(dplyr)
-library(rgdal)
-library(raster)
-library(alluvial)
-library(doBy)
-library(riverplot)
-
+#### Parameters
 COLOR_0 <- "darkslategray1"
 COLOR_10 <- "dodgerblue1"
 COLOR_20 <- "darkorange"
@@ -28,24 +13,23 @@ PLOT_BACKGROUND_COLOR <- "white"
 TEXT_COLOR = "black"
 
 # Load Data --------------------------------------------------------------------
-roads_2016 <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
+roads <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 
-speed_vars <- paste0(c("Speed"),c(1996, 2006, 2016))
+# Aggregate Data ---------------------------------------------------------------
 
+## Simplify Speeds
+speed_vars <- paste0(c("Speed"),1996:2016)
 for(var in speed_vars){
-  roads_2016[[var]][roads_2016[[var]] == 15] <- 10
-  roads_2016[[var]][roads_2016[[var]] == 25] <- 20
-  roads_2016[[var]][roads_2016[[var]] == 35] <- 30
+  roads[[var]][roads[[var]] == 15] <- 10
+  roads[[var]][roads[[var]] == 25] <- 20
+  roads[[var]][roads[[var]] == 35] <- 30
 }
 
-transitions_df <- summaryBy(LINKLENGTH ~ 
-                              Speed1996 + 
-                              Speed2006 + 
-                              Speed2016, data=roads_2016@data, keep.names = T, FUN=sum)
-#transitions_df$improvement <- transitions_df$Speed2016 > transitions_df$Speed1996
-#transitions_df$same <- transitions_df$Speed2016 == transitions_df$Speed1996
+transitions_df <- roads@data %>%
+  group_by(Speed1996, Speed2006, Speed2016) %>%
+  summarise(LINKLENGTH = sum(LINKLENGTH))
 
-# Figure -----------------------------------------------------------------------
+# Prep for Figure --------------------------------------------------------------
 transitions_df$N <- transitions_df$LINKLENGTH
 transitions_df$Speed1996 <- paste0(transitions_df$Speed1996, "_", 1:nrow(transitions_df), "_1") 
 transitions_df$Speed2006 <- paste0(transitions_df$Speed2006, "_", 1:nrow(transitions_df), "_2") 
@@ -55,7 +39,6 @@ transitions_df$Speed2016 <- paste0(transitions_df$Speed2016, "_", 1:nrow(transit
 #### Edges
 edges1 <- subset(transitions_df, select=c(Speed1996, Speed2006, Speed2016, N))
 names(edges1) <- c(paste0("N",1:3), "Value")
-edges1$N1
 
 #### Nodes
 nodes1 <- bind_rows(
@@ -132,15 +115,13 @@ nodes1$y[grepl("70_",nodes1$ID) & grepl("_3|_2",nodes1$ID)] <- nodes1$y[grepl("7
 
 nodes1$x[nodes1$x == 2] <- 1.9
 
+nodes1 <- nodes1 %>% as.data.frame()
+edges1_2 <- edges1_2 %>% as.data.frame()
 riverplot_obj <- makeRiver(nodes1, edges1_2,
                            node_labels=labels,
                            node_styles=styles)
 
-#riverplot(riverplot_obj)
-
-
-
-png(file.path(project_file_path,"Results","Figures", "road_speed_transition_alluvial_3years.png"),width = 4*480, height = 4*480,res=300, bg=PLOT_BACKGROUND_COLOR)
+png(file.path(data_file_path, "RSDP Roads", "Outputs", "figures", "sankey_speed_3years.png"),width = 4*480, height = 4*480,res=300, bg=PLOT_BACKGROUND_COLOR)
 riverplot(riverplot_obj, nsteps=100, fix.pdf=T, plot_area=0.9, xscale=.8)
 text(.025,-.05,"1996",font=2,col=TEXT_COLOR)
 text(.38,-.05,"2006",font=2,col=TEXT_COLOR)
