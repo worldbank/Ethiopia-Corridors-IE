@@ -44,12 +44,15 @@ for(i in 1:nrow(base_end_df)){
     # First difference
     group_by(cell_id) %>%
     summarize_at(names(data) %>% str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_"), 
-                 diff)
+                 diff) %>%
+    
+    # Remove select variables
+    dplyr::select(-c(dmspols_1996))
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(cell_id, distance_mst)) 
+    dplyr::select(c(cell_id, distance_mst, dmspols_1996)) 
   
   ## Merge
   data_clean <- merge(data_first_diff, data_time_invar, by = "cell_id")
@@ -62,12 +65,4 @@ for(i in 1:nrow(base_end_df)){
   write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
                             paste0(file_name, ".dta")))
 }
-
-
-
-
-
-lm(dmspols_ihs ~ road_length_45above, data = data_clean) %>% summary()
-
-
 
