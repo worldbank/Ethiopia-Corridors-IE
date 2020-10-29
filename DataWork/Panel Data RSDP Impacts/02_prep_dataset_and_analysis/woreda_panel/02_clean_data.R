@@ -50,6 +50,13 @@ data <- data %>%
   mutate(dmspols_1996 = dmspols[year == 1996]) %>%
   ungroup()
 
+# IHS DMSP-OLS -----------------------------------------------------------------
+calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
+
+data <- data %>%
+  mutate(dmspols_ihs = calc_ihs(dmspols),
+         dmspols_zhang_ihs = calc_ihs(dmspols_zhang))
+
 # Select Relevant Variables ----------------------------------------------------
 id_vars <- c("cell_id", "year")
 adm_vars <- c("W_CODE", "woreda_id")
@@ -74,9 +81,11 @@ data <- data %>%
 var_label(data$cell_id) <- "Unique unit ID"
 var_label(data$year) <- "year"
 var_label(data$dmspols) <- "Average NTL: DMSP-OLS"
+var_label(data$dmspols_ihs) <- "Average NTL, IHS: DMSP-OLS"
 var_label(data$dmspols_2) <- "Proportion of pixels with NTL > 2"
 var_label(data$dmspols_6) <- "Proportion of pixels with NTL > 6"
 var_label(data$dmspols_zhang) <- "Average NTL: DMSP-OLS, Intercalibrated"
+var_label(data$dmspols_zhang_ihs) <- "Average NTL, IHS: DMSP-OLS, Intercalibrated"
 var_label(data$dmspols_zhang_2) <- "Proportion of pixels with NTL > 2 (DMSP-OLS Intercalibrated)"
 var_label(data$dmspols_zhang_6) <- "Proportion of pixels with NTL > 6 (DMSP-OLS Intercalibrated)"
 var_label(data$viirs_median) <- "Median NTL Across Months: VIIRS"

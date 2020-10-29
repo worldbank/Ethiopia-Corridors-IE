@@ -43,7 +43,7 @@ data <- data %>%
 
 # Figures ----------------------------------------------------------------------
 for(ntl_group_i in c("All", "1", "2")){
-  for(addis_distance_i in c("Far")){
+  for(addis_distance_i in c("All", "Far")){
     
     title <- "Impact of Roads"
     

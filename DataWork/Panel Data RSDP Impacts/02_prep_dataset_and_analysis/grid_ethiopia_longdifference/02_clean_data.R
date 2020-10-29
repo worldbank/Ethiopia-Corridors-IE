@@ -41,7 +41,7 @@ for(i in 1:nrow(base_end_df)){
     filter(year %in% c(base_year, end_year)) %>%
     
     # Assume NA is 0 (for first difference... eg, road length)
-    #mutate_if(is.numeric, ~replace_na(0)) %>%
+    #mutate_if(is.numeric, replace_na, replace = 0) %>%
     
     # First difference
     group_by(cell_id) %>%

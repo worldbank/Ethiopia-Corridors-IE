@@ -27,11 +27,11 @@ data$dmspols_zhang[data$dmspols_zhang > 0 & data$year %in% 1996] %>% median(na.r
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6")){
+for(dep_var in c("ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
-    #for(controls in c("", "+temp_avg+precipitation")){
-    for(controls in c("")){
+    for(controls in c("", "+temp_avg+precipitation")){
+    #for(controls in c("")){
       
       #for(addis_distance in c("All", "Far")){
       for(addis_distance in c("All", "Far")){
