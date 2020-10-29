@@ -4,8 +4,6 @@
 roads <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 eth_adm <- readRDS(file.path(data_file_path, "GADM", "RawData", "gadm36_ETH_0_sp.rds"))
 
-#roads <- roads[runif(nrow(roads)) < 0.1,]
-
 # Prep Data --------------------------------------------------------------------
 ## Road completion year
 roads@data <- roads@data %>%
@@ -14,11 +12,6 @@ roads@data <- roads@data %>%
 
 roads_existing <- roads[roads$completion_year <= 1996,]
 roads_improved <- roads[roads$completion_year > 1996,]
-
-# roads$completion_year[roads$completion_year <= 1996] <- "No\nImprovement"
-# 
-# roads$completion_year <- roads$completion_year %>%
-#   factor(c("No\nImprovement", 1997:2016))
 
 ## Tidy dataframe
 roads_improved$id <- row.names(roads_improved)
