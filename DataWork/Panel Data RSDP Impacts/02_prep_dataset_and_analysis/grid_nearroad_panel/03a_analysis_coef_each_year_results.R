@@ -24,10 +24,18 @@ data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "2"
 ## Check Median NTL Value
 data$dmspols_zhang[data$dmspols_zhang > 0 & data$year %in% 1996] %>% median(na.rm=T)
 
+## NTL lit at baseline
+data$dmspols_zhang_base0na <- data$dmspols_zhang
+data$dmspols_zhang_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
+
+data$dmspols_zhang_ihs_base0na <- data$dmspols_zhang_ihs
+data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
+
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs")){
+# "ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs"
+for(dep_var in c("dmspols_zhang_base0na","dmspols_zhang_ihs_base0na")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
     for(controls in c("", "+temp_avg+precipitation")){
