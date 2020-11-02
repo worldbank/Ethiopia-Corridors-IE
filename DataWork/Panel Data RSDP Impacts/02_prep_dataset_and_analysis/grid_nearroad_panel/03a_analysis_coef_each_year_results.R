@@ -34,8 +34,7 @@ data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-# "ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs"
-for(dep_var in c("dmspols_zhang_base0na","dmspols_zhang_ihs_base0na")){
+for(dep_var in c("dmspols_zhang_base0na","dmspols_zhang_ihs_base0na", "ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
     for(controls in c("", "+temp_avg+precipitation")){

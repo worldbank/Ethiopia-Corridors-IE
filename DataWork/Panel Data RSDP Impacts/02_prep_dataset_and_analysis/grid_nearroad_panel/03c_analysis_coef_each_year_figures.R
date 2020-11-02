@@ -13,8 +13,11 @@ data <- data %>%
   filter(indep_var %>% str_detect("years_since_")) %>%
   
   ## Only include relevant dependent variables
-  filter(dep_var %in% c("dmspols_zhang", 
+  filter(dep_var %in% c(#"dmspols_zhang", 
                         "dmspols_zhang_ihs",
+                        #"dmspols_zhang_base0na",
+                        "dmspols_zhang_ihs_base0na",
+                        "dmspols_zhang_2",
                         "dmspols_zhang_6",
                         "globcover_urban",
                         "globcover_cropland",
@@ -23,15 +26,20 @@ data <- data %>%
   
   ## Rename/Factor Dep Var
   mutate(dep_var = case_when(
-    dep_var == "dmspols_zhang" ~ "NTL",
+    #dep_var == "dmspols_zhang" ~ "NTL",
     dep_var == "dmspols_zhang_ihs" ~ "NTL (IHS)",
+    dep_var == "dmspols_zhang_2" ~ "NTL > 2",
     dep_var == "dmspols_zhang_6" ~ "NTL > 6",
+    #dep_var == "dmspols_zhang_base0na" ~ "NTL, Areas Lit at Baseline",
+    dep_var == "dmspols_zhang_ihs_base0na" ~ "NTL (IHS), Areas Lit at Baseline",
     dep_var == "globcover_urban" ~ "Urban",
     dep_var == "globcover_cropland" ~ "Cropland",
     dep_var == "ndvi" ~ "NDVI",
     dep_var == "ndvi_cropland" ~ "NDVI, Cropland Areas"
   ) %>%
-    factor(levels = c("NTL", "NTL (IHS)", "NTL > 6", "Urban",
+    factor(levels = c("NTL (IHS)", 
+                      "NTL (IHS), Areas Lit at Baseline",
+                      "NTL > 2", "NTL > 6", "Urban",
                       "Cropland", "NDVI", "NDVI, Cropland Areas"))) %>%
   
   ## Rename Indep Var
@@ -58,7 +66,7 @@ for(ntl_group_i in c("All", "1", "2")){
              #dep_var %in% "globcover_urban",
              ntl_group %in% ntl_group_i,
              #indep_var %in% "years_since_improvedroad",
-             controls %in% "") %>%
+             controls %in% "+temp_avg+precipitation") %>%
       ggplot(aes(x = years_since_improved, y = b, ymin = p025, ymax=p975,
                  group = indep_var, color=indep_var)) +
       geom_point(position = position_dodge(width = p_dodge_width),size=1) + 
@@ -79,7 +87,7 @@ for(ntl_group_i in c("All", "1", "2")){
       ggsave(filename = file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",
                                   "outputs", "figures", 
                                   paste0("gridpanel_coefeachyear_addis",addis_distance_i,"_ntl",ntl_group_i,".png")),
-             height = 5, width = 14)
+             height = 5, width = 16)
     
   }
 }
