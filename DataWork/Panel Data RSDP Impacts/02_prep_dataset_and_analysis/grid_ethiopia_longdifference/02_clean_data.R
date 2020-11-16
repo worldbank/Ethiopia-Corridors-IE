@@ -33,6 +33,10 @@ for(i in 1:nrow(base_end_df)){
   base_year <- base_end_df$baseline[i]
   end_year <- base_end_df$endline[i]
   
+  #### Construct Variables Before First Difference
+  data$dmspols_zhang_2 <- as.numeric(data$dmspols_zhang >= 2)
+  data$dmspols_zhang_6 <- as.numeric(data$dmspols_zhang >= 6)
+  
   #### First Difference Dataset
   
   ## First difference dataset of time varying variables 

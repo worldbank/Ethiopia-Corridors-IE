@@ -25,32 +25,65 @@ df2016 <- readRDS(file.path(panel_rsdp_imp_data_file_path,
                                    2016,
                                    ".Rds")))
 
-df2016$dmspols_zhang_ihs_base0na <- df2016$dmspols_zhang_ihs
-df2016$dmspols_zhang_ihs_base0na[df2016$dmspols_zhang_1996 %in% 0] <- NA
-
 # Estimate Models --------------------------------------------------------------
 ## 2012 as Endline
-iv_dmspols_zhang_ihs  <- felm(dmspols_zhang_ihs  ~ 1 | 0 | (near_anyimproved_by2012 ~ near_mst_5km) | W_CODE, data = df2012)
-iv_dmspols_zhang_2    <- felm(dmspols_zhang_2    ~ 1 | 0 | (near_anyimproved_by2012 ~ near_mst_5km) | W_CODE, data = df2012)
-iv_dmspols_zhang_6    <- felm(dmspols_zhang_6    ~ 1 | 0 | (near_anyimproved_by2012 ~ near_mst_5km) | W_CODE, data = df2012)
+iv_dmspols_zhang_ihs         <- felm(dmspols_zhang_ihs         ~ 1 | 0 | (near_anyimproved_by2012_5km ~ near_mst_5km) | W_CODE, data = df2012)
+iv_dmspols_zhang_ihs_base0na <- felm(dmspols_zhang_ihs_base0na ~ 1 | 0 | (near_anyimproved_by2012_5km ~ near_mst_5km) | W_CODE, data = df2012)
+iv_dmspols_zhang_2           <- felm(dmspols_zhang_2           ~ 1 | 0 | (near_anyimproved_by2012_5km ~ near_mst_5km) | W_CODE, data = df2012)
+iv_dmspols_zhang_6           <- felm(dmspols_zhang_6           ~ 1 | 0 | (near_anyimproved_by2012_5km ~ near_mst_5km) | W_CODE, data = df2012)
 
 ## 2016 as Endline
-iv_ndvi               <- felm(ndvi               ~ 1 | 0 | (near_anyimproved_ever_5km ~ near_mst_5km) | W_CODE, data = df2016)
-iv_ndvi_cropland      <- felm(ndvi_cropland      ~ 1 | 0 | (near_anyimproved_ever_5km ~ near_mst_5km) | W_CODE, data = df2016)
 iv_globcover_urban    <- felm(globcover_urban    ~ 1 | 0 | (near_anyimproved_ever_5km ~ near_mst_5km) | W_CODE, data = df2016)
 iv_globcover_cropland <- felm(globcover_cropland ~ 1 | 0 | (near_anyimproved_ever_5km ~ near_mst_5km) | W_CODE, data = df2016)
+iv_ndvi               <- felm(ndvi               ~ 1 | 0 | (near_anyimproved_ever_5km ~ near_mst_5km) | W_CODE, data = df2016)
+iv_ndvi_cropland      <- felm(ndvi_cropland      ~ 1 | 0 | (near_anyimproved_ever_5km ~ near_mst_5km) | W_CODE, data = df2016)
 
-
-
-waldtest(iv2$stage1, ~near_mst_5km, lhs=iv2$stage1$lhs)[5] # F-Stat
-
-
-
-
-
-
-for(dep_var in c("dmspols_zhang_base0na","dmspols_zhang_ihs_base0na", "ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs")){
-  
-
-
-
+# Stargazer --------------------------------------------------------------------
+stargazer(iv_dmspols_zhang_ihs,
+          iv_dmspols_zhang_ihs_base0na,
+          iv_dmspols_zhang_2,
+          iv_dmspols_zhang_6,
+          iv_globcover_urban,
+          iv_globcover_cropland,
+          iv_ndvi,
+          iv_ndvi_cropland,
+          dep.var.labels.include = T,
+          dep.var.labels = c("NTL (IHS)",
+                             "NTL (IHS), Base Lit",
+                             "NTL $>$ 2",
+                             "NTL $>$ 6",
+                             "Urban",
+                             "Cropland",
+                             "NDVI",
+                             "NDVI, Crop"),
+          dep.var.caption = "",
+          covariate.labels = covariate.labels,
+          omit.stat = c("f","ser"),
+          align=TRUE,
+          no.space=TRUE,
+          float=FALSE,
+          column.sep.width="-15pt",
+          digits=2,
+          add.lines = list(
+            c("1st Stage F-Stat", 
+              waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5],
+              waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5],
+              waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5],
+              waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5],
+              waldtest(iv_globcover_urban$stage1,           ~near_mst_5km, lhs=iv_globcover_urban$stage1$lhs)[5],
+              waldtest(iv_globcover_cropland$stage1,        ~near_mst_5km, lhs=iv_globcover_cropland$stage1$lhs)[5],
+              waldtest(iv_ndvi$stage1,                      ~near_mst_5km, lhs=iv_ndvi$stage1$lhs)[5],
+              waldtest(iv_ndvi_cropland$stage1,             ~near_mst_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5]
+            )
+          ),
+          out = file.path(panel_rsdp_imp_data_file_path, 
+                          "dmspols_grid_ethiopia", 
+                          "outputs",
+                          "tables",
+                          "iv_near_mst_5km_results.tex"))
+          
+          
+          
+          
+          
+          
