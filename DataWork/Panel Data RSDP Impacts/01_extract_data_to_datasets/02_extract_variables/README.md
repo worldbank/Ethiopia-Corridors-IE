@@ -5,6 +5,7 @@
 * __extract_distance_cities.R:__ Extract distance to cities. Uses a dataset of major cities in Ethiopia. Calculates distance to any city, distance to cities by population (lower, middle and upper third) and distance to Addis
 * __extract_distance_roads_any_ever.R:__ Distance to any road (using 2016 shapefile)
 * __extract_distance_roads_any_improved_ever.R:__ Distance to any improved road (using whether road was improved as of 2016)
+* __extract_distance_roads_any_improved_ever_by2012.R:__ Distance to any improved road (using whether road was improved as of 2012)
 * __extract_distance_roads_by_phase.R:__ Distance to RSDP phase roads
 * __extract_distance_roads_by_speedlimit.R:__ Distance to roads by speed limit in each year
 * __extract_distance_roads_improved_by_speedlimit_after.R:__ Distance to improved roads by speed, using the speed of the road after improvement

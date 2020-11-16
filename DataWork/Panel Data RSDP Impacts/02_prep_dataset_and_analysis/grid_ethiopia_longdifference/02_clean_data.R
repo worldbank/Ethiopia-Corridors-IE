@@ -40,9 +40,6 @@ for(i in 1:nrow(base_end_df)){
     arrange(year) %>%
     filter(year %in% c(base_year, end_year)) %>%
     
-    # Assume NA is 0 (for first difference... eg, road length)
-    #mutate_if(is.numeric, replace_na, replace = 0) %>%
-    
     # First difference
     group_by(cell_id) %>%
     summarize_at(names(data) %>% str_subset("dmspols|globcover|ndvi"), 
@@ -51,11 +48,26 @@ for(i in 1:nrow(base_end_df)){
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(cell_id, distance_mst, distance_anyimproved_ever, 
-                    distance_anyroad2016, distance_city_addisababa)) 
+    dplyr::select(c(cell_id, distance_mst, 
+                    distance_anyimproved_ever, 
+                    distance_anyimproved_by2012,
+                    distance_anyroad2012,
+                    distance_anyroad2016, 
+                    distance_city_addisababa,
+                    W_CODE,
+                    Z_CODE)) 
   
   ## Merge
   data_clean <- merge(data_first_diff, data_time_invar, by = "cell_id")
+  
+  ## Define "Near Road" Variables
+  data_clean$near_anyimproved_ever_5km <- data_clean$distance_anyimproved_ever <= 5*1000
+  data_clean$near_anyimproved_by2012_5km   <- data_clean$distance_anyimproved_ever <= 5*1000
+  
+  data_clean$near_anyroad2012_5km      <- data_clean$distance_anyroad2012 <= 5*1000
+  data_clean$near_anyroad2016_5km      <- data_clean$distance_anyroad2016 <= 5*1000
+  
+  data_clean$near_mst_5km              <- data_clean$distance_mst <= 5*1000
   
   #### Export
   file_name <- paste0("longdiff_data_clean_base",base_year,"_end",end_year)

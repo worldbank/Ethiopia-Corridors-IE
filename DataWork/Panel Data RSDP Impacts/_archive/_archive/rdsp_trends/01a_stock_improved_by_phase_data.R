@@ -12,15 +12,15 @@
   # IV: 2010 - 2015
 
 # Load Data --------------------------------------------------------------------
-#### ADM
-setwd(file.path(rawdata_file_path, "ethiopiaworeda"))
-woreda_spf <- readOGR(dsn=".", layer="Eth_Woreda_2013")
-woreda_spf <- spTransform(woreda_spf, CRS("+proj=merc +lon_0=0 +lat_ts=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+## RSDP Roads
+roads <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 
-province_sdf <- raster::aggregate(woreda_spf, by="REGIONNAME")
-
-#### Roads
-eth_roads <- readRDS(file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
+## Province Data
+eth <- readOGR(dsn = file.path(data_file_path, "Woreda Boundaries - 2013", "RawData"),
+               layer = "Eth_Woreda_2013")
+eth <- spTransform(eth, CRS("+proj=merc +lon_0=0 +lat_ts=0 +x_0=0 +y_0=0 +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+eth <- gBuffer(eth, width = 0, byid = T)
+province_sdf <- raster::aggregate(eth, by="REGIONNAME")
 
 # Roads Per Year Per Province --------------------------------------------------
 road_growth_stats_by_phase <- function(phase){
