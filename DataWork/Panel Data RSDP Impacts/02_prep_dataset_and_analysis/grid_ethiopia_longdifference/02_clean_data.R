@@ -47,6 +47,12 @@ for(i in 1:nrow(base_end_df)){
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
+    
+    # Baseline values
+    group_by(cell_id) %>%
+    mutate(dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
+    ungroup() %>%
+    
     filter(year %in% base_year) %>%
     dplyr::select(c(cell_id, distance_mst, 
                     distance_anyimproved_ever, 
@@ -54,6 +60,7 @@ for(i in 1:nrow(base_end_df)){
                     distance_anyroad2012,
                     distance_anyroad2016, 
                     distance_city_addisababa,
+                    dmspols_zhang_1996,
                     W_CODE,
                     Z_CODE)) 
   
@@ -61,13 +68,17 @@ for(i in 1:nrow(base_end_df)){
   data_clean <- merge(data_first_diff, data_time_invar, by = "cell_id")
   
   ## Define "Near Road" Variables
-  data_clean$near_anyimproved_ever_5km <- data_clean$distance_anyimproved_ever <= 5*1000
-  data_clean$near_anyimproved_by2012_5km   <- data_clean$distance_anyimproved_ever <= 5*1000
+  data_clean$near_anyimproved_ever_5km <- as.numeric(data_clean$distance_anyimproved_ever <= 5*1000)
+  data_clean$near_anyimproved_by2012_5km   <- as.numeric(data_clean$distance_anyimproved_ever <= 5*1000)
   
-  data_clean$near_anyroad2012_5km      <- data_clean$distance_anyroad2012 <= 5*1000
-  data_clean$near_anyroad2016_5km      <- data_clean$distance_anyroad2016 <= 5*1000
+  data_clean$near_anyroad2012_5km      <- as.numeric(data_clean$distance_anyroad2012 <= 5*1000)
+  data_clean$near_anyroad2016_5km      <- as.numeric(data_clean$distance_anyroad2016 <= 5*1000)
   
-  data_clean$near_mst_5km              <- data_clean$distance_mst <= 5*1000
+  data_clean$near_mst_5km              <- as.numeric(data_clean$distance_mst <= 5*1000)
+  
+  ## NTL in Lit Cells
+  data_clean$dmspols_zhang_ihs_base0na <- data_clean$dmspols_zhang_ihs
+  data_clean$dmspols_zhang_ihs_base0na[data_clean$dmspols_zhang_1996 %in% 0] <- NA
   
   #### Export
   file_name <- paste0("longdiff_data_clean_base",base_year,"_end",end_year)
