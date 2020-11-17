@@ -58,7 +58,9 @@ for(i in 1:nrow(base_end_df)){
     ungroup() %>%
     
     filter(year %in% base_year) %>%
-    dplyr::select(c(cell_id, distance_mst, 
+    dplyr::select(c(cell_id,
+                    distance_mst, 
+                    distance_mst_mindist,
                     distance_anyimproved_ever, 
                     distance_anyimproved_by2012,
                     distance_anyroad2012,
@@ -79,6 +81,7 @@ for(i in 1:nrow(base_end_df)){
   data_clean$near_anyroad2016_5km      <- as.numeric(data_clean$distance_anyroad2016 <= 5*1000)
   
   data_clean$near_mst_5km              <- as.numeric(data_clean$distance_mst <= 5*1000)
+  data_clean$near_mst_mindist_5km      <- as.numeric(data_clean$distance_mst_mindist <= 5*1000)
   
   ## NTL in Lit Cells
   data_clean$dmspols_zhang_ihs_base0na <- data_clean$dmspols_zhang_ihs

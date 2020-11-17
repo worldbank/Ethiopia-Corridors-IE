@@ -24,6 +24,7 @@ DATASETS_TIME_INVARIANT <- c("distance_roads_any_improved_ever.Rds",
                              "distance_roads_any_2012_ever.Rds",
                              "distance_roads_any_2016_ever.Rds",
                              "distance_hypothetical_road_least_cost_mst.Rds",
+                             "distance_hypothetical_road_min_dist_mst.Rds",
                              "distance_cities.Rds",
                              "adm_units.Rds")
 

@@ -1,75 +1,21 @@
 # Create Minimal Spanning Tree
 
 # Load Data --------------------------------------------------------------------
-## Woredas
-woreda <- readOGR(dsn = file.path(rawdata_file_path, "woreda_population", "HDX_CSA"), layer = "Ethioworeda")
-woreda <- spTransform(woreda, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
-woreda$uid <- 1:nrow(woreda)
+## Points to Connect
+woreda_points <- readRDS(file.path(data_file_path, "Hypothetical Road Networks", "points_to_connect.Rds"))
+
+## Elevation/Slope
+elevation <- raster(file.path(data_file_path, "Elevation", "RawData", "gee_download", "eth_elevation_1000m.tif"))
+slope <- terrain(elevation, opt="slope", unit="degrees",neighbors=8)
 
 ## Ethiopia ADM boundary
 # The "woreda" file has holes for water bodies
-eth <- readRDS(file.path(rawdata_file_path, "GADM", "gadm36_ETH_0_sp.rds")) %>%
+eth <- readRDS(file.path(data_file_path, "GADM", "RawData", "gadm36_ETH_0_sp.rds")) %>%
   gBuffer(width = 10/111.12)
 
-## Population
-gpw <- raster(file.path(rawdata_file_path, "gpw-v4-population-density-2000", "gpw-v4-population-density_2000.tif"))
-gpw <- gpw %>% crop(eth)
-
-## Elevation/Slope
-elevation <- raster(file.path(rawdata_file_path, "elevation", "gee_download", "eth_elevation_1000m.tif"))
-slope <- terrain(elevation, opt="slope", unit="degrees",neighbors=8)
-
-## Globcover
-land_cover <- raster(file.path(rawdata_file_path, "esa_globcover", "scratch", "ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"), 1) %>%
-  crop(eth)
-
-land_cover_urban <- calc(land_cover, function(x) x %in% 190)
-land_cover_wetland <- calc(land_cover, function(x) x %in% 180)
-land_cover_water <- calc(land_cover, function(x) x %in% 210)
-
-land_cover_urban <- resample(land_cover_urban, slope)
-land_cover_wetland <- resample(land_cover_wetland, slope)
-land_cover_water <- resample(land_cover_water, slope)
-
-# To 0/1
-land_cover_urban <- calc(land_cover_urban, function(x) as.numeric(x > 0))
-land_cover_wetland <- calc(land_cover_wetland, function(x) as.numeric(x > 0))
-land_cover_water <- calc(land_cover_water, function(x) as.numeric(x > 0))
-
-# Location with largest population with woreda ---------------------------------
-woreda_points <- lapply(1:nrow(woreda), function(i){
-  
-  print(i)
-  
-  gpw_i <- gpw %>% 
-    crop(woreda[i,]) %>%
-    mask(woreda[i,])
-  
-  df <- gpw_i %>% coordinates() %>% as.data.frame()
-  df$pop <- gpw_i[]
-  
-  loc_df <- df[which.max(df$pop),] %>%
-    dplyr::select(x,y)
-  
-  if(nrow(loc_df) %in% 0){
-    loc_df <- coordinates(woreda[i,]) %>%
-      as.data.frame() %>%
-      dplyr::rename(x= V1,
-                    y= V2)
-  }
-  
-  
-  return(loc_df)
-  
-}) %>% 
-  bind_rows()
-
-woreda_points$uid <- 1:nrow(woreda_points)
-coordinates(woreda_points) <- ~x+y
-crs(woreda_points) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
-
 # Cost Surface -----------------------------------------------------------------
-cost_r <- 1 + slope + 25*land_cover_urban + 25*land_cover_wetland + 25*land_cover_water
+cost_r <- slope
+cost_r[] <- 1
 cost_r <- cost_r %>% mask(eth)
 
 # Least Cost Path --------------------------------------------------------------
@@ -125,20 +71,7 @@ minimal_spanning_tree_sdf$road_id <- 1:nrow(minimal_spanning_tree_sdf)
 minimal_spanning_tree_sdf <- subset(minimal_spanning_tree_sdf, select=c(road_id,cost,origin,dest))
 
 saveRDS(minimal_spanning_tree_sdf, 
-        file.path(finaldata_file_path, 
-                  "hypothetical_road_networks",
-                  "least_cost_path_mst.Rds"))
-
-
-
-roads <- readRDS(file.path(finaldata_file_path, "roads", "RoadNetworkPanelData_1996_2016.Rds"))
-roads <- roads[roads$Speed1996 > 20,]
-
-leaflet() %>%
-  addTiles() %>%
-  addPolylines(data=roads, color="red") %>%
-  addPolylines(data=minimal_spanning_tree_sdf, opacity=1) 
-
+        file.path(data_file_path, "Hypothetical Road Networks", "least_euc_distance_path_mst.Rds"))
 
 
 
