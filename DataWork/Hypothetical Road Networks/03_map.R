@@ -2,7 +2,7 @@
 
 # Load Data --------------------------------------------------------------------
 mst_cost <- readRDS(file.path(data_file_path, "Hypothetical Road Networks", "least_cost_path_mst.Rds"))
-#mst_dist <- readRDS(file.path(data_file_path, "Hypothetical Road Networks", "least_euc_distance_path_mst.Rds"))
+mst_dist <- readRDS(file.path(data_file_path, "Hypothetical Road Networks", "least_euc_distance_path_mst.Rds"))
 roads <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 
 eth <- readRDS(file.path(data_file_path, "GADM", "RawData", "gadm36_ETH_0_sp.rds")) 

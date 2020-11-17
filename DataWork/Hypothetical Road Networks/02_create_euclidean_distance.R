@@ -22,29 +22,56 @@ woreda_points <- readRDS(file.path(data_file_path, "Hypothetical Road Networks",
 # https://stackoverflow.com/questions/52601127/r-how-to-find-least-cost-path-through-raster-image
 #cost_t <- transition(cost_r, function(x) 1/mean(x), directions=8)
 
+coords <- woreda_points %>% 
+  coordinates() %>% 
+  as.data.frame() %>%
+  dplyr::rename(long = x, lat = y) 
+coords$uid <- woreda_points$uid
+
 extract_path_cost <- function(i){
   
   print(i)
   
-  path_i <- lapply(i:(nrow(woreda_points)-1), function(row){
-    #print(row)
-    
-    l <- rbind(woreda_points[i,],
-               woreda_points[(row+1),]) %>%
-      as("SpatialLines")
-    
-    l$cost <- gDistance(woreda_points[row,],
-                        woreda_points[(row+1),])
-    
-    return(l)
-    
-  }) %>% 
-    do.call(what = "rbind")
+  coords_i <- coords[i,]
+  coords_noti <- coords[(i+1):(nrow(coords)),]
   
-  path_i$origin <- woreda_points$uid[i]
-  path_i$dest <- woreda_points$uid[(i+1):nrow(woreda_points)]
+  coords_noti_orig <- coords_noti
+  coords_noti_orig$lat <- coords_i$lat
+  coords_noti_orig$long <- coords_i$long
   
-   return(path_i)
+  path_i <- bind_rows(coords_noti, coords_noti_orig) %>%
+    filter(uid != i) %>%
+    mutate(temp = 1:n()) %>%
+    sf::st_as_sf(coords = c("long","lat")) %>% 
+    sf::st_set_crs(4326) %>%
+    group_by(uid) %>% 
+    dplyr::summarize(m = mean(temp)) %>% 
+    st_cast("LINESTRING") %>%
+    as("Spatial")
+  
+  path_i$cost <- gLength(path_i, byid = T) %>% as.numeric()
+  
+  
+  # path_i <- lapply(i:(nrow(woreda_points)-1), function(row){
+  #   #print(row)
+  #   
+  #   l <- rbind(woreda_points[i,],
+  #              woreda_points[(row+1),]) %>%
+  #     as("SpatialLines")
+  #   
+  #   l$cost <- gDistance(woreda_points[i,],
+  #                       woreda_points[(row+1),])
+  #   
+  #   return(l)
+  #   
+  # }) %>% 
+  #   do.call(what = "rbind")
+  
+  path_i$origin <- coords$uid[i]
+  path_i$dest <- coords$uid[(i+1):nrow(coords)]
+  path_i$m <- NULL
+  
+  return(path_i)
 }
 
 least_cost_paths_sdf <- lapply(1:(nrow(woreda_points)-1), extract_path_cost) %>% do.call(what="rbind")
