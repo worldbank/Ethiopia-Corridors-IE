@@ -76,14 +76,14 @@ stargazer(iv_dmspols_zhang_ihs,
           digits=2,
           add.lines = list(
             c("1st Stage F-Stat", 
-              waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_globcover_urban$stage1,           ~near_mst_5km, lhs=iv_globcover_urban$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_globcover_cropland$stage1,        ~near_mst_5km, lhs=iv_globcover_cropland$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_ndvi$stage1,                      ~near_mst_5km, lhs=iv_ndvi$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_ndvi_cropland$stage1,             ~near_mst_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5] %>% round(ROUND_NUM)
+              waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_globcover_urban$stage1,           ~near_mst_mindist_5km, lhs=iv_globcover_urban$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_globcover_cropland$stage1,        ~near_mst_mindist_5km, lhs=iv_globcover_cropland$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_ndvi$stage1,                      ~near_mst_mindist_5km, lhs=iv_ndvi$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_ndvi_cropland$stage1,             ~near_mst_mindist_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5] %>% round(ROUND_NUM)
             )
           ),
           out = file.path(panel_rsdp_imp_data_file_path, 
@@ -91,6 +91,45 @@ stargazer(iv_dmspols_zhang_ihs,
                           "outputs",
                           "tables",
                           "iv_near_mst_mindistance_5km_results.tex"))
+
+### First Stage
+stargazer(iv_dmspols_zhang_ihs$stage1,
+          iv_dmspols_zhang_ihs_base0na$stage1,
+          iv_dmspols_zhang_2$stage1,
+          iv_dmspols_zhang_6$stage1,
+          iv_globcover_urban$stage1,
+          iv_globcover_cropland$stage1,
+          iv_ndvi$stage1,
+          iv_ndvi_cropland$stage1,
+          dep.var.labels.include = T,
+          dep.var.labels = c("Near Improved Road"),
+          dep.var.caption = "",
+          covariate.labels = "Near MST",
+          omit.stat = c("f","ser"),
+          align=TRUE,
+          no.space=TRUE,
+          float=FALSE,
+          column.sep.width="-15pt",
+          digits=2,
+          add.lines = list(
+            c("1st Stage F-Stat", 
+              waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_mindist_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_globcover_urban$stage1,           ~near_mst_mindist_5km, lhs=iv_globcover_urban$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_globcover_cropland$stage1,        ~near_mst_mindist_5km, lhs=iv_globcover_cropland$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_ndvi$stage1,                      ~near_mst_mindist_5km, lhs=iv_ndvi$stage1$lhs)[5] %>% round(ROUND_NUM),
+              waldtest(iv_ndvi_cropland$stage1,             ~near_mst_mindist_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5] %>% round(ROUND_NUM)
+            )
+          ),
+          out = file.path(panel_rsdp_imp_data_file_path, 
+                          "dmspols_grid_ethiopia", 
+                          "outputs",
+                          "tables",
+                          "iv_near_mst_mindistance_5km_1stage_results.tex"))
+
+
 
 
 

@@ -36,7 +36,7 @@ ld_mst <- ggplot() +
             aes(x = long, y = lat, group = group,
                 color = "Improved Roads"),
             size = 0.5) +
-  geom_path(data = mst_cost,
+  geom_path(data = mst_dist,
             aes(x = long, y = lat, group = group,
                 color = "MST"),
             size = 0.35) +
