@@ -45,6 +45,7 @@ for(year in 1996:2016){
                                          color = "black"),
           legend.title = element_text(color = "white", hjust = 0.5),
           legend.text = element_text(color = "white"),
+          legend.position = c(0.83, 0.75),
           plot.title = element_text(hjust = 0.5, face = "bold", color = "white")) +
     coord_quickmap() 
   

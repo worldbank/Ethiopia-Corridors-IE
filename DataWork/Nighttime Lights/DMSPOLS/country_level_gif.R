@@ -19,25 +19,28 @@ for(year in 1992:2013){
   
   ## Map
   p <- ggplot() +
-    # geom_raster(data = dmspols_df ,
-    #             aes(x = x, y = y),
-    #             fill = "black") + 
+    geom_raster(data = dmspols_df ,
+                aes(x = x, y = y),
+                fill = "black") +
     geom_polygon(data = eth_adm,
-                 aes(x = long, y = lat, group = group),
-                 fill = "black") +
+                  aes(x = long, y = lat, group = group),
+                  color = "white",
+                 size = .2) +
     geom_raster(data = dmspols_df[dmspols_df$value > 0,] , 
                 aes(x = x, y = y,
-                    fill = value,
-                    alpha = value)) + 
+                    fill = value)) + 
     scale_fill_gradient2(low = "yellow",
                          mid = "gold",
-                         high = "darkorange2",
+                         high = "firebrick2",
                          midpoint = 2,
                          limits = c(0, 4.2)) +
-    scale_alpha_continuous(range = c(0.7, 1)) +
+    labs(title = year) +
     coord_quickmap() +
     theme_void() +
-    theme(legend.position = "none")
+    theme(legend.position = "none",
+          plot.background = element_rect(fill = "black",
+                                         color = "black"),
+          plot.title = element_text(hjust = 0.5, face = "bold", color = "white"))
   ggsave(p, filename = file.path(data_file_path, "Nighttime Lights", "DMSPOLS",
                                  "Outputs", "figures", "country_level_gif", "pngs",
                                  paste0("dmspols_", year, ".png")),

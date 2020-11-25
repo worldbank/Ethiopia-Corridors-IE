@@ -26,13 +26,13 @@ ggplot() +
   geom_path(data = roads_existing,
             aes(x = long, y = lat, group = group),
             color = "gray",
-            size = .05) +
+            size = .15) +
   geom_path(data = roads_improved_tidy,
             aes(x = long, y = lat, group = group, color = completion_year),
-            size = .05) +
+            size = .15) +
   theme_void() +
   scale_colour_gradientn(colours = rev(brewer.pal(n = 11, name = "Spectral"))) +
-  labs(color = "Improvement\nYear") +
+  labs(color = "Road\nImprovement\nYear") +
   theme(plot.background = element_rect(fill = "black",
                                        color = "black"),
         legend.title = element_text(color = "white", hjust = 0.5),
