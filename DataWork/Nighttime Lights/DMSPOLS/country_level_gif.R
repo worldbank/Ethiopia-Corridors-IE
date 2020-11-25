@@ -24,8 +24,8 @@ for(year in 1992:2013){
                 fill = "black") +
     geom_polygon(data = eth_adm,
                   aes(x = long, y = lat, group = group),
-                  color = "white",
-                 size = .2) +
+                  color = "white", fill = NA,
+                 size = .15) +
     geom_raster(data = dmspols_df[dmspols_df$value > 0,] , 
                 aes(x = x, y = y,
                     fill = value)) + 
