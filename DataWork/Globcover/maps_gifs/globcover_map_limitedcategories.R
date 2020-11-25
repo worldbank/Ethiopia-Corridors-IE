@@ -63,7 +63,8 @@ for(year in 1996:2016){
           plot.title = element_text(hjust = 0.5, size=16, face = "bold", color = "white"),
           legend.text = element_text(size=14, color = "white"),
           legend.title = element_text(size=14, color = "white")) +
-    labs(title=paste0("Land Cover: ",year),fill="Land Class") +
+    labs(title=year,
+         fill="Land Class") +
     scale_fill_manual(values=c("lightgoldenrod1", "cornsilk", "red","chartreuse3","dodgerblue")) 
   ggsave(globcover_map, filename=file.path(data_file_path, "Globcover", "Outputs", "figures",
                                            "country_level_gif",
@@ -73,3 +74,5 @@ for(year in 1996:2016){
   time <- time + 1
 
 }
+
+
