@@ -15,7 +15,7 @@ for(year in 1996:2016){
   if(year %in% 1996:2015){
     globcover <- raster(file.path(data_file_path, "Globcover", "RawData", "1992_2015_data", "ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"), time) 
   } else{
-    globcover <- raster(file.path(data_file_path, "Globcover", "RawData", "2016_2018_data", "C3S-LC-L4-LCCS-Map-300m-P1Y-",year,"-v2.1.1.tif")) 
+    globcover <- raster(file.path(data_file_path, "Globcover", "RawData", "2016_2018_data", paste0("C3S-LC-L4-LCCS-Map-300m-P1Y-",year,"-v2.1.1.tif"))) 
   }
   
   ## Crop/Mask

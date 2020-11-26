@@ -9,18 +9,22 @@ year <- 2010
 
 # Loop Through Years -----------------------------------------------------------
 time <- 5 # time = 5 = 1996
-for(year in 1996:2016){
+for(year in rev(1996:2016)){
   print(year)
   
   # Load Data ------------------------------------------------------------------
   ## NDVI
-  ndvi <- raster(file.path(data_file_path, "NDVI", "RawData", "Landsat", paste0("eth_ls5_ndvi_annual_",year,".tif")))  
+  if(year %in% 1990:1998){
+    ndvi <- raster(file.path(data_file_path, "NDVI", "RawData", "Landsat_1km", paste0("eth_1km_ls5_ndvi_annual_",year,".tif")))  
+  } else{
+    ndvi <- raster(file.path(data_file_path, "NDVI", "RawData", "Landsat_1km", paste0("eth_1km_ls7_ndvi_annual_",year,".tif")))  
+  }
   
   ## Load Globcover Band
   if(year %in% 1996:2015){
     globcover <- raster(file.path(data_file_path, "Globcover", "RawData", "1992_2015_data", "ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"), time) 
   } else{
-    globcover <- raster(file.path(data_file_path, "Globcover", "RawData", "2016_2018_data", "C3S-LC-L4-LCCS-Map-300m-P1Y-",year,"-v2.1.1.tif")) 
+    globcover <- raster(file.path(data_file_path, "Globcover", "RawData", "2016_2018_data", paste0("C3S-LC-L4-LCCS-Map-300m-P1Y-",year,"-v2.1.1.tif"))) 
   }
   
   # Prep Data ------------------------------------------------------------------
@@ -67,7 +71,7 @@ for(year in 1996:2016){
                                       paste0("ndvi_",year,".png")), height=5, width=5)
   
   ndvi_cropland_map <- ggplot() +  
-    geom_polygon(data=eth_adm0, aes(x=long, y=lat, group=group), fill="gray50", color=NA) +
+    geom_polygon(data=eth_adm, aes(x=long, y=lat, group=group), fill="black", color=NA) +
     geom_tile(data=ndvi_cropland_spdf, aes(x=x, y=y, fill=value)) +
     scale_fill_gradientn(colours = rev(terrain.colors(10))) +
     labs(title = year) +
