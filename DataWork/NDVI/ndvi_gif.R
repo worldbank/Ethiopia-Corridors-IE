@@ -71,6 +71,10 @@ for(year in rev(1996:2016)){
                                       paste0("ndvi_",year,".png")), height=5, width=5)
   
   ndvi_cropland_map <- ggplot() +  
+    geom_polygon(data = eth_adm,
+                 aes(x = long, y = lat, group = group),
+                 color = "white", fill = NA,
+                 size = .15) +
     geom_polygon(data=eth_adm, aes(x=long, y=lat, group=group), fill="black", color=NA) +
     geom_tile(data=ndvi_cropland_spdf, aes(x=x, y=y, fill=value)) +
     scale_fill_gradientn(colours = rev(terrain.colors(10))) +
