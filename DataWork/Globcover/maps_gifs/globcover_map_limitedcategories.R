@@ -24,7 +24,7 @@ addis_buff <- gBuffer(addis, width = 175/111.12, byid=T)
 
 # Load Data --------------------------------------------------------------------
 time <- 1 # time: 1 = 1992; time: 5 = 1996
-for(year in 1992:2016){
+for(year in rev(1992:2016)){
   
   time <- year - 1991
   
@@ -121,8 +121,6 @@ for(year in 1992:2016){
            height = 6,
            width = 8)
   }
-  
-  time <- time + 1
   
 }
 
