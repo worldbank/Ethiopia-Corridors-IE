@@ -16,7 +16,10 @@
 # --"dmspols_grid_nearroad": Near 10km of any road as of 2016
 # --"dmspols_grid_nearroad_randomsample": Random sample of above
 # --"woreda": Woreda polygons
-DATASET_TYPE <- "dmspols_grid_ethiopia"
+# --"clusters_of_globcover_urban.R": Urban Clusters from Globcover
+# --"clusters_of_ntl.R": Urban Clusters from NTL
+
+DATASET_TYPE <- "woreda"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -55,7 +58,9 @@ if(CREATE_UNIT_LEVEL_DATASETS){
   
   scripts <- c("create_dmspols_grid_nearroad.R",
                "create_dmspols_grid_nearroad_randomsample.R",
-               "create_woreda.R")
+               "create_woreda.R",
+               "create_clusters_of_globcover_urban.R",
+               "create_clusters_of_ntl.R")
   
   for(script_i in scripts){
     print(paste(script_i, "----------------------------------------------------"))
@@ -77,10 +82,16 @@ if(EXTRACT_DATA){
     scripts_unit_specific <- file.path(rsdp_impact_prep_data_code_file_path, 
                                        "02_extract_variables_grid_specific") %>%
       list.files(pattern = ".R", full.names = T)
-  } else{
+  } 
+  
+  if(grepl("woreda", DATASET_TYPE)){
     scripts_unit_specific <- file.path(rsdp_impact_prep_data_code_file_path, 
                                        "02_extract_variables_woreda_specific") %>%
       list.files(pattern = ".R", full.names = T)
+  }
+  
+  if(grepl("clusters", DATASET_TYPE)){
+    scripts_unit_specific <- NULL
   }
   
   ## Merge scripts

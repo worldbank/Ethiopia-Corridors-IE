@@ -1,5 +1,8 @@
 # Clean Data
 
+# DEPENDS ON DATASET PRODUCED BY:
+# grid_ethiopia_baseendline/01_merge_data.R
+
 #### Parameters
 # 0 meters, meaning woreda must intersect
 NEAR_THRESHOLD <- 0 

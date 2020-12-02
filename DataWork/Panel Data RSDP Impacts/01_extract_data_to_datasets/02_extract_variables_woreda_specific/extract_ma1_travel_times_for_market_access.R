@@ -103,13 +103,17 @@ calc_travel_time <- function(year, woreda_points){
                        woreda_points[i,],
                        woreda_points) %>% as.numeric()
     
-    tt <- tt * RESOLUTION_KM # to get more accurate travel time???? TODO
+    #tt <- tt * RESOLUTION_KM # to get more accurate travel time 
     
     #### TESTING
-    #tt <- costDistance(cost_t,
+    # tt <- costDistance(cost_t,
     #                   woreda_points[1,],
-    #                   woreda_points[100,]) %>% as.numeric()
-    
+    #                   woreda_points[550,]) %>% as.numeric()
+    # 
+    # tt
+    # woreda_points[1,] %>% spTransform(CRS("+init=epsg:4326")) %>% coordinates() %>% rev()
+    # woreda_points[550,] %>% spTransform(CRS("+init=epsg:4326")) %>% coordinates() %>% rev()
+    # 
     #tt1 <- shortestPath(cost_t,
     #                   woreda_points[1,],
     #                   woreda_points[100,],
