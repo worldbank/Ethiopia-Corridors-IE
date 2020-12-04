@@ -7,6 +7,23 @@ points <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "indivi
 woreda <- readRDS(file.path(data_file_path, "Woreda Population", "FinalData", "woreda.Rds"))
 woreda <- spTransform(woreda, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
 
+if(grepl("clusters", DATASET_TYPE)){
+  # If cluster, use centroid
+  
+  ## Centroid
+  points_centroid <- coordinates(points) %>%
+    as.data.frame() %>%
+    dplyr::rename(lon = V1,
+                  lat = V2) %>%
+    bind_cols(points@data)
+  
+  ## Spatially Define and project
+  coordinates(points_centroid) <- ~lon+lat
+  crs(points_centroid) <- CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
+  
+  points <- points_centroid
+}
+
 # Add Data ---------------------------------------------------------------------
 points_OVER_woreda <- sp::over(points, woreda)
 

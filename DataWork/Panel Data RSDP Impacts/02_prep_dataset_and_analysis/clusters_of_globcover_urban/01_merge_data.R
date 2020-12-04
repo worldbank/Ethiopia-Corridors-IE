@@ -5,12 +5,6 @@
 #### Load dataset to merge into
 points_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "individual_datasets", "dmspols.Rds"))
 
-points_cluster_df <- points_all %>%
-  dplyr::select(cell_id, cluster_n_cells) %>%
-  distinct()
-
-points_all$cluster_n_cells <- NULL
-
 #### Names of datasets to merge in
 # Separate by:
 #  -- time invarient (merge by cell_id)
@@ -21,6 +15,8 @@ DATASETS_TIME_INVARIANT <- c("distance_roads_by_rsdp_phase.Rds",
                              "distance_roads_any_2016_ever.Rds",
                              "distance_hypothetical_road_least_cost_mst.Rds",
                              "distance_hypothetical_road_min_dist_mst.Rds",
+                             "adm_units.Rds",
+                             "cluster_n_cells.Rds",
                              "distance_cities.Rds")
 
 DATASETS_TIME_VARYING <- c("viirs.Rds",
@@ -48,8 +44,6 @@ for(dataset in DATASETS_TIME_INVARIANT){
   dataset_temp$cluster_n_cells <- NULL
   points_all <- merge(points_all, dataset_temp, by="cell_id", all=T)
 }
-
-points_all <- merge(points_all, points_cluster_df, by="cell_id", all=T)
 
 # Export -----------------------------------------------------------------------
 saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data.Rds"))
