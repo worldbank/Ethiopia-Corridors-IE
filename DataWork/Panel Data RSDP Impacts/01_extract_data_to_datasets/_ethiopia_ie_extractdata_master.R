@@ -94,7 +94,6 @@ if(EXTRACT_DATA){
       list.files(pattern = ".R", full.names = T)
   }
   
-  
   ## Merge scripts
   scripts <- c(scripts_all_units, scripts_unit_specific) %>% sort()
   
