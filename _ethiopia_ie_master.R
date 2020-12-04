@@ -75,6 +75,7 @@ library(gdistance)
 library(shp2graph)
 library(riverplot)
 library(leaflet)
+library(TTR)
 
 # Functions
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")

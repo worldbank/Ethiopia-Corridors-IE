@@ -13,12 +13,31 @@ addis_distance <- "All"
 ntl_group <- "All"
 
 # Load Data --------------------------------------------------------------------
-data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "grid_data_clean.Rds"))
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
 
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("dmspols_zhang_base0na","dmspols_zhang_ihs_base0na", "ndvi","ndvi_cropland", "globcover_urban", "globcover_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs")){
+for(dep_var in c("dmspols_zhang_base0na",
+                 "dmspols_zhang_ihs_base0na", 
+                 "ndvi",
+                 "ndvi_cropland", 
+                 "globcover_urban",
+                 "globcover_urban_sum",
+                 "globcover_cropland", 
+                 "globcover_cropland_sum", 
+                 "dmspols_zhang",
+                 "dmspols_zhang_ihs", 
+                 "dmspols_zhang_sum0greater",
+                 "dmspols_zhang_sum1",
+                 "dmspols_zhang_sum2",
+                 "dmspols_zhang_sum6",
+                 "dmspols", 
+                 "dmspols_ihs",
+                 "dmspols_sum0greater",
+                 "dmspols_sum1",
+                 "dmspols_sum2",
+                 "dmspols_sum6")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
     for(controls in c("", "+temp_avg+precipitation")){
@@ -33,7 +52,7 @@ for(dep_var in c("dmspols_zhang_base0na","dmspols_zhang_ihs_base0na", "ndvi","nd
           ## Check if exists          
           filename <- paste0(dep_var, "-", indep_var, "-", controls, "-", addis_distance, "-", ntl_group, ".Rds")
           file <- file.path(panel_rsdp_imp_data_file_path, 
-                            "dmspols_grid_nearroad", "results_datasets", 
+                            "clusters_of_globcover_urban", "results_datasets", 
                             "individual_datasets",
                             filename)
           
@@ -47,12 +66,11 @@ for(dep_var in c("dmspols_zhang_base0na","dmspols_zhang_ihs_base0na", "ndvi","nd
             if(addis_distance %in% "Far") data_temp <- data_temp[data_temp$far_addis %in% 1,]
             if(ntl_group %in% "1")        data_temp <- data_temp[data_temp$ntl_group %in% "1",]
             if(ntl_group %in% "2")        data_temp <- data_temp[data_temp$ntl_group %in% "2",]
-            if(ntl_group %in% "3")        data_temp <- data_temp[data_temp$ntl_group %in% "3",]
-            
+
             ### Run model
             results_df_temp <- tryCatch({     
               
-              paste(dep_var, "~", indep_var, controls, "| year + cell_id | 0 | woreda_id") %>%
+              paste(dep_var, "~", indep_var, controls, "| year + cell_id | 0 | 0") %>%
                 as.formula() %>%
                 felm(data = data_temp) %>%
                 lm_confint_tidy(indep_var)%>%

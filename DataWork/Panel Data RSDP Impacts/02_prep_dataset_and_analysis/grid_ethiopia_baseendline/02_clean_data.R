@@ -39,7 +39,10 @@ data <- data %>%
   mutate(dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
   ungroup()
 
-## NTL in Lit Cells
+## NTL lit at baseline
+data$dmspols_zhang_base0na <- data$dmspols_zhang
+data$dmspols_zhang_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
+
 data$dmspols_zhang_ihs_base0na <- data$dmspols_zhang_ihs
 data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 

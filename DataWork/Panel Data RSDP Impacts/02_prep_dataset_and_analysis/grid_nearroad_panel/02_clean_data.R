@@ -260,6 +260,22 @@ for(start_i in start_ids){
   data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
   data$distance_city_addisababa <- NULL
   
+  ## Nighttime lights groups
+  ntl_non0_med <- data$dmspols_1996_woreda[data$dmspols_1996_woreda > 0] %>% median(na.rm=T)
+  data$ntl_group <- NA
+  data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med] <- "1"
+  data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "2"
+  
+  ## Check Median NTL Value
+  data$dmspols_zhang[data$dmspols_zhang > 0 & data$year %in% 1996] %>% median(na.rm=T)
+  
+  ## NTL lit at baseline
+  data$dmspols_zhang_base0na <- data$dmspols_zhang
+  data$dmspols_zhang_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
+  
+  data$dmspols_zhang_ihs_base0na <- data$dmspols_zhang_ihs
+  data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
+  
   # Geographic Regions ---------------------------------------------------------
   # data$region_type <- ifelse(data$GADM_ID_1 %in% c("Afar", "Benshangul-Gumaz", "Somali"), "Sparse", "Dense") %>% factor(levels=c("Sparse", "Dense"))
   # data$GADM_ID_1 <- NULL

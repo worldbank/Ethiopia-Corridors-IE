@@ -16,10 +16,10 @@
 # --"dmspols_grid_nearroad": Near 10km of any road as of 2016
 # --"dmspols_grid_nearroad_randomsample": Random sample of above
 # --"woreda": Woreda polygons
-# --"clusters_of_globcover_urban.R": Urban Clusters from Globcover
-# --"clusters_of_ntl.R": Urban Clusters from NTL
+# --"clusters_of_globcover_urban": Urban Clusters from Globcover
+# --"clusters_of_ntl": Urban Clusters from NTL
 
-DATASET_TYPE <- "woreda"
+DATASET_TYPE <- "clusters_of_globcover_urban"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -47,8 +47,8 @@ DIST_THRESH <- 2
 #### RUN SCRIPT PARAMETERS
 CREATE_UNIT_LEVEL_DATASETS <- F
 
-EXTRACT_DATA <- F
-OVERWRITE_EXTRACTED_DATA <- F # Checks if data already extracted. If T, re-extracts
+EXTRACT_DATA <- T
+OVERWRITE_EXTRACTED_DATA <- T # Checks if data already extracted. If T, re-extracts
 # data. If F, skips extracting data
 
 # RUN SCRIPTS ==================================================================
@@ -125,7 +125,7 @@ if(EXTRACT_DATA){
   }
   
   ## Run scripts
-  for(script_i in scripts){
+  for(script_i in rev(scripts)){
     print(paste(script_i, "----------------------------------------------------"))
     source(script_i)
   } 
