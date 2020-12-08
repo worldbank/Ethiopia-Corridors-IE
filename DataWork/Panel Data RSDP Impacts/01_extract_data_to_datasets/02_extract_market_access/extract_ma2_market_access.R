@@ -79,6 +79,9 @@ location_traveltimes <- merge(location_traveltimes,
 # Remove cases where travel time is zero
 location_traveltimes <- location_traveltimes[!(location_traveltimes$travel_time %in% 0),]
 
+# Travel time to minutes
+location_traveltimes$travel_time <- location_traveltimes$travel_time * 60
+
 # Population divided by travel time
 location_traveltimes$pop_DIV_tt_theta1 <- location_traveltimes$dest_pop2000 / (location_traveltimes$travel_time^1)
 location_traveltimes$pop_DIV_tt_theta2 <- location_traveltimes$dest_pop2000 / (location_traveltimes$travel_time^2)
@@ -105,7 +108,7 @@ MA_df <- location_traveltimes[, list(
   MA_ntl2000_theta1 = sum(ntl_DIV_tt_theta1), 
   MA_ntl2000_theta2 = sum(ntl_DIV_tt_theta2), 
   MA_ntl2000_theta5 = sum(ntl_DIV_tt_theta5),
-  MA_ntl2000_theta8 = sum(ntl_DIV_tt_theta8)
+  MA_ntl2000_theta8 = sum(ntl_DIV_tt_theta8),
   
   MA_gcu2000_theta1 = sum(gcu_DIV_tt_theta1), 
   MA_gcu2000_theta2 = sum(gcu_DIV_tt_theta2), 
@@ -127,7 +130,7 @@ MA_exclude_100km_df <- location_traveltimes_far[, list(
   MA_ntl2000_theta1_exclude100km = sum(ntl_DIV_tt_theta1), 
   MA_ntl2000_theta2_exclude100km = sum(ntl_DIV_tt_theta2), 
   MA_ntl2000_theta5_exclude100km = sum(ntl_DIV_tt_theta5),
-  MA_ntl2000_theta8_exclude100km = sum(ntl_DIV_tt_theta8)
+  MA_ntl2000_theta8_exclude100km = sum(ntl_DIV_tt_theta8),
   
   MA_gcu2000_theta1_exclude100km = sum(gcu_DIV_tt_theta1), 
   MA_gcu2000_theta2_exclude100km = sum(gcu_DIV_tt_theta2), 

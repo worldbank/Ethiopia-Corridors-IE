@@ -59,12 +59,13 @@ data <- data %>%
 
 # Select Relevant Variables ----------------------------------------------------
 id_vars <- c("cell_id", "year")
-adm_vars <- c("W_CODE", "woreda_id")
+adm_vars <- c("W_CODE", "R_CODE", "Z_CODE", "woreda_id")
 road_length_vars <- names(data) %>% str_subset("road_length_") %>% str_subset("above")
 road_distance_vars <- c("distance_mst")
 dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% str_subset("above")
 satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
 MA_vars <- names(data) %>% str_subset("MA_")
+other_vars <- c("gpw2000")
 
 vars_all <- c(id_vars,
               adm_vars,
@@ -72,7 +73,8 @@ vars_all <- c(id_vars,
               road_distance_vars,
               dist_road_speed_vars,
               satellite_vars,
-              MA_vars)
+              MA_vars,
+              other_vars)
 
 data <- data %>%
   dplyr::select(all_of(vars_all))
@@ -114,6 +116,7 @@ var_label(data$MA_pop2000_theta8_exclude100km) <- "Market Access, excluding wore
 var_label(data$distance_mst) <- "Distance to hypothetical network: min spanning tree (meters)"
 var_label(data$dmspols_1996) <- "Average NTL in 1996 (DMSP-OLS)"
 var_label(data$woreda_id) <- "Unique Woreda ID"
+var_label(data$gpw2000) <- "Population in 2000 (Gridded Population of the World)"
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))

@@ -28,6 +28,9 @@ data <- data %>%
   mutate(dmspols_ihs = calc_ihs(dmspols),
          dmspols_zhang_ihs = calc_ihs(dmspols_zhang))
 
+data$globcover_urban    <- as.numeric(data$globcover_urban    > 0)
+data$globcover_cropland <- as.numeric(data$globcover_cropland > 0)
+
 # First Difference -------------------------------------------------------------
 for(i in 1:nrow(base_end_df)){
   print(i)
