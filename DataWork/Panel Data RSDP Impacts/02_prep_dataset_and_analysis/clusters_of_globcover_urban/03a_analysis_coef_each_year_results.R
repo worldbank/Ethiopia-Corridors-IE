@@ -3,7 +3,7 @@
 # Exports dataframe of results, to be used to make figures
 
 #### Parameters
-OVERWRITE_FILES <- T
+OVERWRITE_FILES <- F
 
 #### Default
 dep_var <- "globcover_urban"
@@ -24,11 +24,13 @@ for(dep_var in c("dmspols_zhang_base0na",
                  "ndvi_cropland", 
                  "globcover_urban",
                  "globcover_urban_sum",
+                 "globcover_urban_sum_above0",
                  "globcover_cropland", 
                  "globcover_cropland_sum", 
                  "dmspols_zhang",
                  "dmspols_zhang_ihs", 
                  "dmspols_zhang_sum0greater",
+                 "dmspols_zhang_sum0greater_bin",
                  "dmspols_zhang_sum1",
                  "dmspols_zhang_sum2",
                  "dmspols_zhang_sum6",
@@ -70,7 +72,7 @@ for(dep_var in c("dmspols_zhang_base0na",
             ### Run model
             results_df_temp <- tryCatch({     
               
-              paste(dep_var, "~", indep_var, controls, "| year + cell_id | 0 | 0") %>%
+              paste(dep_var, "~", indep_var, controls, "| year + cell_id | 0 | woreda_id") %>%
                 as.formula() %>%
                 felm(data = data_temp) %>%
                 lm_confint_tidy(indep_var)%>%

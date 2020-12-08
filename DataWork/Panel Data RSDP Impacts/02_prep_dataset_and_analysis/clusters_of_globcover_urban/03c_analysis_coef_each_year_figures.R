@@ -8,17 +8,18 @@ data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_
                           "did_coef_every_year.Rds"))
 
 data <- data %>%
+  filter(controls %in% "+temp_avg+precipitation")
+
+data <- data %>%
   
   ## Only include relevant independent variables
   filter(indep_var %>% str_detect("years_since_")) %>%
   
   ## Only include relevant dependent variables
-  filter(dep_var %in% c(#"dmspols_zhang", 
-                        "dmspols_zhang_ihs",
-                        #"dmspols_zhang_base0na",
-                        "dmspols_zhang_ihs_base0na",
+  filter(dep_var %in% c("dmspols_zhang_ihs",
                         "dmspols_zhang_sum2",
                         "dmspols_zhang_sum6",
+                        "globcover_urban_sum_above0",
                         "globcover_urban_sum",
                         "globcover_cropland_sum",
                         "ndvi",
@@ -30,16 +31,16 @@ data <- data %>%
     dep_var == "dmspols_zhang_ihs" ~ "NTL (IHS)",
     dep_var == "dmspols_zhang_sum2" ~ "NTL > 2",
     dep_var == "dmspols_zhang_sum6" ~ "NTL > 6",
+    dep_var == "globcover_urban_sum_above0" ~ "Cluster Exists",
     #dep_var == "dmspols_zhang_base0na" ~ "NTL, Areas Lit at Baseline",
-    dep_var == "dmspols_zhang_ihs_base0na" ~ "NTL (IHS), Areas Lit at Baseline",
+    #dep_var == "dmspols_zhang_ihs_base0na" ~ "NTL (IHS), Areas Lit at Baseline",
     dep_var == "globcover_urban_sum" ~ "Urban",
     dep_var == "globcover_cropland_sum" ~ "Cropland",
     dep_var == "ndvi" ~ "NDVI",
     dep_var == "ndvi_cropland" ~ "NDVI, Cropland Areas"
   ) %>%
     factor(levels = c("NTL (IHS)", 
-                      "NTL (IHS), Areas Lit at Baseline",
-                      "NTL > 2", "NTL > 6", "Urban",
+                      "NTL > 2", "NTL > 6", "Cluster Exists", "Urban",
                       "Cropland", "NDVI", "NDVI, Cropland Areas"))) %>%
   
   ## Rename Indep Var
@@ -62,9 +63,9 @@ for(ntl_group_i in c("All", "1", "2")){
     if(ntl_group_i %in% "2") title <- paste0(title, ", Baseline NTL Above Median")
 
     data %>%
-      filter(addis_distance %in% addis_distance_i,
+      filter(addis_distance %in% all_of(addis_distance_i),
              #dep_var %in% "globcover_urban",
-             ntl_group %in% ntl_group_i,
+             ntl_group %in% all_of(ntl_group_i),
              #indep_var %in% "years_since_improvedroad",
              controls %in% "+temp_avg+precipitation") %>%
       ggplot(aes(x = years_since_improved, y = b, ymin = p025, ymax=p975,

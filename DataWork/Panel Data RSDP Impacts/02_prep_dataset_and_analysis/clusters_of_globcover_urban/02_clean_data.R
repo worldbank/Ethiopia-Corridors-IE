@@ -286,6 +286,9 @@ data <- data %>%
   group_by(cell_id) %>%
   mutate(first_year_urban = min(globcover_urban_sum_bin_X_year, na.rm=T)) 
 
+data$dmspols_zhang_sum0greater_bin <- as.numeric(data$dmspols_zhang_sum0greater > 0)
+data$globcover_urban_sum_above0 <- as.numeric(data$globcover_urban_sum > 0)
+
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
 
