@@ -17,6 +17,9 @@ clusters_ntl <- merge(clusters_ntl, data_ntl, by = "cell_id")
 ## Subset to clusters in sample
 clusters_ntl <- clusters_ntl[clusters_ntl$cell_id %in% data_ntl$cell_id,]
 
+## Buffer 
+clusters_ntl <- gBuffer(clusters_ntl, width = 0.5/111.12, byid=T)
+
 ## Tidy
 clusters_ntl$id <- row.names(clusters_ntl)
 clusters_ntl_tidy <- tidy(clusters_ntl)
@@ -72,6 +75,7 @@ p_urban <- ggplot() +
   theme(plot.title = element_text(hjust = 0.5, face = "bold"))
 
 p_all <- ggarrange(p_ntl, p_urban,
+                   nrow = 1,
                    common.legend = T,
                    legend = "right")
 

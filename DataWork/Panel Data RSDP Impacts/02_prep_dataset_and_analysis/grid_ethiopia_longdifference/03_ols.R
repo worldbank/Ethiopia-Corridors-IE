@@ -49,22 +49,14 @@ lm_ndvi_cropland      <- felm(ndvi_cropland      ~ near_anyimproved_5km | 0 | 0 
 
 # Stargazer --------------------------------------------------------------------
 stargazer(lm_dmspols_zhang_ihs,
-          lm_dmspols_zhang_ihs_base0na,
           lm_dmspols_zhang_2,
           lm_dmspols_zhang_6,
           lm_globcover_urban,
-          lm_globcover_cropland,
-          lm_ndvi,
-          lm_ndvi_cropland,
           dep.var.labels.include = T,
           dep.var.labels = c("NTL (IHS)",
-                             "NTL (IHS), Lit at Base.",
                              "NTL $>$ 2",
                              "NTL $>$ 6",
-                             "Urban",
-                             "Cropland",
-                             "NDVI",
-                             "NDVI, Crop"),
+                             "Urban"),
           dep.var.caption = "",
           covariate.labels = "Near Improved Rd.",
           omit.stat = c("f","ser"),
@@ -73,11 +65,7 @@ stargazer(lm_dmspols_zhang_ihs,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
-          out = file.path(panel_rsdp_imp_data_file_path, 
-                          "dmspols_grid_ethiopia", 
-                          "outputs",
-                          "tables",
-                          "ols_near_mst_5km_results.tex"))
+          out = file.path(paper_tables, "ols_near_imprd_5km_results.tex"))
           
           
           

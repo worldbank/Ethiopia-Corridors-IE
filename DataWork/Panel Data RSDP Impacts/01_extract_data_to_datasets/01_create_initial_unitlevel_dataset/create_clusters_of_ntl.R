@@ -62,7 +62,6 @@ clumps_sp <- raster::aggregate(clumps_sp,
                                list(list(mean, 'cluster_n_cells')))
 
 # Group together close together clusters ---------------------------------------
-clumps_sp <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "individual_datasets", "points.Rds"))
 
 ## Centroid
 points_sp <- coordinates(clumps_sp) %>%
