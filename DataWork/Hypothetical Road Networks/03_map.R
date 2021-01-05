@@ -31,7 +31,7 @@ lc_mst <- ggplot() +
 ld_mst <- ggplot() +
   geom_polygon(data = eth,
                aes(x = long, y = lat, group = group),
-               fill = "cornsilk1", color = NA) +
+               fill = "gray50", color = NA) + # cornsilk1
   geom_path(data = improved_roads,
             aes(x = long, y = lat, group = group,
                 color = "Improved Roads"),
@@ -55,4 +55,7 @@ ggsave(fig, filename = file.path(data_file_path, "Hypothetical Road Networks", "
 ggsave(fig, filename = file.path(data_file_path, "Panel Data RSDP Impacts", 
                                  "Data", "dmspols_grid_ethiopia", "outputs",
                                  "figures", "mst_maps.png"),
+       height = 3.5, width = 7)
+
+ggsave(fig, filename = file.path(paper_figures, "mst_maps.png"),
        height = 3.5, width = 7)
