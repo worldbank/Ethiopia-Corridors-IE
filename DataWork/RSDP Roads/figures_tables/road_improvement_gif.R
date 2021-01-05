@@ -34,6 +34,10 @@ for(year in 1996:2016){
     geom_path(data = roads_tidy_i,
               aes(x = long, y = lat, group = group, color = Speed),
               size = .15) +
+    geom_path(data = roads_tidy_i[roads_tidy_i$Speed %in% 70,],
+              aes(x = long, y = lat, group = group),
+              color = "red",
+              size = .25) +
     theme_void() +
     scale_colour_gradientn(colours = colors,
                            limits = c(0, 70),

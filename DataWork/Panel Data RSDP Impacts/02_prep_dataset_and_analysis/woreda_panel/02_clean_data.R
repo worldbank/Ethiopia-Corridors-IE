@@ -44,18 +44,27 @@ for(speed_i in speeds_vec){
     paste0("Min distance to road of ", speed_i, "km/hr and above")
 }
 
-# Baseline Variables -----------------------------------------------------------
-data <- data %>%
-  group_by(cell_id) %>%
-  mutate(dmspols_1996 = dmspols[year == 1996]) %>%
-  ungroup()
+# Log Variables ----------------------------------------------------------------
+## Log MA
+ma_vars <- data %>% names() %>% str_subset("^MA_")
+for(var in ma_vars) data[[paste0(var, "_log")]] <- data[[var]] %>% log()
 
 # IHS DMSP-OLS -----------------------------------------------------------------
 calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
 
 data <- data %>%
   mutate(dmspols_ihs = calc_ihs(dmspols),
+         dmspols_log = log(dmspols + 1),
          dmspols_zhang_ihs = calc_ihs(dmspols_zhang))
+
+# Baseline Variables -----------------------------------------------------------
+data <- data %>%
+  group_by(cell_id) %>%
+  mutate(dmspols_1996           = dmspols[year == 1996],
+         dmspols_log_1996       = dmspols_log[year == 1996],
+         dmspols_ihs_1996       = dmspols_ihs[year == 1996],
+         dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996]) %>%
+  ungroup()
 
 # Select Relevant Variables ----------------------------------------------------
 id_vars <- c("cell_id", "year")

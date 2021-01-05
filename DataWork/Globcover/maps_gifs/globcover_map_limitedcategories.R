@@ -14,7 +14,7 @@ addis <- data.frame(id = 1,
                     lon = 38.759422)
 coordinates(addis) <- ~lon+lat
 crs(addis) <- CRS("")
-addis_buff <- gBuffer(addis, width = 175/111.12, byid=T)
+addis_buff <- gBuffer(addis, width = 50/111.12, byid=T)
 
 # leaflet() %>%
 #   addTiles() %>%

@@ -20,7 +20,7 @@ clusters$id <- row.names(clusters)
 clusters_tidy <- tidy(clusters)
 clusters_tidy <- merge(clusters_tidy,clusters@data, by = "id")
 
-ggplot() +
+p <- ggplot() +
   geom_polygon(data = eth,
                aes(x = long, y = lat, group = group),
                fill = "black") +
@@ -29,11 +29,18 @@ ggplot() +
   labs(fill = "First Year\nWith NTL") +
   scale_fill_distiller(palette = "Spectral") +
   coord_quickmap() +
-  theme_void() +
-  ggsave(filename = file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl",
-                              "outputs", "figures", "clusters_map.png"),
+  theme_void() 
+
+ggsave(p, filename = file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl",
+                              "outputs", "figures", "ntl_clusters_map.png"),
          height = 3.5, width = 5)
 
+ggsave(p, filename = file.path(paper_figures, "ntl_clusters_map.png"),
+       height = 3.5, width = 5)
+
+
+
+ 
 
 
 

@@ -15,13 +15,12 @@ base_end_df <- data.frame(baseline = c(1996, 1996),
                           endline =  c(2012, 2016))
 
 # Load Data --------------------------------------------------------------------
-data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", "panel_data_clean.Rds"))
 
-## Make sure have woreda in both years. Check why this always wouldn't be case?
+## Remove select variabes
+# These are characters and cause code to break when first differencing
 data <- data %>%
-  group_by(cell_id) %>%
-  mutate(N_woreda = n()) %>%
-  filter(N_woreda == max(N_woreda))
+  dplyr::select(-c(dmspols_1996_group, dmspols_zhang_1996_group))
 
 # Clean Data -------------------------------------------------------------------
 for(i in 1:nrow(base_end_df)){
@@ -51,7 +50,7 @@ for(i in 1:nrow(base_end_df)){
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(cell_id, Z_CODE, distance_mst, dmspols_1996)) 
+    dplyr::select(c(cell_id, distance_mst, dmspols_1996)) 
   
   ## Merge
   data_clean <- merge(data_first_diff, data_time_invar, by = "cell_id")
@@ -59,9 +58,9 @@ for(i in 1:nrow(base_end_df)){
   #### Export
   file_name <- paste0("longdiff_data_clean_base",base_year,"_end",end_year)
   
-  saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
+  saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", 
                           paste0(file_name, ".Rds")))
-  write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
+  write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", 
                             paste0(file_name, ".dta")))
 }
 

@@ -74,18 +74,18 @@ stargazer(iv_dmspols_zhang_ihs,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
-          add.lines = list(
-            c("1st Stage F-Stat", 
-              waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_globcover_urban$stage1,           ~near_mst_5km, lhs=iv_globcover_urban$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_globcover_cropland$stage1,        ~near_mst_5km, lhs=iv_globcover_cropland$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_ndvi$stage1,                      ~near_mst_5km, lhs=iv_ndvi$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_ndvi_cropland$stage1,             ~near_mst_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5] %>% round(ROUND_NUM)
-            )
-          ),
+          # add.lines = list(
+          #   c("1st Stage F-Stat", 
+          #     lfe::waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
+          #     #waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5] %>% round(ROUND_NUM),
+          #     lfe::waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5] %>% round(ROUND_NUM),
+          #     lfe::waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5] %>% round(ROUND_NUM),
+          #     lfe::waldtest(iv_globcover_urban$stage1,           ~near_mst_5km, lhs=iv_globcover_urban$stage1$lhs)[5] %>% round(ROUND_NUM)
+          #     #waldtest(iv_globcover_cropland$stage1,        ~near_mst_5km, lhs=iv_globcover_cropland$stage1$lhs)[5] %>% round(ROUND_NUM),
+          #     #waldtest(iv_ndvi$stage1,                      ~near_mst_5km, lhs=iv_ndvi$stage1$lhs)[5] %>% round(ROUND_NUM),
+          #     #waldtest(iv_ndvi_cropland$stage1,             ~near_mst_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5] %>% round(ROUND_NUM)
+          #   )
+          # ),
           out = file.path(panel_rsdp_imp_data_file_path, 
                           "dmspols_grid_ethiopia", 
                           "outputs",
@@ -113,14 +113,14 @@ stargazer(iv_dmspols_zhang_ihs$stage1,
           digits=2,
           add.lines = list(
             c("1st Stage F-Stat", 
-              waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_globcover_urban$stage1,           ~near_mst_5km, lhs=iv_globcover_urban$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_globcover_cropland$stage1,        ~near_mst_5km, lhs=iv_globcover_cropland$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_ndvi$stage1,                      ~near_mst_5km, lhs=iv_ndvi$stage1$lhs)[5] %>% round(ROUND_NUM),
-              waldtest(iv_ndvi_cropland$stage1,             ~near_mst_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5] %>% round(ROUND_NUM)
+              lfe::waldtest(iv_dmspols_zhang_ihs$stage1,         ~near_mst_5km, lhs=iv_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
+              lfe::waldtest(iv_dmspols_zhang_ihs_base0na$stage1, ~near_mst_5km, lhs=iv_dmspols_zhang_ihs_base0na$stage1$lhs)[5] %>% round(ROUND_NUM),
+              lfe::waldtest(iv_dmspols_zhang_2$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_2$stage1$lhs)[5] %>% round(ROUND_NUM),
+              lfe::waldtest(iv_dmspols_zhang_6$stage1,           ~near_mst_5km, lhs=iv_dmspols_zhang_6$stage1$lhs)[5] %>% round(ROUND_NUM),
+              lfe::waldtest(iv_globcover_urban$stage1,           ~near_mst_5km, lhs=iv_globcover_urban$stage1$lhs)[5] %>% round(ROUND_NUM),
+              lfe::waldtest(iv_globcover_cropland$stage1,        ~near_mst_5km, lhs=iv_globcover_cropland$stage1$lhs)[5] %>% round(ROUND_NUM),
+              lfe::waldtest(iv_ndvi$stage1,                      ~near_mst_5km, lhs=iv_ndvi$stage1$lhs)[5] %>% round(ROUND_NUM),
+              lfe::waldtest(iv_ndvi_cropland$stage1,             ~near_mst_5km, lhs=iv_ndvi_cropland$stage1$lhs)[5] %>% round(ROUND_NUM)
             )
           ),
           out = file.path(panel_rsdp_imp_data_file_path, 

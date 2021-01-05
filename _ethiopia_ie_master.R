@@ -13,6 +13,8 @@ if(Sys.info()[["user"]] == "andm2")    project_file_path <- "C:/Users/andm2/Drop
 if(Sys.info()[["user"]] == "robmarty") code_file_path <- "~/Documents/Github/Ethiopia-Corridors-IE"
 if(Sys.info()[["user"]] == "andm2")    code_file_path <- "G:/Work/Ethiopia/Ethiopia-Corridors-IE"
 
+if(Sys.info()[["user"]] == "robmarty") overleaf_path <- "~/Dropbox/Apps/Overleaf/The Impact of Ethiopia RSDP Evidence from Satellite Data"
+
 data_file_path <- file.path(project_file_path, "Data")
 panel_rsdp_imp_file_path <- file.path(project_file_path, "Data", "Panel Data RSDP Impacts")
 panel_rsdp_imp_data_file_path <- file.path(panel_rsdp_imp_file_path, "Data")
@@ -22,6 +24,12 @@ panel_rsdp_imp_data_file_path <- file.path(panel_rsdp_imp_file_path, "Data")
 rsdp_impact_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts")
 rsdp_impact_prep_data_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts", "01_extract_data_to_datasets")
 rsdp_impact_analysis_code_file_path <- file.path(code_file_path, "DataWork", "Panel Data RSDP Impacts", "02_prep_dataset_and_analysis")
+
+# TODO: to change
+paper_figures <- file.path(overleaf_path, "Figures")
+paper_tables <- file.path(overleaf_path, "Tables")
+#paper_figures <- file.path(project_file_path, "Paper", "figures")
+#paper_tables <- file.path(project_file_path, "Paper", "tables")
 
 # Parameters -------------------------------------------------------------------
 

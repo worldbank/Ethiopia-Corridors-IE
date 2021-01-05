@@ -289,6 +289,35 @@ data <- data %>%
 data$dmspols_zhang_sum0greater_bin <- as.numeric(data$dmspols_zhang_sum0greater > 0)
 data$globcover_urban_sum_above0 <- as.numeric(data$globcover_urban_sum > 0)
 
+# MA Transform -----------------------------------------------------------------
+data <- data %>%
+  mutate(MA_pop2000_theta1_log = log(MA_pop2000_theta1),
+         MA_pop2000_theta2_log = log(MA_pop2000_theta2),
+         MA_pop2000_theta5_log = log(MA_pop2000_theta5),
+         MA_pop2000_theta8_log = log(MA_pop2000_theta8),
+         MA_pop2000_theta1_exclude100km_log = log(MA_pop2000_theta1_exclude100km),
+         MA_pop2000_theta2_exclude100km_log = log(MA_pop2000_theta2_exclude100km),
+         MA_pop2000_theta5_exclude100km_log = log(MA_pop2000_theta5_exclude100km),
+         MA_pop2000_theta8_exclude100km_log = log(MA_pop2000_theta8_exclude100km),
+         
+         MA_gcu2000_theta1_log = log(MA_gcu2000_theta1),
+         MA_gcu2000_theta2_log = log(MA_gcu2000_theta2),
+         MA_gcu2000_theta5_log = log(MA_gcu2000_theta5),
+         MA_gcu2000_theta8_log = log(MA_gcu2000_theta8),
+         MA_gcu2000_theta1_exclude100km_log = log(MA_gcu2000_theta1_exclude100km),
+         MA_gcu2000_theta2_exclude100km_log = log(MA_gcu2000_theta2_exclude100km),
+         MA_gcu2000_theta5_exclude100km_log = log(MA_gcu2000_theta5_exclude100km),
+         MA_gcu2000_theta8_exclude100km_log = log(MA_gcu2000_theta8_exclude100km),
+         
+         MA_ntl2000_theta1_log = log(MA_ntl2000_theta1),
+         MA_ntl2000_theta2_log = log(MA_ntl2000_theta2),
+         MA_ntl2000_theta5_log = log(MA_ntl2000_theta5),
+         MA_ntl2000_theta8_log = log(MA_ntl2000_theta8),
+         MA_ntl2000_theta1_exclude100km_log = log(MA_ntl2000_theta1_exclude100km),
+         MA_ntl2000_theta2_exclude100km_log = log(MA_ntl2000_theta2_exclude100km),
+         MA_ntl2000_theta5_exclude100km_log = log(MA_ntl2000_theta5_exclude100km),
+         MA_ntl2000_theta8_exclude100km_log = log(MA_ntl2000_theta8_exclude100km))
+
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
 
