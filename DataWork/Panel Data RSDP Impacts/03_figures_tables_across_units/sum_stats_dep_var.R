@@ -1,7 +1,5 @@
 # Summary Statistics
 
-ROUND_NUM <- 2
-
 # Define Helper Functions ------------------------------------------------------
 
 if_na_return <- function(x, 
@@ -33,7 +31,11 @@ data_grid_near_rd  <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_
 data_grid_full     <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",       "merged_datasets", "panel_data_clean.Rds"))
 
 # Function for Sum Stats -------------------------------------------------------
-make_sum_stats <- function(data, variables){
+make_sum_stats <- function(data, 
+                           variables,
+                           ROUND_NUM_NTL = 2,
+                           ROUND_NUM_URBAN = 2){
+  
   for(var in variables){
     
     if(var %in% "dmspols_zhang")          var_name <- "NTL"
@@ -48,6 +50,12 @@ make_sum_stats <- function(data, variables){
     if(var %in% "globcover_cropland_sum") var_name <- "Cropland"
     if(var %in% "ndvi")                   var_name <- "NDVI"
     if(var %in% "ndvi_cropland")          var_name <- "NDVI in Cropland"
+    
+    if(var %in% "globcover_urban"){
+      ROUND_NUM <- ROUND_NUM_URBAN
+    } else{
+      ROUND_NUM <- ROUND_NUM_NTL
+    }
     
     mean_1996 <- data[[var]][data$year %in% 1996] %>% mean(na.rm = T) %>% round(ROUND_NUM)
     mean_2012 <- data[[var]][data$year %in% 2012] %>% mean(na.rm = T) %>% round(ROUND_NUM)
@@ -87,7 +95,8 @@ make_sum_stats(data_grid_full,
                              "dmspols_zhang_2",
                              "dmspols_zhang_6",
                              #"dmspols_zhang_base0na",
-                             "globcover_urban"))
+                             "globcover_urban"),
+               ROUND_NUM_URBAN = 4)
 
 cat("\\hline \n")
 N <- data_grid_near_rd %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
@@ -99,7 +108,8 @@ make_sum_stats(data_grid_near_rd,
                              "dmspols_zhang_2",
                              "dmspols_zhang_6",
                              #"dmspols_zhang_base0na",
-                             "globcover_urban"))
+                             "globcover_urban"),
+               ROUND_NUM_URBAN = 4)
 
 cat("\\hline \n")
 N <- data_ntl %>% 

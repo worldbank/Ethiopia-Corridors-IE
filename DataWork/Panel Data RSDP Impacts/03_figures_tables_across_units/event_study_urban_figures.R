@@ -121,30 +121,35 @@ make_figures_by_base_ntl <- function(dep_var_i,
 for(addis_dist in c("All", "Far")){
   
   p <- make_figures_by_base_ntl("Urban", addis_dist)
+  p <- annotate_figure(p, top = text_grob("Urban", color = "black", face = "bold", size = 14))
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_Urban_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
   p <- make_figures_by_base_ntl("NTL > 2", addis_dist)
+  p <- annotate_figure(p, top = text_grob("NTL > 2", color = "black", face = "bold", size = 14))
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_NTL_gt_2_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
   p <- make_figures_by_base_ntl("NTL > 6", addis_dist)
+  p <- annotate_figure(p, top = text_grob("NTL > 6", color = "black", face = "bold", size = 14))
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_NTL_gt_6_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
   p <- make_figures_by_base_ntl("Cluster Exists", addis_dist)
+  p <- annotate_figure(p, top = text_grob("Cluster Exists", color = "black", face = "bold", size = 14))
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_Cluster_Exists_",addis_dist,".png")),
          height = 6.5, width = 9)
   rm(p)
   
   p <- make_figures_by_base_ntl("IHS(NTL)", addis_dist)
+  p <- annotate_figure(p, top = text_grob("IHS(NTL)", color = "black", face = "bold", size = 14))
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_ihs_ntl_",addis_dist,".png")),
          height = 6.5, width = 12)
