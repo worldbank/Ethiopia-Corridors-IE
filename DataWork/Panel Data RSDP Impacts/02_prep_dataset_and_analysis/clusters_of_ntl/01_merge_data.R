@@ -16,6 +16,7 @@ DATASETS_TIME_INVARIANT <- c("distance_roads_by_rsdp_phase.Rds",
                              "distance_hypothetical_road_least_cost_mst.Rds",
                              "distance_hypothetical_road_min_dist_mst.Rds",
                              "adm_units.Rds",
+                             "area.Rds",
                              "cluster_n_cells.Rds",
                              "distance_cities.Rds")
 

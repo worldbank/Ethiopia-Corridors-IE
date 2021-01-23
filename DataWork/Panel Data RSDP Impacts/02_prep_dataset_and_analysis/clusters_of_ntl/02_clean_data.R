@@ -182,6 +182,16 @@ if(ALL_YEARS_IMPROVED_VAR){
   
 }
 
+# Log Variables ----------------------------------------------------------------
+calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
+
+ma_var <- data %>% names() %>% str_subset("^MA_")
+for(var in ma_var) data[[paste0(var, "_log")]] <- data[[var]] %>% log()
+
+ntl_var <- data %>% names() %>% str_subset("dmspols")
+for(var in ntl_var) data[[paste0(var, "_log")]] <- log(data[[var]] + 1)
+for(var in ntl_var) data[[paste0(var, "_ihs")]] <- calc_ihs(data[[var]])
+
 # Dependent Variable Transformations -----------------------------------------
 # Inverse Hyperbolic Since Transformation 
 # This is used by Mitnik et. al. due to lots of zeros in DMSP-OLS 
@@ -195,16 +205,7 @@ data <- data %>%
   mutate(dmspols_1996 = dmspols[year == 1996],
          dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
   
-  ungroup() %>%
-  
-  # IHS
-  mutate(dmspols_ihs            = calc_ihs(dmspols),
-         viirs_mean_ihs         = calc_ihs(viirs_mean),
-         viirs_median_ihs       = calc_ihs(viirs_median),
-         viirs_max_ihs          = calc_ihs(viirs_max),
-         dmspols_zhang_ihs      = calc_ihs(dmspols_zhang),
-         dmspols_1996_ihs       = calc_ihs(dmspols_1996),
-         dmspols_zhang_1996_ihs = calc_ihs(dmspols_zhang_1996))
+  ungroup() 
 
 # Baseline NTL quantiles
 dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
@@ -233,6 +234,16 @@ data$dmspols_6 <- data$dmspols >= 6
 data$dmspols_zhang_1 <- data$dmspols_zhang >= 1
 data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
 data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
+
+
+# Log Counts -------------------------------------------------------------------
+data$globcover_urban_sum_log <- log(data$globcover_urban_sum + 1)
+data$dmspols_sum1_log <- log(data$dmspols_sum1 + 1)
+data$dmspols_sum2_log <- log(data$dmspols_sum2 + 1)
+data$dmspols_sum6_log <- log(data$dmspols_sum6 + 1)
+data$dmspols_zhang_sum1_log <- log(data$dmspols_zhang_sum1 + 1)
+data$dmspols_zhang_sum2_log <- log(data$dmspols_zhang_sum2 + 1)
+data$dmspols_zhang_sum6_log <- log(data$dmspols_zhang_sum6 + 1)
 
 # Other variable transformations ---------------------------------------------
 data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
@@ -289,34 +300,6 @@ data <- data %>%
 data$dmspols_zhang_sum0greater_bin <- as.numeric(data$dmspols_zhang_sum0greater > 0)
 data$globcover_urban_sum_above0 <- as.numeric(data$globcover_urban_sum > 0)
 
-# MA Transform -----------------------------------------------------------------
-data <- data %>%
-  mutate(MA_pop2000_theta1_log = log(MA_pop2000_theta1),
-         MA_pop2000_theta2_log = log(MA_pop2000_theta2),
-         MA_pop2000_theta5_log = log(MA_pop2000_theta5),
-         MA_pop2000_theta8_log = log(MA_pop2000_theta8),
-         MA_pop2000_theta1_exclude100km_log = log(MA_pop2000_theta1_exclude100km),
-         MA_pop2000_theta2_exclude100km_log = log(MA_pop2000_theta2_exclude100km),
-         MA_pop2000_theta5_exclude100km_log = log(MA_pop2000_theta5_exclude100km),
-         MA_pop2000_theta8_exclude100km_log = log(MA_pop2000_theta8_exclude100km),
-         
-         MA_gcu2000_theta1_log = log(MA_gcu2000_theta1),
-         MA_gcu2000_theta2_log = log(MA_gcu2000_theta2),
-         MA_gcu2000_theta5_log = log(MA_gcu2000_theta5),
-         MA_gcu2000_theta8_log = log(MA_gcu2000_theta8),
-         MA_gcu2000_theta1_exclude100km_log = log(MA_gcu2000_theta1_exclude100km),
-         MA_gcu2000_theta2_exclude100km_log = log(MA_gcu2000_theta2_exclude100km),
-         MA_gcu2000_theta5_exclude100km_log = log(MA_gcu2000_theta5_exclude100km),
-         MA_gcu2000_theta8_exclude100km_log = log(MA_gcu2000_theta8_exclude100km),
-         
-         MA_ntl2000_theta1_log = log(MA_ntl2000_theta1),
-         MA_ntl2000_theta2_log = log(MA_ntl2000_theta2),
-         MA_ntl2000_theta5_log = log(MA_ntl2000_theta5),
-         MA_ntl2000_theta8_log = log(MA_ntl2000_theta8),
-         MA_ntl2000_theta1_exclude100km_log = log(MA_ntl2000_theta1_exclude100km),
-         MA_ntl2000_theta2_exclude100km_log = log(MA_ntl2000_theta2_exclude100km),
-         MA_ntl2000_theta5_exclude100km_log = log(MA_ntl2000_theta5_exclude100km),
-         MA_ntl2000_theta8_exclude100km_log = log(MA_ntl2000_theta8_exclude100km))
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", "panel_data_clean.Rds"))

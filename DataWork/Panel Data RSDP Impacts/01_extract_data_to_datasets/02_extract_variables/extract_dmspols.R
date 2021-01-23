@@ -12,23 +12,22 @@ extract_dmspols_to_points <- function(year, sdf){
   
   if(grepl("grid", DATASET_TYPE)){
     sdf$dmspols <- dmspols_vx$extract_points(sp=sdf) %>% as.numeric
-  } else if(grepl("woreda", DATASET_TYPE)){
-    sdf$dmspols <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
-    sdf$dmspols_2 <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
-    sdf$dmspols_6 <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
-    
-  } else if(grepl("clusters", DATASET_TYPE)){
+  } else {
+    # Average NTL value
     sdf$dmspols   <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x, na.rm=T)}) %>% as.numeric
+    
+    # Proportion of unit above NTL threshold
     sdf$dmspols_1 <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x >= 1, na.rm=T)}) %>% as.numeric
     sdf$dmspols_2 <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
     sdf$dmspols_6 <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
     
+    # Number of cells above NTL threshold
     sdf$dmspols_sum         <- dmspols_vx$extract(sp=sdf, fun=function(x){sum(x, na.rm=T)}) %>% as.numeric
     sdf$dmspols_sum0greater <- dmspols_vx$extract(sp=sdf, fun=function(x){sum(x > 0, na.rm=T)}) %>% as.numeric
     sdf$dmspols_sum1        <- dmspols_vx$extract(sp=sdf, fun=function(x){sum(x >= 1, na.rm=T)}) %>% as.numeric
     sdf$dmspols_sum2        <- dmspols_vx$extract(sp=sdf, fun=function(x){sum(x >= 2, na.rm=T)}) %>% as.numeric
     sdf$dmspols_sum6        <- dmspols_vx$extract(sp=sdf, fun=function(x){sum(x >= 6, na.rm=T)}) %>% as.numeric
-  }
+  } 
   
   sdf$year <- year
   return(sdf@data)

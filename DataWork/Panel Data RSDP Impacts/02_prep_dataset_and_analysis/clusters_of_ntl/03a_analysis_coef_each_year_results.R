@@ -3,7 +3,7 @@
 # Exports dataframe of results, to be used to make figures
 
 #### Parameters
-OVERWRITE_FILES <- F
+OVERWRITE_FILES <- T
 
 #### Default
 dep_var <- "globcover_urban"
@@ -24,6 +24,7 @@ for(dep_var in c("dmspols_zhang_base0na",
                  "ndvi_cropland", 
                  "globcover_urban",
                  "globcover_urban_sum",
+                 "globcover_urban_sum_log",
                  "globcover_urban_sum_above0",
                  "globcover_cropland", 
                  "globcover_cropland_sum", 
@@ -34,12 +35,18 @@ for(dep_var in c("dmspols_zhang_base0na",
                  "dmspols_zhang_sum1",
                  "dmspols_zhang_sum2",
                  "dmspols_zhang_sum6",
+                 "dmspols_zhang_sum1_log",
+                 "dmspols_zhang_sum2_log",
+                 "dmspols_zhang_sum6_log",
                  "dmspols", 
                  "dmspols_ihs",
                  "dmspols_sum0greater",
                  "dmspols_sum1",
                  "dmspols_sum2",
-                 "dmspols_sum6")){
+                 "dmspols_sum6",
+                 "dmspols_sum1_log",
+                 "dmspols_sum2_log",
+                 "dmspols_sum6_log")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
     for(controls in c("", "+temp_avg+precipitation")){

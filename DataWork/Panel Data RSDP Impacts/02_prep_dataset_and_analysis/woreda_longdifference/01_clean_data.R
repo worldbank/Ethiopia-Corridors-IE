@@ -51,7 +51,7 @@ for(i in 1:nrow(base_end_df)){
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(cell_id, Z_CODE, distance_mst, dmspols_1996)) 
+    dplyr::select(c(cell_id, Z_CODE, distance_mst, dmspols_1996, area_polygon, distance_city_addisababa)) 
   
   ## Merge
   data_clean <- merge(data_first_diff, data_time_invar, by = "cell_id")

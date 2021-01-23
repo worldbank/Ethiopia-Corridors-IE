@@ -38,8 +38,8 @@ data <- bind_rows(
 )
 
 data <- data %>%
-  filter(indep_var %>% str_detect("years_since_")) %>%
-  filter(controls %in% "+temp_avg+precipitation") %>%
+  dplyr::filter(indep_var %>% str_detect("years_since_")) %>%
+  dplyr::filter(controls %in% "+temp_avg+precipitation") %>%
   
   ## Rename/Factor Dep Var
   mutate(dep_var = case_when(
@@ -50,14 +50,15 @@ data <- data %>%
     dep_var == "dmspols_zhang_6" ~ "NTL > 6",
     dep_var == "dmspols_zhang_sum0greater_bin" ~ "Cluster Exists",
     dep_var == "globcover_urban_sum_above0" ~ "Cluster Exists",
-    dep_var == "globcover_urban_sum" ~ "Urban",
-    dep_var == "globcover_urban" ~ "Urban"
+    dep_var == "globcover_urban_sum" ~ "Urban (Globcover)",
+    dep_var == "globcover_urban" ~ "Urban (Globcover)"
   )) %>%
   mutate(indep_var = case_when(
     indep_var == "years_since_improvedroad" ~ "All",
     indep_var == "years_since_improvedroad_50aboveafter" ~ ">=50 km/hr",
     indep_var == "years_since_improvedroad_below50after" ~ "<50 km/hr"
-  ))
+  )) %>%
+  dplyr::filter(dep_var != "Cluster Exists")
 
 # Figures ----------------------------------------------------------------------
 ntl_group_i <- "All"
@@ -67,7 +68,7 @@ dep_var_i <- "Urban"
 title <- "Impact of Roads"
 
 make_1_figure <- function(ntl_group_i,
-                          dep_var_i,
+                          unit_i,
                           addis_distance_i){
   
   title <- ""
@@ -78,7 +79,7 @@ make_1_figure <- function(ntl_group_i,
   if(ntl_group_i %in% "2") title <- paste0(title, "Baseline NTL Above Median")
   
   p <- data %>%
-    filter(dep_var %in% all_of(dep_var_i),
+    filter(unit %in% all_of(unit_i),
            addis_distance %in% all_of(addis_distance_i),
            ntl_group %in% all_of(ntl_group_i)) %>%
     ggplot(aes(x = years_since_improved, y = b, ymin = p025, ymax=p975,
@@ -95,17 +96,17 @@ make_1_figure <- function(ntl_group_i,
                        guide = guide_legend(reverse = TRUE)) +
     theme_minimal() +
     theme(plot.title = element_text(hjust = 0.5, face = "bold", size=10)) +
-    facet_wrap(~unit,
+    facet_wrap(~dep_var,
                scales = "free_y",
                nrow = 1)
 }
 
-make_figures_by_base_ntl <- function(dep_var_i,
+make_figures_by_base_ntl <- function(unit_i,
                                      addis_distance_i){
   
   p_all <- lapply(c("All", "1", "2"),
                   make_1_figure,
-                  dep_var_i,
+                  unit_i,
                   addis_distance_i)
   
   p_arrange <- ggarrange(p_all[[1]],
@@ -113,48 +114,35 @@ make_figures_by_base_ntl <- function(dep_var_i,
                          p_all[[3]],
                          nrow = 3,
                          common.legend = T,
-                         legend = "right")
+                         legend = "bottom")
   
   return(p_arrange)
 }
 
 for(addis_dist in c("All", "Far")){
   
-  p <- make_figures_by_base_ntl("Urban", addis_dist)
-  p <- annotate_figure(p, top = text_grob("Urban", color = "black", face = "bold", size = 14))
+  p <- make_figures_by_base_ntl("NTL Cluster", addis_dist)
   ggsave(p,
-         filename = file.path(paper_figures, paste0("eventstudy_Urban_",addis_dist,".png")),
+         filename = file.path(paper_figures, paste0("eventstudy_ntlcluster_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
-  p <- make_figures_by_base_ntl("NTL > 2", addis_dist)
-  p <- annotate_figure(p, top = text_grob("NTL > 2", color = "black", face = "bold", size = 14))
+  p <- make_figures_by_base_ntl("1x1km Grid", addis_dist)
   ggsave(p,
-         filename = file.path(paper_figures, paste0("eventstudy_NTL_gt_2_",addis_dist,".png")),
+         filename = file.path(paper_figures, paste0("eventstudy_1kmgrid_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
-  p <- make_figures_by_base_ntl("NTL > 6", addis_dist)
-  p <- annotate_figure(p, top = text_grob("NTL > 6", color = "black", face = "bold", size = 14))
+  p <- make_figures_by_base_ntl("Urban Cluster", addis_dist)
   ggsave(p,
-         filename = file.path(paper_figures, paste0("eventstudy_NTL_gt_6_",addis_dist,".png")),
-         height = 6.5, width = 12)
-  rm(p)
-  
-  p <- make_figures_by_base_ntl("Cluster Exists", addis_dist)
-  p <- annotate_figure(p, top = text_grob("Cluster Exists", color = "black", face = "bold", size = 14))
-  ggsave(p,
-         filename = file.path(paper_figures, paste0("eventstudy_Cluster_Exists_",addis_dist,".png")),
-         height = 6.5, width = 9)
-  rm(p)
-  
-  p <- make_figures_by_base_ntl("IHS(NTL)", addis_dist)
-  p <- annotate_figure(p, top = text_grob("IHS(NTL)", color = "black", face = "bold", size = 14))
-  ggsave(p,
-         filename = file.path(paper_figures, paste0("eventstudy_ihs_ntl_",addis_dist,".png")),
+         filename = file.path(paper_figures, paste0("eventstudy_urbancluster_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
 }
+
+
+
+
 
 

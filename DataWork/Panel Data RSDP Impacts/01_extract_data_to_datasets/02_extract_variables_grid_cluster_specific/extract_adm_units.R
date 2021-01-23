@@ -28,9 +28,9 @@ if(grepl("clusters", DATASET_TYPE)){
 points_OVER_woreda <- sp::over(points, woreda)
 
 points$woreda_id <- points_OVER_woreda$woreda_id
-# points$W_CODE <- points_OVER_woreda$W_CODE
-# points$Z_CODE <- points_OVER_woreda$Z_CODE
-# points$R_CODE <- points_OVER_woreda$R_CODE
+points$W_CODE <- points_OVER_woreda$W_CODE
+points$Z_CODE <- points_OVER_woreda$Z_CODE
+points$R_CODE <- points_OVER_woreda$R_CODE
 
 points$woreda_pop2007 <- points_OVER_woreda$Pop2007
 points$woreda_density2007 <- points_OVER_woreda$Density

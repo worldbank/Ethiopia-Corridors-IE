@@ -85,6 +85,7 @@ library(riverplot)
 library(leaflet)
 library(TTR)
 library(tidyselect)
+library(dvmisc)
 
 # Functions
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")

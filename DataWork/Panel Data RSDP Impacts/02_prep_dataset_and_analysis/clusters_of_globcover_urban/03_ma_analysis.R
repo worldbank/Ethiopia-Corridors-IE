@@ -6,6 +6,11 @@ data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_
 data <- data %>%
   filter(year >= 1996)
 
+data <- data %>%
+  filter(year == 1996)
+
+data$cluster_n_cells %>% hist()
+
 # MA Transform -----------------------------------------------------------------
 data <- data %>%
   mutate(MA_pop2000_theta1_log = log(MA_pop2000_theta1),

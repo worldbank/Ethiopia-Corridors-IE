@@ -26,7 +26,7 @@ for(speed_i in speeds_vec){
   vars_road_length <- paste0("road_length_", speeds_vec[speeds_vec >= speed_i])
   
   data[[paste0("road_length_",speed_i,"above")]] <- data %>%
-    select(all_of(vars_road_length)) %>% 
+    dplyr::select(all_of(vars_road_length)) %>% 
     apply(1, sum_na)
   
   var_label(data[[paste0("road_length_",speed_i,"above")]]) <- 
@@ -37,7 +37,7 @@ for(speed_i in speeds_vec){
   vars_distance_road <- paste0("distance_road_speed_", speeds_vec[speeds_vec >= speed_i])
   
   data[[paste0("distance_road_speed_",speed_i,"above")]] <- data %>%
-    select(all_of(vars_distance_road)) %>% 
+    dplyr::select(all_of(vars_distance_road)) %>% 
     apply(1, min, na.rm=T)
   
   var_label(data[[paste0("distance_road_speed_",speed_i,"above")]]) <- 
@@ -45,17 +45,14 @@ for(speed_i in speeds_vec){
 }
 
 # Log Variables ----------------------------------------------------------------
-## Log MA
-ma_vars <- data %>% names() %>% str_subset("^MA_")
-for(var in ma_vars) data[[paste0(var, "_log")]] <- data[[var]] %>% log()
-
-# IHS DMSP-OLS -----------------------------------------------------------------
 calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
 
-data <- data %>%
-  mutate(dmspols_ihs = calc_ihs(dmspols),
-         dmspols_log = log(dmspols + 1),
-         dmspols_zhang_ihs = calc_ihs(dmspols_zhang))
+ma_var <- data %>% names() %>% str_subset("^MA_")
+for(var in ma_var) data[[paste0(var, "_log")]] <- data[[var]] %>% log()
+
+ntl_var <- data %>% names() %>% str_subset("dmspols")
+for(var in ntl_var) data[[paste0(var, "_log")]] <- log(data[[var]] + 1)
+for(var in ntl_var) data[[paste0(var, "_ihs")]] <- calc_ihs(data[[var]])
 
 # Baseline Variables -----------------------------------------------------------
 data <- data %>%
@@ -74,7 +71,7 @@ road_distance_vars <- c("distance_mst")
 dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% str_subset("above")
 satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
 MA_vars <- names(data) %>% str_subset("MA_")
-other_vars <- c("gpw2000")
+other_vars <- c("gpw2000", "area_polygon", "distance_city_addisababa")
 
 vars_all <- c(id_vars,
               adm_vars,

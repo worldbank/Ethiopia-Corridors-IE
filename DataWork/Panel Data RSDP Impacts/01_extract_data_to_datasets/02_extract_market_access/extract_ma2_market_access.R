@@ -17,6 +17,7 @@ globcover_urban[] <- as.numeric(globcover_urban[] %in% 190)
 ## Population using geometry
 gpw <- crop(gpw, woreda)
 woreda$pop_geom <- velox(gpw)$extract(sp = woreda, fun = function(x) sum(x, na.rm=T)) %>% as.vector()
+woreda$pop_geom_log <- log(woreda$pop_geom)
 
 ## Population using centroid
 # Use when geometry returns NA
@@ -29,6 +30,7 @@ woreda$pop_geom[is.na(woreda$pop_geom)] <- woreda$pop_centroid[is.na(woreda$pop_
 ## Cleanup
 woreda@data <- woreda@data %>%
   dplyr::rename(dest_pop2000 = pop_geom,
+                dest_poplog2000 = pop_geom_log,
                 dest_uid = cell_id)
 
 # Extract NTL ------------------------------------------------------------------
@@ -88,6 +90,11 @@ location_traveltimes$pop_DIV_tt_theta2 <- location_traveltimes$dest_pop2000 / (l
 location_traveltimes$pop_DIV_tt_theta5 <- location_traveltimes$dest_pop2000 / (location_traveltimes$travel_time^5)
 location_traveltimes$pop_DIV_tt_theta8 <- location_traveltimes$dest_pop2000 / (location_traveltimes$travel_time^8)
 
+location_traveltimes$poplog_DIV_tt_theta1 <- location_traveltimes$dest_poplog2000 / (location_traveltimes$travel_time^1)
+location_traveltimes$poplog_DIV_tt_theta2 <- location_traveltimes$dest_poplog2000 / (location_traveltimes$travel_time^2)
+location_traveltimes$poplog_DIV_tt_theta5 <- location_traveltimes$dest_poplog2000 / (location_traveltimes$travel_time^5)
+location_traveltimes$poplog_DIV_tt_theta8 <- location_traveltimes$dest_poplog2000 / (location_traveltimes$travel_time^8)
+
 location_traveltimes$ntl_DIV_tt_theta1 <- location_traveltimes$dest_ntl1996 / (location_traveltimes$travel_time^1)
 location_traveltimes$ntl_DIV_tt_theta2 <- location_traveltimes$dest_ntl1996 / (location_traveltimes$travel_time^2)
 location_traveltimes$ntl_DIV_tt_theta5 <- location_traveltimes$dest_ntl1996 / (location_traveltimes$travel_time^5)
@@ -105,6 +112,11 @@ MA_df <- location_traveltimes[, list(
   MA_pop2000_theta5 = sum(pop_DIV_tt_theta5),
   MA_pop2000_theta8 = sum(pop_DIV_tt_theta8),
   
+  MA_poplog2000_theta1 = sum(poplog_DIV_tt_theta1), 
+  MA_poplog2000_theta2 = sum(poplog_DIV_tt_theta2), 
+  MA_poplog2000_theta5 = sum(poplog_DIV_tt_theta5),
+  MA_poplog2000_theta8 = sum(poplog_DIV_tt_theta8),
+  
   MA_ntl2000_theta1 = sum(ntl_DIV_tt_theta1), 
   MA_ntl2000_theta2 = sum(ntl_DIV_tt_theta2), 
   MA_ntl2000_theta5 = sum(ntl_DIV_tt_theta5),
@@ -118,14 +130,100 @@ MA_df <- location_traveltimes[, list(
   as.data.frame() %>%
   dplyr::rename(cell_id = orig_uid)
 
-#### Calculate Market Access - Excluding within 100km
-location_traveltimes_far <- location_traveltimes[!(location_traveltimes$distance > 100 * 1000),]
+# Exlude Within 10km -----------------------------------------------------------
+location_traveltimes_far <- location_traveltimes[(location_traveltimes$distance > 10 * 1000),]
+
+MA_exclude_10km_df <- location_traveltimes_far[, list(
+  MA_pop2000_theta1_exclude10km = sum(pop_DIV_tt_theta1), 
+  MA_pop2000_theta2_exclude10km = sum(pop_DIV_tt_theta2),
+  MA_pop2000_theta5_exclude10km = sum(pop_DIV_tt_theta5),
+  MA_pop2000_theta8_exclude10km = sum(pop_DIV_tt_theta8),
+  
+  MA_poplog2000_theta1_exclude10km = sum(poplog_DIV_tt_theta1), 
+  MA_poplog2000_theta2_exclude10km = sum(poplog_DIV_tt_theta2),
+  MA_poplog2000_theta5_exclude10km = sum(poplog_DIV_tt_theta5),
+  MA_poplog2000_theta8_exclude10km = sum(poplog_DIV_tt_theta8),
+  
+  MA_ntl2000_theta1_exclude10km = sum(ntl_DIV_tt_theta1), 
+  MA_ntl2000_theta2_exclude10km = sum(ntl_DIV_tt_theta2), 
+  MA_ntl2000_theta5_exclude10km = sum(ntl_DIV_tt_theta5),
+  MA_ntl2000_theta8_exclude10km = sum(ntl_DIV_tt_theta8),
+  
+  MA_gcu2000_theta1_exclude10km = sum(gcu_DIV_tt_theta1), 
+  MA_gcu2000_theta2_exclude10km = sum(gcu_DIV_tt_theta2), 
+  MA_gcu2000_theta5_exclude10km = sum(gcu_DIV_tt_theta5),
+  MA_gcu2000_theta8_exclude10km = sum(gcu_DIV_tt_theta8)
+), by=list(orig_uid, year)] %>%
+  as.data.frame() %>%
+  dplyr::rename(cell_id = orig_uid)
+
+# Exlude Within 20km -----------------------------------------------------------
+location_traveltimes_far <- location_traveltimes[(location_traveltimes$distance > 20 * 1000),]
+
+MA_exclude_20km_df <- location_traveltimes_far[, list(
+  MA_pop2000_theta1_exclude20km = sum(pop_DIV_tt_theta1), 
+  MA_pop2000_theta2_exclude20km = sum(pop_DIV_tt_theta2),
+  MA_pop2000_theta5_exclude20km = sum(pop_DIV_tt_theta5),
+  MA_pop2000_theta8_exclude20km = sum(pop_DIV_tt_theta8),
+  
+  MA_poplog2000_theta1_exclude20km = sum(poplog_DIV_tt_theta1), 
+  MA_poplog2000_theta2_exclude20km = sum(poplog_DIV_tt_theta2),
+  MA_poplog2000_theta5_exclude20km = sum(poplog_DIV_tt_theta5),
+  MA_poplog2000_theta8_exclude20km = sum(poplog_DIV_tt_theta8),
+  
+  MA_ntl2000_theta1_exclude20km = sum(ntl_DIV_tt_theta1), 
+  MA_ntl2000_theta2_exclude20km = sum(ntl_DIV_tt_theta2), 
+  MA_ntl2000_theta5_exclude20km = sum(ntl_DIV_tt_theta5),
+  MA_ntl2000_theta8_exclude20km = sum(ntl_DIV_tt_theta8),
+  
+  MA_gcu2000_theta1_exclude20km = sum(gcu_DIV_tt_theta1), 
+  MA_gcu2000_theta2_exclude20km = sum(gcu_DIV_tt_theta2), 
+  MA_gcu2000_theta5_exclude20km = sum(gcu_DIV_tt_theta5),
+  MA_gcu2000_theta8_exclude20km = sum(gcu_DIV_tt_theta8)
+), by=list(orig_uid, year)] %>%
+  as.data.frame() %>%
+  dplyr::rename(cell_id = orig_uid)
+
+# Exlude Within 50km -----------------------------------------------------------
+location_traveltimes_far <- location_traveltimes[(location_traveltimes$distance > 50 * 1000),]
+
+MA_exclude_50km_df <- location_traveltimes_far[, list(
+  MA_pop2000_theta1_exclude50km = sum(pop_DIV_tt_theta1), 
+  MA_pop2000_theta2_exclude50km = sum(pop_DIV_tt_theta2),
+  MA_pop2000_theta5_exclude50km = sum(pop_DIV_tt_theta5),
+  MA_pop2000_theta8_exclude50km = sum(pop_DIV_tt_theta8),
+  
+  MA_poplog2000_theta1_exclude50km = sum(poplog_DIV_tt_theta1), 
+  MA_poplog2000_theta2_exclude50km = sum(poplog_DIV_tt_theta2),
+  MA_poplog2000_theta5_exclude50km = sum(poplog_DIV_tt_theta5),
+  MA_poplog2000_theta8_exclude50km = sum(poplog_DIV_tt_theta8),
+  
+  MA_ntl2000_theta1_exclude50km = sum(ntl_DIV_tt_theta1), 
+  MA_ntl2000_theta2_exclude50km = sum(ntl_DIV_tt_theta2), 
+  MA_ntl2000_theta5_exclude50km = sum(ntl_DIV_tt_theta5),
+  MA_ntl2000_theta8_exclude50km = sum(ntl_DIV_tt_theta8),
+  
+  MA_gcu2000_theta1_exclude50km = sum(gcu_DIV_tt_theta1), 
+  MA_gcu2000_theta2_exclude50km = sum(gcu_DIV_tt_theta2), 
+  MA_gcu2000_theta5_exclude50km = sum(gcu_DIV_tt_theta5),
+  MA_gcu2000_theta8_exclude50km = sum(gcu_DIV_tt_theta8)
+), by=list(orig_uid, year)] %>%
+  as.data.frame() %>%
+  dplyr::rename(cell_id = orig_uid)
+
+# Exlude Within 100km -----------------------------------------------------------
+location_traveltimes_far <- location_traveltimes[(location_traveltimes$distance > 100 * 1000),]
 
 MA_exclude_100km_df <- location_traveltimes_far[, list(
   MA_pop2000_theta1_exclude100km = sum(pop_DIV_tt_theta1), 
   MA_pop2000_theta2_exclude100km = sum(pop_DIV_tt_theta2),
   MA_pop2000_theta5_exclude100km = sum(pop_DIV_tt_theta5),
   MA_pop2000_theta8_exclude100km = sum(pop_DIV_tt_theta8),
+  
+  MA_poplog2000_theta1_exclude100km = sum(poplog_DIV_tt_theta1), 
+  MA_poplog2000_theta2_exclude100km = sum(poplog_DIV_tt_theta2),
+  MA_poplog2000_theta5_exclude100km = sum(poplog_DIV_tt_theta5),
+  MA_poplog2000_theta8_exclude100km = sum(poplog_DIV_tt_theta8),
   
   MA_ntl2000_theta1_exclude100km = sum(ntl_DIV_tt_theta1), 
   MA_ntl2000_theta2_exclude100km = sum(ntl_DIV_tt_theta2), 
@@ -141,7 +239,10 @@ MA_exclude_100km_df <- location_traveltimes_far[, list(
   dplyr::rename(cell_id = orig_uid)
 
 # Merge Market Access Measures -------------------------------------------------
-MA_all_df <- merge(MA_df, MA_exclude_100km_df, by=c("cell_id" , "year"), all=T)
+MA_all_df <- merge(MA_df, MA_exclude_10km_df, by=c("cell_id" , "year"), all=T)
+MA_all_df <- merge(MA_all_df, MA_exclude_20km_df, by=c("cell_id" , "year"), all=T)
+MA_all_df <- merge(MA_all_df, MA_exclude_50km_df, by=c("cell_id" , "year"), all=T)
+MA_all_df <- merge(MA_all_df, MA_exclude_100km_df, by=c("cell_id" , "year"), all=T)
 
 # Export -----------------------------------------------------------------------
 saveRDS(MA_all_df, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "ma2_market_access.Rds"))

@@ -4,7 +4,9 @@
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", "panel_data_clean.Rds"))
 
 data <- data %>%
-  filter(year >= 1996)
+  filter(year == 1996)
+
+data$cluster_n_cells %>% hist()
 
 data <- data %>%
   filter(year %in% c(1996, 2016)) %>%

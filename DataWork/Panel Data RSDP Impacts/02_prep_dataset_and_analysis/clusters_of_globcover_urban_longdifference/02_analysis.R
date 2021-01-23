@@ -17,6 +17,9 @@ for(theta in c(1,2,5,8)){
       data2012$MA_var <- data2012[[paste0("MA_pop2000_theta",theta,exclude100, log)]]
       data2016$MA_var <- data2016[[paste0("MA_pop2000_theta",theta,exclude100, log)]]
       
+      data2012$distance_city_addisababa_log <- data2012$distance_city_addisababa %>% log()
+      data2016$distance_city_addisababa_log <- data2016$distance_city_addisababa %>% log()
+      
       lm_dmspols_zhang_ihs             <- felm(dmspols_zhang_ihs             ~ MA_var | 0 | 0 | 0, data = data2012)
       lm_dmspols_zhang_sum2            <- felm(dmspols_zhang_sum2            ~ MA_var | 0 | 0 | 0, data = data2012)
       lm_dmspols_zhang_sum6            <- felm(dmspols_zhang_sum6            ~ MA_var | 0 | 0 | 0, data = data2012)
@@ -24,7 +27,14 @@ for(theta in c(1,2,5,8)){
       lm_globcover_urban_sum           <- felm(globcover_urban_sum        ~ MA_var | 0 | 0 | 0, data = data2016)
       lm_globcover_cropland_sum        <- felm(globcover_cropland_sum        ~ MA_var | 0 | 0 | 0, data = data2016)
       lm_ndvi                          <- felm(ndvi                          ~ MA_var | 0 | 0 | 0, data = data2016)
-      #lm_ndvi_cropland                 <- felm(ndvi_cropland                 ~ MA_var | 0 | 0 | 0, data = data2016)
+
+      lm_dmspols_zhang_ihs_ADDIS             <- felm(dmspols_zhang_ihs             ~ MA_var*distance_city_addisababa_log | 0 | 0 | 0, data = data2012)
+      lm_dmspols_zhang_sum2_ADDIS             <- felm(dmspols_zhang_sum2            ~ MA_var*distance_city_addisababa_log | 0 | 0 | 0, data = data2012)
+      lm_dmspols_zhang_sum6_ADDIS            <- felm(dmspols_zhang_sum6            ~ MA_var*distance_city_addisababa_log | 0 | 0 | 0, data = data2012)
+      lm_dmspols_zhang_sum0greater_bin_ADDIS <- felm(dmspols_zhang_sum0greater_bin ~ MA_var*distance_city_addisababa_log | 0 | 0 | 0, data = data2012)
+      lm_globcover_urban_sum_ADDIS           <- felm(globcover_urban_sum           ~ MA_var*distance_city_addisababa_log | 0 | 0 | 0, data = data2016)
+      lm_globcover_cropland_sum_ADDIS        <- felm(globcover_cropland_sum        ~ MA_var*distance_city_addisababa_log | 0 | 0 | 0, data = data2016)
+      lm_ndvi_ADDIS                          <- felm(ndvi                          ~ MA_var*distance_city_addisababa_log | 0 | 0 | 0, data = data2016)
       
       lm_dmspols_zhang_ihs_NTLBASE             <- felm(dmspols_zhang_ihs             ~ MA_var*dmspols_1996_bin | 0 | 0 | 0, data = data2012)
       lm_dmspols_zhang_sum2_NTLBASE            <- felm(dmspols_zhang_sum2            ~ MA_var*dmspols_1996_bin | 0 | 0 | 0, data = data2012)
@@ -33,8 +43,7 @@ for(theta in c(1,2,5,8)){
       lm_globcover_urban_sum_NTLBASE           <- felm(globcover_urban_sum           ~ MA_var*dmspols_1996_bin | 0 | 0 | 0, data = data2016)
       lm_globcover_cropland_sum_NTLBASE        <- felm(globcover_cropland_sum        ~ MA_var*dmspols_1996_bin | 0 | 0 | 0, data = data2016)
       lm_ndvi_NTLBASE                          <- felm(ndvi                          ~ MA_var*dmspols_1996_bin | 0 | 0 | 0, data = data2016)
-      #lm_ndvi_cropland_NTLBASE                 <- felm(ndvi_cropland                 ~ MA_var*dmspols_1996_bin | 0 | 0 | 0, data = data2016)
-      
+
       stargazer(lm_dmspols_zhang_ihs,
                 lm_dmspols_zhang_sum2,
                 lm_dmspols_zhang_sum6,
