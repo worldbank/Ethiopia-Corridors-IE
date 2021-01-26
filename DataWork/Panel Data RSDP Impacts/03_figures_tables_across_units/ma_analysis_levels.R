@@ -7,10 +7,10 @@ data <- data %>%
   filter(year >= 1996)
 
 # Regressions ------------------------------------------------------------------
-for(unit in c("woreda", "clusters_of_ntl", "clusters_of_globcover_urban")){
+for(unit in c("woreda")){ # "clusters_of_ntl", "clusters_of_globcover_urban"
   for(theta in c(1,2,5,8)){
     for(log in c("_log")){
-      for(exclude100 in c("")){ # "_exclude100km"
+      for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude100km"
         
         ## Load/Subset Data
         data <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "panel_data_clean.Rds"))
@@ -19,25 +19,33 @@ for(unit in c("woreda", "clusters_of_ntl", "clusters_of_globcover_urban")){
           filter(year >= 1996)
         
         ## Prep MA Var
-        data$MA_var <- data[[paste0("MA_pop2000_theta",theta,exclude100, log)]]
+        data$MA_var_theta1 <- data[[paste0("MA_pop2000_theta",1,exclude, log)]]
+        data$MA_var_theta8 <- data[[paste0("MA_pop2000_theta",8,exclude, log)]]
         
-        data$globcover_urban_sum_log <- log(data$globcover_urban_sum + 1)
-        data$dmspols_zhang_sum2_log <- log(data$dmspols_zhang_sum2 + 1)
-        data$dmspols_zhang_sum6_log <- log(data$dmspols_zhang_sum6 + 1)
-        
-        lm_globcover_urban    <- felm(globcover_urban_sum     ~ MA_var + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
-        lm_dmspols_zhang_2    <- felm(dmspols_zhang_sum2     ~ MA_var + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
-        lm_dmspols_zhang_6    <- felm(dmspols_zhang_sum6     ~ MA_var + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
-        lm_dmspols_zhang_ihs  <- felm(dmspols_zhang_ihs   ~ MA_var + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        lm_globcover_urban_theta1    <- felm(globcover_urban_sum ~ MA_var_theta1 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        lm_dmspols_zhang_2_theta1    <- felm(dmspols_zhang_sum2  ~ MA_var_theta1 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        lm_dmspols_zhang_6_theta1    <- felm(dmspols_zhang_sum6  ~ MA_var_theta1 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        lm_dmspols_zhang_ihs_theta1  <- felm(dmspols_zhang_ihs   ~ MA_var_theta1 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
 
-        stargazer(lm_globcover_urban,
-                  lm_dmspols_zhang_2,
-                  lm_dmspols_zhang_6,
-                  lm_dmspols_zhang_ihs,
+        lm_globcover_urban_theta8    <- felm(globcover_urban_sum ~ MA_var_theta8 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        lm_dmspols_zhang_2_theta8    <- felm(dmspols_zhang_sum2  ~ MA_var_theta8 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        lm_dmspols_zhang_6_theta8    <- felm(dmspols_zhang_sum6  ~ MA_var_theta8 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        lm_dmspols_zhang_ihs_theta8  <- felm(dmspols_zhang_ihs   ~ MA_var_theta8 + temp_avg + precipitation | year + cell_id | 0 | Z_CODE, data = data)
+        
+        stargazer(lm_globcover_urban_theta1,
+                  lm_dmspols_zhang_2_theta1,
+                  lm_dmspols_zhang_6_theta1,
+                  lm_dmspols_zhang_ihs_theta1,
+                  lm_globcover_urban_theta8,
+                  lm_dmspols_zhang_2_theta8,
+                  lm_dmspols_zhang_6_theta8,
+                  lm_dmspols_zhang_ihs_theta8,
                   dep.var.labels.include = T,
-                  dep.var.labels   = c("Urban", "NTL$>$2", "NTL$>$6", "IHS(NTL)"),
-                  keep=c("MA_var"),
-                  covariate.labels = c("log(MA)"),
+                  dep.var.labels   = c("Urban", "NTL$>$2", "NTL$>$6", "IHS(NTL)",
+                                       "Urban", "NTL$>$2", "NTL$>$6", "IHS(NTL)"),
+                  keep=c("MA_var_theta1", "MA_var_theta8"),
+                  covariate.labels = c("log(MA); $\\theta=1$",
+                                       "log(MA); $\\theta=8$"),
                   dep.var.caption = "",
                   omit.stat = c("f","ser"), 
                   align=TRUE,
@@ -50,7 +58,7 @@ for(unit in c("woreda", "clusters_of_ntl", "clusters_of_globcover_urban")){
                     c("Woreda FE", "Y", "Y", "Y","Y", "Y", "Y")
                   ),
                   out=file.path(paper_tables,
-                                paste0("MA_table_theta",theta,log,exclude100,"_",unit,".tex")))
+                                paste0("MA_table",log,exclude,"_",unit,".tex")))
       }
     }
   }

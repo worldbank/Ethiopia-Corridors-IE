@@ -54,6 +54,7 @@ woreda_points <- spTransform(woreda_points, UTM_ETH)
 woreda <- spTransform(woreda_wgs84, UTM_ETH)
 
 # Crete Raster BaseLayer -------------------------------------------------------
+if(DATASET_TYPE %in% "clusters_of_ntl") woreda <- gBuffer(woreda, width = 3000, byid=T)
 r <- raster(xmn=woreda@bbox[1,1], 
             xmx=woreda@bbox[1,2], 
             ymn=woreda@bbox[2,1], 

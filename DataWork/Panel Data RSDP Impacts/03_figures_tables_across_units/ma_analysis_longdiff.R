@@ -1,7 +1,7 @@
 # Market Access Analysis
 
 # Regressions ------------------------------------------------------------------
-for(unit in c("woreda", "clusters_of_ntl")){ # "woreda", "clusters_of_ntl"
+for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
   for(theta in c(1,2,5,8)){
     for(log in c("_log")){
       for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude100km"
@@ -20,8 +20,8 @@ for(unit in c("woreda", "clusters_of_ntl")){ # "woreda", "clusters_of_ntl"
         data2012$MA_var_theta8 <- data2012[[paste0("MA_pop2000_theta",8,exclude, log)]]
         data2016$MA_var_theta8 <- data2016[[paste0("MA_pop2000_theta",8,exclude, log)]]
         
-        #data2012$distance_city_addisababa <- data2012$distance_city_addisababa / 1000 / 100
-        #data2016$distance_city_addisababa <- data2016$distance_city_addisababa / 1000 / 100
+        data2012$distance_city_addisababa <- data2012$distance_city_addisababa / 1000 / 100
+        data2016$distance_city_addisababa <- data2016$distance_city_addisababa / 1000 / 100
         
         # Z_CODE
         lm_globcover_urban_theta1    <- felm(globcover_urban_sum ~ MA_var_theta1  | 0 | 0 | Z_CODE, data = data2016)
@@ -45,9 +45,9 @@ for(unit in c("woreda", "clusters_of_ntl")){ # "woreda", "clusters_of_ntl"
                   dep.var.labels.include = T,
                   dep.var.labels   = c("Urban", "NTL$>$2", "NTL$>$6", "IHS(NTL)",
                                        "Urban", "NTL$>$2", "NTL$>$6", "IHS(NTL)"),
-                  keep=c("MA_var_theta1", "MA_var_theta8"),
-                  covariate.labels = c("log(MA); $\\theta=1$",
-                                       "log(MA); $\\theta=8$"),
+                  #keep=c("MA_var_theta1", "MA_var_theta8"),
+                  #covariate.labels = c("log(MA); $\\theta=1$",
+                  #                     "log(MA); $\\theta=8$"),
                   dep.var.caption = "",
                   omit.stat = c("f","ser"), 
                   align=TRUE,
