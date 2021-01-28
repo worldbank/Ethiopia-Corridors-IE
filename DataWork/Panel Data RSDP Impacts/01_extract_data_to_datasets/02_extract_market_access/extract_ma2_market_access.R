@@ -163,7 +163,7 @@ location_traveltimes <- location_traveltimes %>%
 
 for(y_var in c("pop", "poplog", "ntl", "gcu")){
   for(tt_var in c("tt", "ic")){
-    for(theta in c(1,2,5,8)){
+    for(theta in c(1,2,3.8,5,8)){
       #location_traveltimes$pop_DIV_tt_theta1 <- location_traveltimes$dest_pop2000 / (location_traveltimes$travel_time^1)
       
       location_traveltimes[[paste0(y_var, "_DIV_", tt_var, "_theta", theta)]] <-
@@ -181,46 +181,54 @@ calc_MA <- function(location_traveltimes,
   #### Calculate Market Access
   MA_df <- location_traveltimes[, list(
     ## Travel Time
-    MA_pop2000_tt_theta1 = sum(pop_DIV_tt_theta1), 
-    MA_pop2000_tt_theta2 = sum(pop_DIV_tt_theta2), 
-    MA_pop2000_tt_theta5 = sum(pop_DIV_tt_theta5),
-    MA_pop2000_tt_theta8 = sum(pop_DIV_tt_theta8),
+    MA_pop2000_tt_theta1   = sum(pop_DIV_tt_theta1), 
+    MA_pop2000_tt_theta2   = sum(pop_DIV_tt_theta2), 
+    MA_pop2000_tt_theta3_8 = sum(pop_DIV_tt_theta3.8), 
+    MA_pop2000_tt_theta5   = sum(pop_DIV_tt_theta5),
+    MA_pop2000_tt_theta8   = sum(pop_DIV_tt_theta8),
     
-    MA_poplog2000_tt_theta1 = sum(poplog_DIV_tt_theta1), 
-    MA_poplog2000_tt_theta2 = sum(poplog_DIV_tt_theta2), 
-    MA_poplog2000_tt_theta5 = sum(poplog_DIV_tt_theta5),
-    MA_poplog2000_tt_theta8 = sum(poplog_DIV_tt_theta8),
+    MA_poplog2000_tt_theta1   = sum(poplog_DIV_tt_theta1), 
+    MA_poplog2000_tt_theta2   = sum(poplog_DIV_tt_theta2), 
+    MA_poplog2000_tt_theta3_8 = sum(poplog_DIV_tt_theta3.8), 
+    MA_poplog2000_tt_theta5   = sum(poplog_DIV_tt_theta5),
+    MA_poplog2000_tt_theta8   = sum(poplog_DIV_tt_theta8),
     
-    MA_ntl2000_tt_theta1 = sum(ntl_DIV_tt_theta1), 
-    MA_ntl2000_tt_theta2 = sum(ntl_DIV_tt_theta2), 
-    MA_ntl2000_tt_theta5 = sum(ntl_DIV_tt_theta5),
-    MA_ntl2000_tt_theta8 = sum(ntl_DIV_tt_theta8),
+    MA_ntl2000_tt_theta1   = sum(ntl_DIV_tt_theta1), 
+    MA_ntl2000_tt_theta2   = sum(ntl_DIV_tt_theta2), 
+    MA_ntl2000_tt_theta3_8 = sum(ntl_DIV_tt_theta3.8), 
+    MA_ntl2000_tt_theta5   = sum(ntl_DIV_tt_theta5),
+    MA_ntl2000_tt_theta8   = sum(ntl_DIV_tt_theta8),
     
-    MA_gcu2000_tt_theta1 = sum(gcu_DIV_tt_theta1), 
-    MA_gcu2000_tt_theta2 = sum(gcu_DIV_tt_theta2), 
-    MA_gcu2000_tt_theta5 = sum(gcu_DIV_tt_theta5),
-    MA_gcu2000_tt_theta8 = sum(gcu_DIV_tt_theta8),
+    MA_gcu2000_tt_theta1   = sum(gcu_DIV_tt_theta1), 
+    MA_gcu2000_tt_theta2   = sum(gcu_DIV_tt_theta2), 
+    MA_gcu2000_tt_theta3_8 = sum(gcu_DIV_tt_theta3.8), 
+    MA_gcu2000_tt_theta5   = sum(gcu_DIV_tt_theta5),
+    MA_gcu2000_tt_theta8   = sum(gcu_DIV_tt_theta8),
     
     ## Iceberg Cost
-    MA_pop2000_ic_theta1 = sum(pop_DIV_ic_theta1), 
-    MA_pop2000_ic_theta2 = sum(pop_DIV_ic_theta2), 
-    MA_pop2000_ic_theta5 = sum(pop_DIV_ic_theta5),
-    MA_pop2000_ic_theta8 = sum(pop_DIV_ic_theta8),
+    MA_pop2000_ic_theta1   = sum(pop_DIV_ic_theta1), 
+    MA_pop2000_ic_theta2   = sum(pop_DIV_ic_theta2), 
+    MA_pop2000_ic_theta3_8 = sum(pop_DIV_ic_theta3.8), 
+    MA_pop2000_ic_theta5   = sum(pop_DIV_ic_theta5),
+    MA_pop2000_ic_theta8   = sum(pop_DIV_ic_theta8),
     
-    MA_poplog2000_ic_theta1 = sum(poplog_DIV_ic_theta1), 
-    MA_poplog2000_ic_theta2 = sum(poplog_DIV_ic_theta2), 
-    MA_poplog2000_ic_theta5 = sum(poplog_DIV_ic_theta5),
-    MA_poplog2000_ic_theta8 = sum(poplog_DIV_ic_theta8),
+    MA_poplog2000_ic_theta1   = sum(poplog_DIV_ic_theta1), 
+    MA_poplog2000_ic_theta2   = sum(poplog_DIV_ic_theta2), 
+    MA_poplog2000_ic_theta3_8 = sum(poplog_DIV_ic_theta3.8), 
+    MA_poplog2000_ic_theta5   = sum(poplog_DIV_ic_theta5),
+    MA_poplog2000_ic_theta8   = sum(poplog_DIV_ic_theta8),
     
-    MA_ntl2000_ic_theta1 = sum(ntl_DIV_ic_theta1), 
-    MA_ntl2000_ic_theta2 = sum(ntl_DIV_ic_theta2), 
-    MA_ntl2000_ic_theta5 = sum(ntl_DIV_ic_theta5),
-    MA_ntl2000_ic_theta8 = sum(ntl_DIV_ic_theta8),
+    MA_ntl2000_ic_theta1   = sum(ntl_DIV_ic_theta1), 
+    MA_ntl2000_ic_theta2   = sum(ntl_DIV_ic_theta2), 
+    MA_ntl2000_ic_theta3_8 = sum(ntl_DIV_ic_theta3.8), 
+    MA_ntl2000_ic_theta5   = sum(ntl_DIV_ic_theta5),
+    MA_ntl2000_ic_theta8   = sum(ntl_DIV_ic_theta8),
     
-    MA_gcu2000_ic_theta1 = sum(gcu_DIV_ic_theta1), 
-    MA_gcu2000_ic_theta2 = sum(gcu_DIV_ic_theta2), 
-    MA_gcu2000_ic_theta5 = sum(gcu_DIV_ic_theta5),
-    MA_gcu2000_ic_theta8 = sum(gcu_DIV_ic_theta8)
+    MA_gcu2000_ic_theta1   = sum(gcu_DIV_ic_theta1), 
+    MA_gcu2000_ic_theta2   = sum(gcu_DIV_ic_theta2), 
+    MA_gcu2000_ic_theta3_8 = sum(gcu_DIV_ic_theta3.8), 
+    MA_gcu2000_ic_theta5   = sum(gcu_DIV_ic_theta5),
+    MA_gcu2000_ic_theta8   = sum(gcu_DIV_ic_theta8)
   ), by=list(orig_uid, year)] %>%
     as.data.frame() %>%
     dplyr::rename(cell_id = orig_uid)
