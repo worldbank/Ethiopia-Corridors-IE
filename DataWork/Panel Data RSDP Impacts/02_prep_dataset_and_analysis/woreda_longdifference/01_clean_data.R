@@ -24,6 +24,11 @@ data <- data %>%
   filter(N_woreda == max(N_woreda))
 
 # Clean Data -------------------------------------------------------------------
+str_remove_1996 <- function(x){
+  # Remove items in vector that end with 1996
+  x[!grepl("_1996$", x)]
+}
+
 for(i in 1:nrow(base_end_df)){
 
   #### Grab start/end years
@@ -42,16 +47,32 @@ for(i in 1:nrow(base_end_df)){
     
     # First difference
     group_by(cell_id) %>%
-    summarize_at(names(data) %>% str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_"), 
+    summarize_at(names(data) %>% 
+                   str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_") %>%
+                   str_remove_1996, 
                  diff) %>%
     
     # Remove select variables
-    dplyr::select(-c(dmspols_1996))
+    dplyr::select(-c(#dmspols_1996,
+                     #dmspols_2bin_1996, 
+                     #dmspols_6bin_1996, 
+                     #dmspols_33bin_1996, 
+                     dmspols_pretnd96_92, dmspols_log_pretnd96_92, dmspols_ihs_pretnd96_92,
+                     dmspols_zhang_log_pretnd96_92, dmspols_zhang_ihs_pretnd96_92))
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(cell_id, Z_CODE, distance_mst, dmspols_1996, area_polygon, distance_city_addisababa)) 
+    dplyr::select(c(ends_with("_1996"),
+                    ends_with("_pretnd96_92"),
+                    cell_id, R_CODE, Z_CODE,Pop2007,  distance_mst, 
+                    #dmspols_1996, 
+                    #dmspols_2bin_1996, 
+                    #dmspols_6bin_1996, 
+                    #dmspols_33bin_1996, 
+                    #dmspols_pretnd96_92, dmspols_log_pretnd96_92, dmspols_ihs_pretnd96_92,
+                    #dmspols_zhang_log_pretnd96_92, dmspols_zhang_ihs_pretnd96_92,
+                    area_polygon, distance_city_addisababa)) 
   
   ## Merge
   data_clean <- merge(data_first_diff, data_time_invar, by = "cell_id")
@@ -61,7 +82,7 @@ for(i in 1:nrow(base_end_df)){
   
   saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
                           paste0(file_name, ".Rds")))
-  write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
-                            paste0(file_name, ".dta")))
+  #write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
+  #                          paste0(file_name, ".dta")))
 }
 

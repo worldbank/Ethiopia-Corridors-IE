@@ -15,8 +15,8 @@ for(theta in c(1,2,5,8)){
   for(log in c("_log")){
     for(exclude100 in c("", "_exclude100km")){
       
-      data2012$MA_var <- data2012[[paste0("MA_pop2000_theta",theta,exclude100, log)]]
-      data2016$MA_var <- data2016[[paste0("MA_pop2000_theta",theta,exclude100, log)]]
+      data2012$MA_var <- data2012[[paste0("MA_pop2000_tt_theta",theta,exclude100, log)]]
+      data2016$MA_var <- data2016[[paste0("MA_pop2000_tt_theta",theta,exclude100, log)]]
       
       lm_globcover_urban    <- felm(globcover_cropland  ~ MA_var | 0 | 0 | Z_CODE, data = data2016)
       lm_dmspols_zhang_2    <- felm(dmspols_zhang_2     ~ MA_var | 0 | 0 | Z_CODE, data = data2012)

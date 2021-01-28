@@ -44,6 +44,7 @@ extract_raster_to_points <- function(year, points){
     points$dmspols_zhang_1 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 1, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_2 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_6 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_33 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x > 33, na.rm=T)}) %>% as.numeric
     
     # Number of cells above NTL threshold
     points$dmspols_zhang_sum         <- dmspols_vx$extract(sp=points, fun=function(x){sum(x, na.rm=T)}) %>% as.numeric
@@ -51,6 +52,7 @@ extract_raster_to_points <- function(year, points){
     points$dmspols_zhang_sum1        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 1, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_sum2        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 2, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_sum6        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 6, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_sum33        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x > 33, na.rm=T)}) %>% as.numeric
     
   } 
   

@@ -3,7 +3,18 @@
 # Load Data / Create Dataset Lists -----------------------------------------------
 
 #### Load dataset to merge into
-points_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "individual_datasets", "dmspols.Rds"))
+# TODO: doesn't contain all woredas, as cut the roads. Need FULL dataset.
+#points_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "individual_datasets", "dmspols.Rds"))
+
+## Make blank data to merge into
+# Not all the time varying datasets contain all the woredas, hence we do this.
+# This is because when we remove areas near a road, some complete woredas are
+# removed
+points_all <- data.frame(cell_id = 1:780)
+points_all$year <- rep(1992:2019, length.out = nrow(points_all))
+
+points_all <- points_all %>% 
+  complete(cell_id, year)
 
 #### Names of datasets to merge in
 # Separate by:
@@ -26,6 +37,7 @@ DATASETS_TIME_VARYING <- c("viirs.Rds",
                            "ndvi.Rds",
                            "ma2_market_access.Rds",
                            "globcover.Rds",
+                           "dmspols.Rds",
                            "dmspols_intercalibrated_zhang.Rds",
                            "distance_roads_improved_by_speedlimit_before.Rds",
                            "distance_roads_improved_by_speedlimit_after.Rds",
