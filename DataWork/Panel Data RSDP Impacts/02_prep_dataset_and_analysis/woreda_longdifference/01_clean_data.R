@@ -23,10 +23,12 @@ data <- data %>%
   mutate(N_woreda = n()) %>%
   filter(N_woreda == max(N_woreda))
 
+data <- data[,!grepl("MA_ntl2000_|MA_poplog2000_|MA_gcu2000_", names(data))]
+
 # Clean Data -------------------------------------------------------------------
-str_remove_1996 <- function(x){
-  # Remove items in vector that end with 1996
-  x[!grepl("_1996$", x)]
+str_remove_vec <- function(x, rx){
+  # Remove items in vector "x" that contain "rx"
+  x[!grepl(rx, x)]
 }
 
 for(i in 1:nrow(base_end_df)){
@@ -49,16 +51,17 @@ for(i in 1:nrow(base_end_df)){
     group_by(cell_id) %>%
     summarize_at(names(data) %>% 
                    str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_") %>%
-                   str_remove_1996, 
-                 diff) %>%
+                   str_remove_vec(rx = "_1996$") %>%
+                   str_remove_vec(rx = "_pretnd96_92$"), 
+                 diff) #%>%
     
     # Remove select variables
-    dplyr::select(-c(#dmspols_1996,
-                     #dmspols_2bin_1996, 
-                     #dmspols_6bin_1996, 
-                     #dmspols_33bin_1996, 
-                     dmspols_pretnd96_92, dmspols_log_pretnd96_92, dmspols_ihs_pretnd96_92,
-                     dmspols_zhang_log_pretnd96_92, dmspols_zhang_ihs_pretnd96_92))
+    #dplyr::select(-c(#dmspols_1996,
+    #                 #dmspols_2bin_1996, 
+    #                 #dmspols_6bin_1996, 
+    #                 #dmspols_33bin_1996, 
+    #                 dmspols_pretnd96_92, dmspols_log_pretnd96_92, dmspols_ihs_pretnd96_92,
+    #                 dmspols_zhang_log_pretnd96_92, dmspols_zhang_ihs_pretnd96_92))
   
   ## Grab time invariant variables
   data_time_invar <- data %>%

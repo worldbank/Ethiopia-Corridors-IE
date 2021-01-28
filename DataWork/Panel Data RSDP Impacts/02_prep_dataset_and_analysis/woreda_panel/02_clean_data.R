@@ -89,7 +89,8 @@ data <- merge(data, data_MA_vars, by = "cell_id")
 # Pretrends Variables ----------------------------------------------------------
 data <- data %>%
   group_by(cell_id) %>%
-  mutate(globcover_urban_sum_pretnd96_92 = globcover_urban_sum[year == 1996]  - globcover_urban_sum[year == 1992], 
+  mutate(globcover_urban_sum_pretnd96_92     = globcover_urban_sum[year == 1996]      - globcover_urban_sum[year == 1992],
+         globcover_urban_sum_ihs_pretnd96_92 = globcover_urban_sum_ihs[year == 1996]  - globcover_urban_sum_ihs[year == 1992],
          globcover_urban_pretnd96_92     = globcover_urban[year == 1996]   - globcover_urban[year == 1992], 
          dmspols_pretnd96_92             = dmspols[year == 1996]           - dmspols[year == 1992],
          dmspols_log_pretnd96_92         = dmspols_log[year == 1996]       - dmspols_log[year == 1992],
