@@ -1,5 +1,12 @@
 # Event Study Figures: Urban
 
+sacco_listing %>%
+  list.files(pattern = "*.xlsx") %>%
+  lapply(read_excel) %>%
+  bind_rows()
+
+
+
 #### Parameters
 p_dodge_width <- 1
 
@@ -7,17 +14,17 @@ p_dodge_width <- 1
 data_urban <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "results_datasets",
                                 "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_zhang_ihs",
-                        "dmspols_zhang_sum2",
-                        "dmspols_zhang_sum6",
-                        "globcover_urban_sum",
+                        "dmspols_zhang_sum2_ihs",
+                        "dmspols_zhang_sum6_ihs",
+                        "globcover_urban_sum_ihs",
                         "globcover_urban_sum_above0"))
 
 data_ntl <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "results_datasets",
                               "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_zhang_ihs",
-                        "dmspols_zhang_sum2",
-                        "dmspols_zhang_sum6",
-                        "globcover_urban_sum",
+                        "dmspols_zhang_sum2_ihs",
+                        "dmspols_zhang_sum6_ihs",
+                        "globcover_urban_sum_ihs",
                         "dmspols_zhang_sum0greater_bin"))
 
 data_grid <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "results_datasets",
@@ -44,13 +51,13 @@ data <- data %>%
   ## Rename/Factor Dep Var
   mutate(dep_var = case_when(
     dep_var == "dmspols_zhang_ihs" ~ "IHS(NTL)",
-    dep_var == "dmspols_zhang_sum2" ~ "NTL > 2",
+    dep_var == "dmspols_zhang_sum2_ihs" ~ "NTL > 2",
     dep_var == "dmspols_zhang_2" ~ "NTL > 2",
-    dep_var == "dmspols_zhang_sum6" ~ "NTL > 6",
+    dep_var == "dmspols_zhang_sum6_ihs" ~ "NTL > 6",
     dep_var == "dmspols_zhang_6" ~ "NTL > 6",
     dep_var == "dmspols_zhang_sum0greater_bin" ~ "Cluster Exists",
     dep_var == "globcover_urban_sum_above0" ~ "Cluster Exists",
-    dep_var == "globcover_urban_sum" ~ "Urban (Globcover)",
+    dep_var == "globcover_urban_sum_ihs" ~ "Urban (Globcover)",
     dep_var == "globcover_urban" ~ "Urban (Globcover)"
   )) %>%
   mutate(indep_var = case_when(

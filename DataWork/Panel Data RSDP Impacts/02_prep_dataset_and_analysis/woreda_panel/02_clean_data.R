@@ -164,8 +164,3 @@ var_label(data$gpw2000) <- "Population in 2000 (Gridded Population of the World)
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))
 #write_dta(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.dta"))
 
-
-
-
-# data$dmspols_zhang_sum_ihs %>% hist()
-
