@@ -120,6 +120,11 @@ calc_travel_time <- function(year, woreda_points){
     #                   woreda_points[100,],
     #             output = "SpatialLines")
     
+    tt1 <- shortestPath(cost_t,
+                       woreda_points[1,],
+                       woreda_points[100:101,],
+                 output = "SpatialLines")
+    
     #coordinates(woreda_points[1,] %>% spTransform(CRS("+init=epsg:4326"))) %>% rev()
     #coordinates(woreda_points[100,] %>% spTransform(CRS("+init=epsg:4326"))) %>% rev()
     

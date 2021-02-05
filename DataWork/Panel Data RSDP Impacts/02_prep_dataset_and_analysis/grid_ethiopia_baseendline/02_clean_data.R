@@ -36,8 +36,18 @@ data <- data %>%
 ## Baseline values
 data <- data %>%
   group_by(cell_id) %>%
-  mutate(dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
+  mutate(dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+         dmspols_1996 = dmspols[year == 1996]) %>%
   ungroup()
+
+data <- data %>%
+  group_by(woreda_id) %>%
+  mutate(dmspols_zhang_1996_woreda = mean(dmspols_zhang_1996, na.rm = T),
+         dmspols_1996_woreda = mean(dmspols_1996, na.rm = T)) %>%
+  ungroup()
+
+data$dmspols_zhang_ihs_1996_woreda <- calc_ihs(data$dmspols_zhang_1996_woreda)
+data$dmspols_ihs_1996_woreda       <- calc_ihs(data$dmspols_1996_woreda)
 
 ## NTL lit at baseline
 data$dmspols_zhang_base0na <- data$dmspols_zhang
@@ -49,8 +59,8 @@ data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
                           "merged_datasets", "panel_data_clean.Rds"))
-write_dta(data, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
-                        "merged_datasets", "panel_data_clean.dta"))
+#write_dta(data, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
+#                        "merged_datasets", "panel_data_clean.dta"))
 
 
 

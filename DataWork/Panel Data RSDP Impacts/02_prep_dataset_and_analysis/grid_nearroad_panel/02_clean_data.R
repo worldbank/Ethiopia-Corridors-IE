@@ -260,12 +260,6 @@ for(start_i in start_ids){
   data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
   data$distance_city_addisababa <- NULL
   
-  ## Nighttime lights groups
-  ntl_non0_med <- data$dmspols_1996_woreda[data$dmspols_1996_woreda > 0] %>% median(na.rm=T)
-  data$ntl_group <- NA
-  data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med] <- "1"
-  data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "2"
-  
   ## Check Median NTL Value
   data$dmspols_zhang[data$dmspols_zhang > 0 & data$year %in% 1996] %>% median(na.rm=T)
   
@@ -293,6 +287,12 @@ for(start_i in start_ids){
     group_by(woreda_id) %>%
     mutate(dmspols_1996_woreda = mean(dmspols_1996, na.rm = T)) %>%
     ungroup()
+  
+  ## Nighttime lights groups
+  ntl_non0_med <- data$dmspols_1996_woreda[data$dmspols_1996_woreda > 0] %>% median(na.rm=T)
+  data$ntl_group <- NA
+  data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med] <- "1"
+  data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "2"
   
   # Remove Stuff Don't Need ----------------------------------------------------
   # Reduces dataset size if grid dataset where need to trim size of dataset

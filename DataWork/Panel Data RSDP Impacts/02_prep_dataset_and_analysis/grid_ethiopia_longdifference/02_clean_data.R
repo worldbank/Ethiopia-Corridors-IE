@@ -17,7 +17,7 @@ base_end_df <- data.frame(baseline = c(1996, 1996),
 
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
-                          "merged_datasets", "panel_data.Rds"))
+                          "merged_datasets", "panel_data_clean.Rds"))
 
 #data <- data[data$cell_id %in% unique(data$cell_id)[1:5000],] ## for testing
 
@@ -53,15 +53,11 @@ for(i in 1:nrow(base_end_df)){
     # First difference
     group_by(cell_id) %>%
     summarize_at(names(data) %>% str_subset("dmspols|globcover|ndvi"), 
-                 diff)
+                 diff) %>%
+    dplyr::select(-c(dmspols_ihs_1996_woreda, dmspols_zhang_ihs_1996_woreda, dmspols_zhang_1996))
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
-    
-    # Baseline values
-    group_by(cell_id) %>%
-    mutate(dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
-    ungroup() %>%
     
     filter(year %in% base_year) %>%
     dplyr::select(c(cell_id,
@@ -72,7 +68,10 @@ for(i in 1:nrow(base_end_df)){
                     distance_anyroad2012,
                     distance_anyroad2016, 
                     distance_city_addisababa,
+                    dmspols_zhang_ihs_1996_woreda,
+                    dmspols_ihs_1996_woreda,
                     dmspols_zhang_1996,
+                    woreda_id,
                     W_CODE,
                     Z_CODE)) 
   
