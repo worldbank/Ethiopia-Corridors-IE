@@ -90,4 +90,4 @@ library(dvmisc)
 # Functions
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")
 source(file.path(code_file_path, "Functions", "commonly_used.R"))
-
+source(file.path(code_file_path, "Functions", "rename_lm_vars.R"))

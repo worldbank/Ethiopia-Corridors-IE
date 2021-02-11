@@ -188,7 +188,7 @@ calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
 ma_var <- data %>% names() %>% str_subset("^MA_")
 for(var in ma_var) data[[paste0(var, "_log")]] <- data[[var]] %>% log()
 
-ntl_var <- data %>% names() %>% str_subset("dmspols")
+ntl_var <- data %>% names() %>% str_subset("dmspols|globcover")
 for(var in ntl_var) data[[paste0(var, "_log")]] <- log(data[[var]] + 1)
 for(var in ntl_var) data[[paste0(var, "_ihs")]] <- calc_ihs(data[[var]])
 
@@ -203,7 +203,16 @@ data <- data %>%
   
   # Baseline variables
   mutate(dmspols_1996 = dmspols[year == 1996],
-         dmspols_zhang_1996 = dmspols_zhang[year == 1996]) 
+         dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+         globcover_urban_1996 = globcover_urban[year == 1996],
+         globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
+         globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
+         dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
+         dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
+         dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
+         dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996]) %>%
+  
+  ungroup() 
   
 # Baseline NTL quantiles
 dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 

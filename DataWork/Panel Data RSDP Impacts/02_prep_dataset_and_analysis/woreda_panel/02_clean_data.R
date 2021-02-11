@@ -64,10 +64,13 @@ data <- data %>%
   group_by(cell_id) %>%
   mutate(globcover_urban_1996        = globcover_urban[year == 1996],
          globcover_urban_sum_1996    = globcover_urban_sum[year == 1996],
+         globcover_urban_sum_ihs_1996    = globcover_urban_sum_ihs[year == 1996],
          globcover_cropland_1996     = globcover_cropland[year == 1996],
          globcover_cropland_sum_1996 = globcover_cropland_sum[year == 1996],
          ndvi_1996              = ndvi[year == 1996],
          ndvi_cropland_1996     = ndvi_cropland[year == 1996],
+         dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
+         dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
          dmspols_1996           = dmspols[year == 1996],
          dmspols_log_1996       = dmspols_log[year == 1996],
          dmspols_2bin_1996      = dmspols_2bin[year == 1996],

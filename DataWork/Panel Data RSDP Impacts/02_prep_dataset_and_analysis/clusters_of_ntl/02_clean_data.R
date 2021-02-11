@@ -203,7 +203,14 @@ data <- data %>%
   
   # Baseline variables
   mutate(dmspols_1996 = dmspols[year == 1996],
-         dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
+         dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+         globcover_urban_1996 = globcover_urban[year == 1996],
+         globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
+         globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
+         dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
+         dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
+         dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
+         dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996]) %>%
   
   ungroup() 
 

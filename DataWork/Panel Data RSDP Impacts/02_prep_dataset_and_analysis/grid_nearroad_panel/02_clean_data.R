@@ -208,6 +208,14 @@ for(start_i in start_ids){
   }
   
   gc()
+  
+  # Log Variables ----------------------------------------------------------------
+  calc_ihs <- function(x) log(x + sqrt(x^2 + 1))
+
+  ntl_var <- data %>% names() %>% str_subset("dmspols|globcover")
+  for(var in ntl_var) data[[paste0(var, "_log")]] <- log(data[[var]] + 1)
+  for(var in ntl_var) data[[paste0(var, "_ihs")]] <- calc_ihs(data[[var]])
+  
   # Dependent Variable Transformations -----------------------------------------
   # Inverse Hyperbolic Since Transformation 
   # This is used by Mitnik et. al. due to lots of zeros in DMSP-OLS 
@@ -219,18 +227,16 @@ for(start_i in start_ids){
     
     # Baseline variables
     mutate(dmspols_1996 = dmspols[year == 1996],
-           dmspols_zhang_1996 = dmspols_zhang[year == 1996]) %>%
+           dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+           globcover_urban_1996 = globcover_urban[year == 1996],
+           globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
+           globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
+           dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
+           dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
+           dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
+           dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996]) %>%
     
-    ungroup() %>%
-    
-    # IHS
-    mutate(dmspols_ihs            = calc_ihs(dmspols),
-           viirs_mean_ihs         = calc_ihs(viirs_mean),
-           viirs_median_ihs       = calc_ihs(viirs_median),
-           viirs_max_ihs          = calc_ihs(viirs_max),
-           dmspols_zhang_ihs      = calc_ihs(dmspols_zhang),
-           dmspols_1996_ihs       = calc_ihs(dmspols_1996),
-           dmspols_zhang_1996_ihs = calc_ihs(dmspols_zhang_1996))
+    ungroup() 
   
   # Baseline NTL quantiles
   dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
