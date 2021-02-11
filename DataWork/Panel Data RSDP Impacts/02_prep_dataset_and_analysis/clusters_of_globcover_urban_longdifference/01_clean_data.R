@@ -41,16 +41,19 @@ for(i in 1:nrow(base_end_df)){
     
     # First difference
     group_by(cell_id) %>%
-    summarize_at(names(data) %>% str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_"), 
-                 diff) %>%
-    
-    # Remove select variables
-    dplyr::select(-c(dmspols_1996))
+    summarize_at(names(data) %>% 
+                   str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_") %>%
+                   str_remove_vec(rx = "_1996$") %>%
+                   str_remove_vec(rx = "_pretnd96_92$"), 
+                 diff) 
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(cell_id, distance_mst, dmspols_1996, distance_city_addisababa, Z_CODE, area_polygon)) 
+    dplyr::select(c(ends_with("_1996"),
+                    ends_with("_pretnd96_92"),
+                    cell_id, R_CODE, Z_CODE,Pop2007,  distance_mst, 
+                    area_polygon, distance_city_addisababa)) 
   
   ## Merge
   data_clean <- merge(data_first_diff, data_time_invar, by = "cell_id")

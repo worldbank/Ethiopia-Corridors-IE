@@ -69,12 +69,6 @@ for(i in 1:nrow(base_end_df)){
     dplyr::select(c(ends_with("_1996"),
                     ends_with("_pretnd96_92"),
                     cell_id, R_CODE, Z_CODE,Pop2007,  distance_mst, 
-                    #dmspols_1996, 
-                    #dmspols_2bin_1996, 
-                    #dmspols_6bin_1996, 
-                    #dmspols_33bin_1996, 
-                    #dmspols_pretnd96_92, dmspols_log_pretnd96_92, dmspols_ihs_pretnd96_92,
-                    #dmspols_zhang_log_pretnd96_92, dmspols_zhang_ihs_pretnd96_92,
                     area_polygon, distance_city_addisababa)) 
   
   ## Merge
