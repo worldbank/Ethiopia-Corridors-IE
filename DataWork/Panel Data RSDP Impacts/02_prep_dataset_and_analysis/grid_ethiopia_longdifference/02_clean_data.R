@@ -54,7 +54,9 @@ for(i in 1:nrow(base_end_df)){
     group_by(cell_id) %>%
     summarize_at(names(data) %>% str_subset("dmspols|globcover|ndvi"), 
                  diff) %>%
-    dplyr::select(-c(dmspols_ihs_1996_woreda, dmspols_zhang_ihs_1996_woreda, dmspols_zhang_1996))
+    dplyr::select(-c(dmspols_ihs_1996_woreda, dmspols_zhang_ihs_1996_woreda, dmspols_zhang_1996,
+                     dmspols_zhang_sum2_1996_woreda,     dmspols_zhang_sum6_1996_woreda,
+                     dmspols_zhang_ihs_sum2_1996_woreda, dmspols_zhang_ihs_sum6_1996_woreda))
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
@@ -67,6 +69,10 @@ for(i in 1:nrow(base_end_df)){
                     distance_anyimproved_by2012,
                     distance_anyroad2012,
                     distance_anyroad2016, 
+                    dmspols_zhang_sum2_1996_woreda, 
+                    dmspols_zhang_sum6_1996_woreda,
+                    dmspols_zhang_ihs_sum2_1996_woreda, 
+                    dmspols_zhang_ihs_sum6_1996_woreda,
                     distance_city_addisababa,
                     dmspols_zhang_ihs_1996_woreda,
                     dmspols_ihs_1996_woreda,
