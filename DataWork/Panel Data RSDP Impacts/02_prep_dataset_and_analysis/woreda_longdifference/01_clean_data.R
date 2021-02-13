@@ -51,7 +51,7 @@ for(i in 1:nrow(base_end_df)){
     group_by(cell_id) %>%
     summarize_at(names(data) %>% 
                    str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_") %>%
-                   str_remove_vec(rx = "_1996$") %>%
+                   str_remove_vec(rx = "_1996") %>%
                    str_remove_vec(rx = "_pretnd96_92$"), 
                  diff) #%>%
     
@@ -66,7 +66,7 @@ for(i in 1:nrow(base_end_df)){
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(ends_with("_1996"),
+    dplyr::select(c(contains("_1996"),
                     ends_with("_pretnd96_92"),
                     cell_id, R_CODE, Z_CODE,Pop2007,  distance_mst, 
                     area_polygon, distance_city_addisababa)) 

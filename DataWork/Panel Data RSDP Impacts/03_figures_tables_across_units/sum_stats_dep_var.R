@@ -25,6 +25,7 @@ if_zero_return <- function(x,
 }
 
 # Sum Stats --------------------------------------------------------------------
+data_woreda        <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda",                      "merged_datasets", "panel_data_clean.Rds"))
 data_ntl           <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl",             "merged_datasets", "panel_data_clean.Rds"))
 data_urban         <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
 data_grid_near_rd  <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",       "merged_datasets", "grid_data_clean.Rds"))
@@ -87,7 +88,7 @@ cat("         & 1996 & 2012 & 2016           &  1996 & 2012 & 2016              
 cat("\\hline \n")
 
 N <- data_grid_full %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid - Full Sample}} & ")
+cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid}} & ")
 cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
 #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 make_sum_stats(data_grid_full, 
@@ -98,18 +99,18 @@ make_sum_stats(data_grid_full,
                              "globcover_urban"),
                ROUND_NUM_URBAN = 4)
 
-cat("\\hline \n")
-N <- data_grid_near_rd %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid - Pixels Near Improved Road}} & ")
-cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
-#cat("\\multicolumn{7}{c}{ } \\\\ \n")
-make_sum_stats(data_grid_near_rd, 
-               variables = c("dmspols_zhang", 
-                             "dmspols_zhang_2",
-                             "dmspols_zhang_6",
-                             #"dmspols_zhang_base0na",
-                             "globcover_urban"),
-               ROUND_NUM_URBAN = 4)
+# cat("\\hline \n")
+# N <- data_grid_near_rd %>% dplyr::filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
+# cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid - Pixels Near Improved Road}} & ")
+# cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
+# #cat("\\multicolumn{7}{c}{ } \\\\ \n")
+# make_sum_stats(data_grid_near_rd, 
+#                variables = c("dmspols_zhang", 
+#                              "dmspols_zhang_2",
+#                              "dmspols_zhang_6",
+#                              #"dmspols_zhang_base0na",
+#                              "globcover_urban"),
+#                ROUND_NUM_URBAN = 4)
 
 cat("\\hline \n")
 N <- data_ntl %>% 
@@ -117,7 +118,7 @@ N <- data_ntl %>%
          distance_anyimproved_ever <= 5000) %>% 
   nrow() %>% 
   prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf Clusters of NTL}} & ")
+cat("\\multicolumn{5}{l}{{\\bf Cities [Defined from Lit Pixels]}} & ")
 cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
 #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 make_sum_stats(data_ntl, 
@@ -133,10 +134,26 @@ N <- data_urban %>%
          distance_anyimproved_ever <= 5000) %>% 
   nrow() %>% 
   prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf Clusters of Urban}} & ")
+cat("\\multicolumn{5}{l}{{\\bf Cities [Defined from Globcover Urban Pixels]}} & ")
 cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
 #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 make_sum_stats(data_urban, 
+               variables = c("dmspols_zhang", 
+                             "dmspols_zhang_sum2",
+                             "dmspols_zhang_sum6",
+                             #"dmspols_zhang_base0na",
+                             "globcover_urban_sum"))
+
+
+cat("\\hline \n")
+N <- data_woreda %>% 
+  filter(year %in% 1996) %>% 
+  nrow() %>% 
+  prettyNum(big.mark=",",scientific=FALSE)
+cat("\\multicolumn{5}{l}{{\\bf Woreda}} & ")
+cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
+#cat("\\multicolumn{7}{c}{ } \\\\ \n")
+make_sum_stats(data_woreda, 
                variables = c("dmspols_zhang", 
                              "dmspols_zhang_sum2",
                              "dmspols_zhang_sum6",

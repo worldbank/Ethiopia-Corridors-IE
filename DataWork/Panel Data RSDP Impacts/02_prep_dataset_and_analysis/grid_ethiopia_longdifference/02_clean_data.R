@@ -56,7 +56,10 @@ for(i in 1:nrow(base_end_df)){
                  diff) %>%
     dplyr::select(-c(dmspols_ihs_1996_woreda, dmspols_zhang_ihs_1996_woreda, dmspols_zhang_1996,
                      dmspols_zhang_sum2_1996_woreda,     dmspols_zhang_sum6_1996_woreda,
-                     dmspols_zhang_ihs_sum2_1996_woreda, dmspols_zhang_ihs_sum6_1996_woreda))
+                     dmspols_zhang_ihs_sum2_1996_woreda, dmspols_zhang_ihs_sum6_1996_woreda,
+                     dmspols_1996_bin3_1,
+                     dmspols_1996_bin3_2,
+                     dmspols_1996_bin3_3))
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
@@ -77,6 +80,9 @@ for(i in 1:nrow(base_end_df)){
                     dmspols_zhang_ihs_1996_woreda,
                     dmspols_ihs_1996_woreda,
                     dmspols_zhang_1996,
+                    dmspols_1996_bin3_1,
+                    dmspols_1996_bin3_2,
+                    dmspols_1996_bin3_3,
                     woreda_id,
                     W_CODE,
                     Z_CODE)) 
@@ -103,8 +109,8 @@ for(i in 1:nrow(base_end_df)){
   
   saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", 
                                 "merged_datasets", paste0(file_name, ".Rds")))
-  write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", 
-                                  "merged_datasets", paste0(file_name, ".dta")))
+  #write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", 
+  #                                "merged_datasets", paste0(file_name, ".dta")))
 }
 
 

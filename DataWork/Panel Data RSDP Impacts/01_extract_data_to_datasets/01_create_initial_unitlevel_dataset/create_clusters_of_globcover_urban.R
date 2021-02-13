@@ -1,5 +1,6 @@
 # Identify Clusters of Lights
 
+set.seed(42)
 # Load Data --------------------------------------------------------------------
 ## Woredas
 woreda <- readRDS(file.path(project_file_path, "Data", "Woreda Population", "FinalData", "woreda.Rds"))
@@ -75,6 +76,43 @@ clumps_sp <- raster::aggregate(clumps_sp, by = "wardheirch_clust_id", sums=list(
 clumps_sp@data <- clumps_sp@data %>%
   dplyr::select(-c(wardheirch_clust_id)) %>% 
   dplyr::mutate(cell_id = 1:n()) # prevous cell_id summed version; fresh, aggregated version
+
+# Restrict to cells with more than 3 years persistent urban --------------------
+data <- lapply(1992:2018, function(year){
+  print(year)
+  
+  if(year %in% 1992:2015){
+    urbangc <- raster(file.path(data_file_path, "Globcover", "RawData", "1992_2015_data", "ESACCI-LC-L4-LCCS-Map-300m-P1Y-1992_2015-v2.0.7.tif"), band=(year-1991)) %>% crop(extent(woreda))
+  } else{
+    urbangc <- raster(file.path(data_file_path, "Globcover", "RawData", "2016_2018_data", paste0("C3S-LC-L4-LCCS-Map-300m-P1Y-",year,"-v2.1.1.tif"))) %>% crop(extent(woreda))
+  }
+  urbangc[] <- as.numeric(urbangc[] %in% c(190))
+  
+  urbangc_vx <- velox(urbangc)
+  clumps_sp$globcover_urban_sum <- urbangc_vx$extract(sp=clumps_sp, fun=function(x){sum(x > 0, na.rm=T)}) %>% as.numeric
+  clumps_sp$year <- year
+  return(clumps_sp@data)
+}) %>%
+  bind_rows()
+
+data <- data %>%
+  arrange(year) %>%
+  group_by(cell_id) %>%
+  
+  # Make binary value: if number of positive
+  mutate(globcover_urban_sum_bin = globcover_urban_sum > 0,
+         globcover_urban_sum_bin = globcover_urban_sum_bin %>% replace_na(0)) %>%
+  
+  # Sum binary value from last 3 time period
+  mutate(N_pos = runSum(globcover_urban_sum_bin, n = 4)) %>%
+  
+  # For each cluster maximum "summed" value
+  mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
+  ungroup() %>%
+  
+  filter(N_pos_max %in% 4)
+
+clumps_sp <- clumps_sp[clumps_sp$cell_id %in% data$cell_id,]
 
 # Export -----------------------------------------------------------------------
 # We save "polygon" and "points" file, where "points" is actually just the polygon.

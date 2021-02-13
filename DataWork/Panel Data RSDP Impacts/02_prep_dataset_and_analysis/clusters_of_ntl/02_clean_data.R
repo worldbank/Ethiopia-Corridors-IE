@@ -209,6 +209,7 @@ data <- data %>%
          globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
          dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
          dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
+         dmspols_zhang_sum33_ihs_1996 = dmspols_zhang_sum33_ihs[year == 1996],
          dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
          dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996]) %>%
   
@@ -242,15 +243,16 @@ data$dmspols_zhang_1 <- data$dmspols_zhang >= 1
 data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
 data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
 
-
 # Log Counts -------------------------------------------------------------------
 data$globcover_urban_sum_log <- log(data$globcover_urban_sum + 1)
 data$dmspols_sum1_log <- log(data$dmspols_sum1 + 1)
 data$dmspols_sum2_log <- log(data$dmspols_sum2 + 1)
 data$dmspols_sum6_log <- log(data$dmspols_sum6 + 1)
+data$dmspols_sum33_log <- log(data$dmspols_sum33 + 1)
 data$dmspols_zhang_sum1_log <- log(data$dmspols_zhang_sum1 + 1)
 data$dmspols_zhang_sum2_log <- log(data$dmspols_zhang_sum2 + 1)
 data$dmspols_zhang_sum6_log <- log(data$dmspols_zhang_sum6 + 1)
+data$dmspols_zhang_sum33_log <- log(data$dmspols_zhang_sum33 + 1)
 
 # Other variable transformations ---------------------------------------------
 data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
@@ -290,12 +292,12 @@ data <- data %>%
   filter(N_pos_max %in% 4)
 
 # Subset Clusters: Cluster Size ------------------------------------------------
-data <- data %>%
-  filter(cluster_n_cells < 100)
+#data <- data %>%
+#  filter(cluster_n_cells < 100)
 
 # Subset Clusters: Near Improved -----------------------------------------------
-data <- data %>%
-  filter(distance_anyimproved_ever < NEAR_CUTOFF)
+#data <- data %>%
+#  filter(distance_anyimproved_ever < NEAR_CUTOFF)
 
 # First Lit Year ---------------------------------------------------------------
 data <- data %>%
@@ -307,6 +309,18 @@ data <- data %>%
 data$dmspols_zhang_sum0greater_bin <- as.numeric(data$dmspols_zhang_sum0greater > 0)
 data$globcover_urban_sum_above0 <- as.numeric(data$globcover_urban_sum > 0)
 
+# Pretrends Variables ----------------------------------------------------------
+data <- data %>%
+  group_by(cell_id) %>%
+  mutate(globcover_urban_sum_pretnd96_92     = globcover_urban_sum[year == 1996]      - globcover_urban_sum[year == 1992],
+         globcover_urban_sum_ihs_pretnd96_92 = globcover_urban_sum_ihs[year == 1996]  - globcover_urban_sum_ihs[year == 1992],
+         globcover_urban_pretnd96_92     = globcover_urban[year == 1996]   - globcover_urban[year == 1992], 
+         dmspols_pretnd96_92             = dmspols[year == 1996]           - dmspols[year == 1992],
+         dmspols_log_pretnd96_92         = dmspols_log[year == 1996]       - dmspols_log[year == 1992],
+         dmspols_ihs_pretnd96_92         = dmspols_ihs[year == 1996]       - dmspols_ihs[year == 1992],
+         dmspols_zhang_log_pretnd96_92   = dmspols_zhang_log[year == 1996] - dmspols_zhang_log[year == 1992],
+         dmspols_zhang_ihs_pretnd96_92   = dmspols_zhang_ihs[year == 1996] - dmspols_zhang_ihs[year == 1992]) %>%
+  ungroup()
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", "panel_data_clean.Rds"))

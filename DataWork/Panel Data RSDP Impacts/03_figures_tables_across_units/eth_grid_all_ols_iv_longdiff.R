@@ -28,6 +28,14 @@ df2016 <- readRDS(file.path(panel_rsdp_imp_data_file_path,
                                    2016,
                                    ".Rds")))
 
+
+## NTL Baseline Bins
+data <- data %>%
+  group_by(cell_id) %>%
+  dplyr::mutate(dmspols_sum2_1996 = dmspols_sum2[year== 1996],
+                dmspols_sum6_1996 = dmspols_sum6[year== 1996]) %>%
+  ungroup()
+
 # Prep Variables ---------------------------------------------------------------
 
 ## Standardize improved variable names
@@ -135,7 +143,7 @@ iv_ld_globcover_urban_basentl2   <- felm(globcover_urban   ~ 1 | 0 | (near_anyim
 # OLS - Stargazer --------------------------------------------------------------
 stargazer(lm_dmspols_zhang_ihs,
           lm_dmspols_zhang_ihs_basentl,
-          lm_dmspols_zhang_ihs_basent2,
+          lm_dmspols_zhang_ihs_basentl2,
           lm_dmspols_zhang_ihs_addis,
           
           lm_dmspols_zhang_2,

@@ -19,7 +19,7 @@
 # --"clusters_of_globcover_urban": Urban Clusters from Globcover
 # --"clusters_of_ntl": Urban Clusters from NTL
 
-DATASET_TYPE <- "clusters_of_globcover_urban"
+DATASET_TYPE <- "clusters_of_ntl"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -48,7 +48,7 @@ DIST_THRESH <- 2
 CREATE_UNIT_LEVEL_DATASET <- F
 
 EXTRACT_DATA <- T
-OVERWRITE_EXTRACTED_DATA <- F # Checks if data already extracted. If T, re-extracts
+OVERWRITE_EXTRACTED_DATA <- T # Checks if data already extracted. If T, re-extracts
 # data. If F, skips extracting data
 
 # RUN SCRIPTS ==================================================================

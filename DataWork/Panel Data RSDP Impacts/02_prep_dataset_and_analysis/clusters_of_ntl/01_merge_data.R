@@ -36,7 +36,6 @@ for(dataset in DATASETS_TIME_VARYING){
   print(dataset)
   dataset_temp <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "individual_datasets", dataset)) 
   points_all <- merge(points_all, dataset_temp, by=c("cell_id", "year"), all=T)
-
 }
 
 for(dataset in DATASETS_TIME_INVARIANT){

@@ -229,12 +229,7 @@ for(start_i in start_ids){
     mutate(dmspols_1996 = dmspols[year == 1996],
            dmspols_zhang_1996 = dmspols_zhang[year == 1996],
            globcover_urban_1996 = globcover_urban[year == 1996],
-           globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
-           globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
-           dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
-           dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
-           dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
-           dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996]) %>%
+           dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996]) %>%
     
     ungroup() 
   
@@ -303,6 +298,15 @@ for(start_i in start_ids){
   # Remove Stuff Don't Need ----------------------------------------------------
   # Reduces dataset size if grid dataset where need to trim size of dataset
   data$distance_city_popsize_3groups_g1 <- NULL
+  data$globcover_urban_log <- NULL
+  data$globcover_cropland_log <- NULL
+  data$dmspols_log <- NULL
+  data$dmspols_zhang <- NULL
+  data$viirs_max <- NULL
+  data$viirs_mean <- NULL
+  data$viirs_mean_2 <- NULL
+  data$viirs_mean_6 <- NULL
+  data$viirs_median <- NULL
   
   # Export Tmp Data ------------------------------------------------------------
   saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "temp_datasets", paste0("grid_data_clean_",start_i,".Rds")))

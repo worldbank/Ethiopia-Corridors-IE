@@ -76,10 +76,22 @@ data <- data %>%
          dmspols_2bin_1996      = dmspols_2bin[year == 1996],
          dmspols_6bin_1996      = dmspols_6bin[year == 1996],
          dmspols_33bin_1996     = dmspols_33bin[year == 1996],
+         dmspols_sum2_1996      = dmspols_sum2[year == 1996],
+         dmspols_sum6_1996      = dmspols_sum6[year == 1996],
+         dmspols_sum33_1996     = dmspols_sum33[year == 1996],
          dmspols_ihs_1996       = dmspols_ihs[year == 1996],
          dmspols_zhang_log_1996 = dmspols_zhang_log[year == 1996],
          dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996]) %>%
   ungroup()
+
+data$dmspols_1996_bin3 <- NA
+data$dmspols_1996_bin3[data$dmspols_sum2_1996 %in% 0] <- 1
+data$dmspols_1996_bin3[data$dmspols_sum2_1996 > 0]    <- 2
+data$dmspols_1996_bin3[data$dmspols_sum6_1996 > 0]    <- 3
+
+data$dmspols_1996_bin3_1 <-  as.numeric(data$dmspols_1996_bin3 == 1)
+data$dmspols_1996_bin3_2 <-  as.numeric(data$dmspols_1996_bin3 == 2)
+data$dmspols_1996_bin3_3 <-  as.numeric(data$dmspols_1996_bin3 == 3)
 
 # Baseline Variables - MA ------------------------------------------------------
 MA_vars <- names(data) %>% str_subset("^MA_")

@@ -52,7 +52,7 @@ for(i in 1:nrow(base_end_df)){
     filter(year %in% base_year) %>%
     dplyr::select(c(ends_with("_1996"),
                     ends_with("_pretnd96_92"),
-                    cell_id, R_CODE, Z_CODE,Pop2007,  distance_mst, 
+                    cell_id, R_CODE, Z_CODE,  distance_mst, 
                     area_polygon, distance_city_addisababa)) 
   
   ## Merge

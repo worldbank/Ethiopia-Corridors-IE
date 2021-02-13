@@ -16,6 +16,12 @@ roads    <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNe
 roads$id <- 1 # useful to have a variable the same for all obs when aggreagting roads later
 roads    <- roads %>% spTransform(CRS(UTM_ETH))
 
+# If cluster, remove certain clusters ------------------------------------------
+#if(grepl("clusters", DATASET_TYPE)){
+#dmspols <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "individual_datasets", "dmspols_intercalibrated_zhang.Rds"))
+#
+#}
+
 # Location with largest population with woreda ---------------------------------
 woreda_points <- lapply(1:nrow(woreda_wgs84), function(i){
   

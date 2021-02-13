@@ -1,5 +1,6 @@
 # Identify Clusters of Lights
 
+set.seed(42)
 # Load Data --------------------------------------------------------------------
 dmspols_1996 <- raster(file.path(data_file_path, "Nighttime Lights", "DMSPOLS", "RawData", "Individual Files", "eth_dmspols_1996.tif"))
 dmspols_1997 <- raster(file.path(data_file_path, "Nighttime Lights", "DMSPOLS", "RawData", "Individual Files", "eth_dmspols_1997.tif"))
@@ -88,6 +89,36 @@ clumps_sp <- raster::aggregate(clumps_sp, by = "wardheirch_clust_id", sums=list(
 clumps_sp@data <- clumps_sp@data %>%
   dplyr::select(-c(wardheirch_clust_id)) %>% 
   dplyr::mutate(cell_id = 1:n()) # prevous cell_id summed version; fresh, aggregated version
+
+saveRDS(clumps_sp, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "individual_datasets", "polygons_ALL_NO_SUBSET.Rds"))
+
+# Restrict to cells with more than 3 years persistent lights -------------------
+data <- lapply(1992:2013, function(year){
+  print(year)
+  dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "DMSPOLS", "RawData", "Individual Files", paste0("eth_dmspols_",year,".tif")))
+  dmspols_vx <- velox(dmspols)
+  clumps_sp$dmspols_sum0greater <- dmspols_vx$extract(sp=clumps_sp, fun=function(x){sum(x > 0, na.rm=T)}) %>% as.numeric
+  clumps_sp$year <- year
+  return(clumps_sp@data)
+}) %>%
+  bind_rows()
+
+dataa <- data %>%
+  arrange(year) %>%
+  group_by(cell_id) %>%
+  
+  # Make binary value: if number of positive
+  mutate(dmspols_sum0greater_bin = dmspols_sum0greater > 0,
+         dmspols_sum0greater_bin = dmspols_sum0greater_bin %>% replace_na(0)) %>%
+  
+  # Sum binary value from last 3 time period
+  mutate(N_pos = runSum(dmspols_sum0greater_bin, n = 2)) %>%
+  
+  # For each cluster maximum "summed" value
+  mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
+  ungroup() %>%
+  
+  filter(N_pos_max %in% 2)
 
 # Export -----------------------------------------------------------------------
 # We save "polygon" and "points" file, where "points" is actually just the polygon.
