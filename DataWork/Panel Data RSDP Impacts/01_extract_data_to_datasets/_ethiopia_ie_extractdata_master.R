@@ -19,7 +19,7 @@
 # --"clusters_of_globcover_urban": Urban Clusters from Globcover
 # --"clusters_of_ntl": Urban Clusters from NTL
 
-DATASET_TYPE <- "clusters_of_ntl"
+DATASET_TYPE <- "clusters_of_globcover_urban"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script

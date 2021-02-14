@@ -228,6 +228,10 @@ for(start_i in start_ids){
     # Baseline variables
     mutate(dmspols_1996 = dmspols[year == 1996],
            dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+           dmspols_2_1996 = dmspols_2[year == 1996],
+           dmspols_6_1996 = dmspols_6[year == 1996],
+           dmspols_10_1996 = dmspols_10[year == 1996],
+           dmspols_15_1996 = dmspols_15[year == 1996],
            globcover_urban_1996 = globcover_urban[year == 1996],
            dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996]) %>%
     
@@ -286,7 +290,11 @@ for(start_i in start_ids){
   # Taking cells near improved road by woreda
   data <- data %>%
     group_by(woreda_id) %>%
-    mutate(dmspols_1996_woreda = mean(dmspols_1996, na.rm = T)) %>%
+    mutate(dmspols_1996_woreda = mean(dmspols_1996, na.rm = T),
+           dmspols_sum2_1996_woreda = sum(dmspols_2_1996, na.rm = T),
+           dmspols_sum6_1996_woreda = sum(dmspols_6_1996, na.rm = T),
+           dmspols_sum10_1996_woreda = sum(dmspols_10_1996, na.rm = T),
+           dmspols_sum15_1996_woreda = sum(dmspols_15_1996, na.rm = T)) %>%
     ungroup()
   
   ## Nighttime lights groups
@@ -294,6 +302,19 @@ for(start_i in start_ids){
   data$ntl_group <- NA
   data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med] <- "1"
   data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "2"
+  
+  # bin3
+  data$dmspols_1996_bin3 <- NA
+  data$dmspols_1996_bin3[data$dmspols_sum2_1996_woreda %in% 0] <- 1
+  data$dmspols_1996_bin3[data$dmspols_sum2_1996_woreda > 0]    <- 2
+  data$dmspols_1996_bin3[data$dmspols_sum6_1996_woreda > 0]    <- 3
+  
+  ## bin4
+  data$dmspols_1996_bin4 <- NA
+  data$dmspols_1996_bin4[data$dmspols_sum2_1996_woreda %in% 0] <- 1
+  data$dmspols_1996_bin4[data$dmspols_sum2_1996_woreda > 0]    <- 2
+  data$dmspols_1996_bin4[data$dmspols_sum6_1996_woreda > 0]    <- 3
+  data$dmspols_1996_bin4[data$dmspols_sum10_1996_woreda > 0]    <- 4
   
   # Remove Stuff Don't Need ----------------------------------------------------
   # Reduces dataset size if grid dataset where need to trim size of dataset

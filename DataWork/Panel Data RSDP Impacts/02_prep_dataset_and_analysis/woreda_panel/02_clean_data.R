@@ -78,12 +78,18 @@ data <- data %>%
          dmspols_33bin_1996     = dmspols_33bin[year == 1996],
          dmspols_sum2_1996      = dmspols_sum2[year == 1996],
          dmspols_sum6_1996      = dmspols_sum6[year == 1996],
+         dmspols_sum10_1996      = dmspols_sum10[year == 1996],
+         dmspols_sum15_1996      = dmspols_sum15[year == 1996],
+         dmspols_sum20_1996      = dmspols_sum20[year == 1996],
+         dmspols_sum25_1996      = dmspols_sum25[year == 1996],
+         dmspols_sum30_1996      = dmspols_sum30[year == 1996],
          dmspols_sum33_1996     = dmspols_sum33[year == 1996],
          dmspols_ihs_1996       = dmspols_ihs[year == 1996],
          dmspols_zhang_log_1996 = dmspols_zhang_log[year == 1996],
          dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996]) %>%
   ungroup()
 
+## bin3
 data$dmspols_1996_bin3 <- NA
 data$dmspols_1996_bin3[data$dmspols_sum2_1996 %in% 0] <- 1
 data$dmspols_1996_bin3[data$dmspols_sum2_1996 > 0]    <- 2
@@ -92,6 +98,30 @@ data$dmspols_1996_bin3[data$dmspols_sum6_1996 > 0]    <- 3
 data$dmspols_1996_bin3_1 <-  as.numeric(data$dmspols_1996_bin3 == 1)
 data$dmspols_1996_bin3_2 <-  as.numeric(data$dmspols_1996_bin3 == 2)
 data$dmspols_1996_bin3_3 <-  as.numeric(data$dmspols_1996_bin3 == 3)
+
+## bin4
+data$dmspols_1996_bin4 <- NA
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 %in% 0] <- 1
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 > 0]    <- 2
+data$dmspols_1996_bin4[data$dmspols_sum6_1996 > 0]    <- 3
+data$dmspols_1996_bin4[data$dmspols_sum10_1996 > 0]    <- 4
+
+data$dmspols_1996_bin4_1 <-  as.numeric(data$dmspols_1996_bin4 == 1)
+data$dmspols_1996_bin4_2 <-  as.numeric(data$dmspols_1996_bin4 == 2)
+data$dmspols_1996_bin4_3 <-  as.numeric(data$dmspols_1996_bin4 == 3)
+data$dmspols_1996_bin4_4 <-  as.numeric(data$dmspols_1996_bin4 == 4)
+
+## bin4v2
+data$dmspols_1996_bin42 <- NA
+data$dmspols_1996_bin42[data$dmspols_sum2_1996 %in% 0] <- 1
+data$dmspols_1996_bin42[data$dmspols_sum2_1996 > 0]    <- 2
+data$dmspols_1996_bin42[data$dmspols_sum6_1996 > 0]    <- 3
+data$dmspols_1996_bin42[data$dmspols_sum15_1996 > 0]    <- 4
+
+data$dmspols_1996_bin42_1 <-  as.numeric(data$dmspols_1996_bin42 == 1)
+data$dmspols_1996_bin42_2 <-  as.numeric(data$dmspols_1996_bin42 == 2)
+data$dmspols_1996_bin42_3 <-  as.numeric(data$dmspols_1996_bin42 == 3)
+data$dmspols_1996_bin42_4 <-  as.numeric(data$dmspols_1996_bin42 == 4)
 
 # Baseline Variables - MA ------------------------------------------------------
 MA_vars <- names(data) %>% str_subset("^MA_")

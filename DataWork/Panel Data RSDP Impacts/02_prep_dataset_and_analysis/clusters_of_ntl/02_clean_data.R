@@ -207,6 +207,9 @@ data <- data %>%
          globcover_urban_1996 = globcover_urban[year == 1996],
          globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
          globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
+         dmspols_sum2_1996 = dmspols_sum2[year == 1996],
+         dmspols_sum6_1996 = dmspols_sum6[year == 1996],
+         dmspols_sum10_1996 = dmspols_sum10[year == 1996],
          dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
          dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
          dmspols_zhang_sum33_ihs_1996 = dmspols_zhang_sum33_ihs[year == 1996],
@@ -226,6 +229,13 @@ data$dmspols_zhang_1996_group[data$dmspols_zhang_1996 >= dmspols_zhang_1996_medi
 
 # Default NTL Group
 data$ntl_group <- data$dmspols_1996_group
+
+## bin4
+data$dmspols_1996_bin4 <- NA
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 %in% 0] <- 1
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 > 0]    <- 2
+data$dmspols_1996_bin4[data$dmspols_sum6_1996 > 0]    <- 3
+data$dmspols_1996_bin4[data$dmspols_sum10_1996 > 0]    <- 4
 
 # data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
 # data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
@@ -292,8 +302,8 @@ data <- data %>%
   filter(N_pos_max %in% 4)
 
 # Subset Clusters: Cluster Size ------------------------------------------------
-#data <- data %>%
-#  filter(cluster_n_cells < 100)
+data <- data %>%
+  filter(cluster_n_cells < 100)
 
 # Subset Clusters: Near Improved -----------------------------------------------
 #data <- data %>%

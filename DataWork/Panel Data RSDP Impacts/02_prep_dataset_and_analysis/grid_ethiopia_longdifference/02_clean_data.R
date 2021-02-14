@@ -59,7 +59,15 @@ for(i in 1:nrow(base_end_df)){
                      dmspols_zhang_ihs_sum2_1996_woreda, dmspols_zhang_ihs_sum6_1996_woreda,
                      dmspols_1996_bin3_1,
                      dmspols_1996_bin3_2,
-                     dmspols_1996_bin3_3))
+                     dmspols_1996_bin3_3,
+                     dmspols_1996_bin4_1,
+                     dmspols_1996_bin4_2,
+                     dmspols_1996_bin4_3,
+                     dmspols_1996_bin4_4,
+                     dmspols_1996_bin42_1,
+                     dmspols_1996_bin42_2,
+                     dmspols_1996_bin42_3,
+                     dmspols_1996_bin42_4))
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
@@ -83,6 +91,14 @@ for(i in 1:nrow(base_end_df)){
                     dmspols_1996_bin3_1,
                     dmspols_1996_bin3_2,
                     dmspols_1996_bin3_3,
+                    dmspols_1996_bin4_1,
+                    dmspols_1996_bin4_2,
+                    dmspols_1996_bin4_3,
+                    dmspols_1996_bin4_4,
+                    dmspols_1996_bin42_1,
+                    dmspols_1996_bin42_2,
+                    dmspols_1996_bin42_3,
+                    dmspols_1996_bin42_4,
                     woreda_id,
                     W_CODE,
                     Z_CODE)) 

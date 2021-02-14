@@ -44,6 +44,11 @@ extract_raster_to_points <- function(year, points){
     points$dmspols_zhang_1 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 1, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_2 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 2, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_6 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 6, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_10 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 10, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_15 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 15, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_20 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 20, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_25 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 25, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_30 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x >= 30, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_33 <- dmspols_vx$extract(sp=points, fun=function(x){mean(x > 33, na.rm=T)}) %>% as.numeric
     
     # Number of cells above NTL threshold
@@ -52,6 +57,11 @@ extract_raster_to_points <- function(year, points){
     points$dmspols_zhang_sum1        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 1, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_sum2        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 2, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_sum6        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 6, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_sum10        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 10, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_sum15        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 15, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_sum20        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 20, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_sum25        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 25, na.rm=T)}) %>% as.numeric
+    points$dmspols_zhang_sum30        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x >= 30, na.rm=T)}) %>% as.numeric
     points$dmspols_zhang_sum33        <- dmspols_vx$extract(sp=points, fun=function(x){sum(x > 33, na.rm=T)}) %>% as.numeric
     
   } 

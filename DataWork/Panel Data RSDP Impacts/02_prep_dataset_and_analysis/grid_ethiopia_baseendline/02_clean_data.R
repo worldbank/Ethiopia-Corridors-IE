@@ -18,9 +18,13 @@ data <- data %>%
     # DMSP - Binary
     dmspols_zhang_2 = as.numeric(dmspols_zhang >= 2),
     dmspols_zhang_6 = as.numeric(dmspols_zhang >= 6),
+    dmspols_zhang_10 = as.numeric(dmspols_zhang >= 10),
+    dmspols_zhang_15 = as.numeric(dmspols_zhang >= 15),
     
     dmspols_2 = as.numeric(dmspols >= 2),
     dmspols_6 = as.numeric(dmspols >= 6),
+    dmspols_10 = as.numeric(dmspols >= 10),
+    dmspols_15 = as.numeric(dmspols >= 15),
     
     # Define "Near Road" Variables
     near_anyimproved_ever_5km = as.numeric(distance_anyimproved_ever <= 5*1000),
@@ -43,6 +47,8 @@ data <- data %>%
          dmspols_1996 = dmspols[year == 1996],
          dmspols_2_1996 = dmspols_2[year == 1996],
          dmspols_6_1996 = dmspols_6[year == 1996],
+         dmspols_10_1996 = dmspols_10[year == 1996],
+         dmspols_15_1996 = dmspols_15[year == 1996],
          dmspols_zhang_2_1996 = dmspols_zhang_2[year == 1996],
          dmspols_zhang_6_1996 = dmspols_zhang_6[year == 1996]) %>%
   ungroup()
@@ -53,6 +59,8 @@ data <- data %>%
          dmspols_1996_woreda = mean(dmspols_1996, na.rm = T),
          dmspols_sum2_1996_woreda = sum(dmspols_2_1996, na.rm = T),
          dmspols_sum6_1996_woreda = sum(dmspols_6_1996, na.rm = T),
+         dmspols_sum10_1996_woreda = sum(dmspols_10_1996, na.rm = T),
+         dmspols_sum15_1996_woreda = sum(dmspols_15_1996, na.rm = T),
          dmspols_zhang_sum2_1996_woreda = sum(dmspols_zhang_2_1996, na.rm = T),
          dmspols_zhang_sum6_1996_woreda = sum(dmspols_zhang_6_1996, na.rm = T)) %>%
   ungroup()
@@ -62,7 +70,8 @@ data$dmspols_ihs_1996_woreda       <- calc_ihs(data$dmspols_1996_woreda)
 data$dmspols_zhang_ihs_sum2_1996_woreda       <- calc_ihs(data$dmspols_zhang_sum2_1996_woreda)
 data$dmspols_zhang_ihs_sum6_1996_woreda       <- calc_ihs(data$dmspols_zhang_sum6_1996_woreda)
 
-## NTL Categories
+#### NTL Categories
+# bin3
 data$dmspols_1996_bin3 <- NA
 data$dmspols_1996_bin3[data$dmspols_sum2_1996_woreda %in% 0] <- 1
 data$dmspols_1996_bin3[data$dmspols_sum2_1996_woreda > 0]    <- 2
@@ -71,6 +80,30 @@ data$dmspols_1996_bin3[data$dmspols_sum6_1996_woreda > 0]    <- 3
 data$dmspols_1996_bin3_1 <-  as.numeric(data$dmspols_1996_bin3 == 1)
 data$dmspols_1996_bin3_2 <-  as.numeric(data$dmspols_1996_bin3 == 2)
 data$dmspols_1996_bin3_3 <-  as.numeric(data$dmspols_1996_bin3 == 3)
+
+## bin4
+data$dmspols_1996_bin4 <- NA
+data$dmspols_1996_bin4[data$dmspols_sum2_1996_woreda %in% 0] <- 1
+data$dmspols_1996_bin4[data$dmspols_sum2_1996_woreda > 0]    <- 2
+data$dmspols_1996_bin4[data$dmspols_sum6_1996_woreda > 0]    <- 3
+data$dmspols_1996_bin4[data$dmspols_sum10_1996_woreda > 0]    <- 4
+
+data$dmspols_1996_bin4_1 <-  as.numeric(data$dmspols_1996_bin4 == 1)
+data$dmspols_1996_bin4_2 <-  as.numeric(data$dmspols_1996_bin4 == 2)
+data$dmspols_1996_bin4_3 <-  as.numeric(data$dmspols_1996_bin4 == 3)
+data$dmspols_1996_bin4_4 <-  as.numeric(data$dmspols_1996_bin4 == 4)
+
+## bin4v2
+data$dmspols_1996_bin42 <- NA
+data$dmspols_1996_bin42[data$dmspols_sum2_1996_woreda %in% 0] <- 1
+data$dmspols_1996_bin42[data$dmspols_sum2_1996_woreda > 0]    <- 2
+data$dmspols_1996_bin42[data$dmspols_sum6_1996_woreda > 0]    <- 3
+data$dmspols_1996_bin42[data$dmspols_sum15_1996_woreda > 0]    <- 4
+
+data$dmspols_1996_bin42_1 <-  as.numeric(data$dmspols_1996_bin42 == 1)
+data$dmspols_1996_bin42_2 <-  as.numeric(data$dmspols_1996_bin42 == 2)
+data$dmspols_1996_bin42_3 <-  as.numeric(data$dmspols_1996_bin42 == 3)
+data$dmspols_1996_bin42_4 <-  as.numeric(data$dmspols_1996_bin42 == 4)
 
 ## NTL lit at baseline
 data$dmspols_zhang_base0na <- data$dmspols_zhang
