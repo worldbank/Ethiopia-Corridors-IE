@@ -41,16 +41,16 @@ extract_globcover <- function(year){
   #globcover_cropland_irrigated <- calc(globcover, fun=globcover_cropland_irrigated_fun)
   #globcover_cropland_mosaic <- calc(globcover, fun=globcover_cropland_mosaic_fun)
   
-  polygons$globcover_urban <- velox(globcover_urban)$extract(polygons, fun=mean)
-  polygons$globcover_cropland <- velox(globcover_cropland)$extract(polygons, fun=mean)
+  polygons$globcover_urban <- velox(globcover_urban)$extract(polygons, fun=mean, small = T)
+  polygons$globcover_cropland <- velox(globcover_cropland)$extract(polygons, fun=mean, small = T)
   #polygons$globcover_cropland_rainfed <- velox(globcover_cropland_rainfed)$extract(polygons, fun=mean)
   #polygons$globcover_cropland_irrigated <- velox(globcover_cropland_irrigated)$extract(polygons, fun=mean)
   #polygons$globcover_cropland_mosaic <- velox(globcover_cropland_mosaic)$extract(polygons, fun=mean)
   
   # If not a grid dataset, also take the sum (for total cells classifed as urban, for example)
   if(!grepl("grid", DATASET_TYPE)){
-    polygons$globcover_urban_sum <- velox(globcover_urban)$extract(polygons, fun=sum)
-    polygons$globcover_cropland_sum <- velox(globcover_cropland)$extract(polygons, fun=sum)
+    polygons$globcover_urban_sum <- velox(globcover_urban)$extract(polygons, fun=sum, small = T)
+    polygons$globcover_cropland_sum <- velox(globcover_cropland)$extract(polygons, fun=sum, small = T)
     #polygons$globcover_cropland_rainfed_sum <- velox(globcover_cropland_rainfed)$extract(polygons, fun=sum)
     #polygons$globcover_cropland_irrigated_sum <- velox(globcover_cropland_irrigated)$extract(polygons, fun=sum)
     #polygons$globcover_cropland_mosaic_sum <- velox(globcover_cropland_mosaic)$extract(polygons, fun=sum)

@@ -28,6 +28,7 @@ roads <- spTransform(roads, CRS(UTM_ETH))
 # Cut Road Areas Out -----------------------------------------------------------
 roads_1km_buff <- gBuffer_chunks(roads, width=1000, 51)
 
+# 735 736 737
 woreda_clean <- lapply(1:nrow(woreda_blank), function(i){
   print(i)
 
@@ -41,7 +42,7 @@ woreda_clean <- lapply(1:nrow(woreda_blank), function(i){
   # Catch errors in removing roads from polygons. An error occurs when, through
   # this process, no part of the woreda is left. If that occurs, we return NULL,
   # so that polygon is excluded
-  woreda_blank_i_e <- NULL
+  woreda_blank_i_e <- woreda_blank_i # default to blank road
   tryCatch({  
     
     # If doesn't intersect with any roads, keep whole woreda
