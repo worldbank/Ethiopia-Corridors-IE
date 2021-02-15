@@ -88,8 +88,8 @@ cat("         & 1996 & 2012 & 2016           &  1996 & 2012 & 2016              
 cat("\\hline \n")
 
 N <- data_grid_full %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid}} & ")
-cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
+cat("\\multicolumn{4}{l}{{\\bf 1x1km Grid}} & ")
+cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
 #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 make_sum_stats(data_grid_full, 
                variables = c("dmspols_zhang", 
@@ -101,8 +101,8 @@ make_sum_stats(data_grid_full,
 
 # cat("\\hline \n")
 # N <- data_grid_near_rd %>% dplyr::filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-# cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid - Pixels Near Improved Road}} & ")
-# cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
+# cat("\\multicolumn{4}{l}{{\\bf 1x1km Grid - Pixels Near Improved Road}} & ")
+# cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
 # #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 # make_sum_stats(data_grid_near_rd,
 #                variables = c("dmspols_zhang",
@@ -118,8 +118,8 @@ make_sum_stats(data_grid_full,
 #          distance_anyimproved_ever <= 5000) %>% 
 #   nrow() %>% 
 #   prettyNum(big.mark=",",scientific=FALSE)
-# cat("\\multicolumn{5}{l}{{\\bf Cities [Defined from Lit Pixels]}} & ")
-# cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
+# cat("\\multicolumn{4}{l}{{\\bf Cities [Defined from Lit Pixels]}} & ")
+# cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
 # #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 # make_sum_stats(data_ntl, 
 #                variables = c("dmspols_zhang", 
@@ -134,8 +134,8 @@ make_sum_stats(data_grid_full,
 #          distance_anyimproved_ever <= 5000) %>% 
 #   nrow() %>% 
 #   prettyNum(big.mark=",",scientific=FALSE)
-# cat("\\multicolumn{5}{l}{{\\bf Cities [Defined from Globcover Urban Pixels]}} & ")
-# cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
+# cat("\\multicolumn{4}{l}{{\\bf Cities [Defined from Globcover Urban Pixels]}} & ")
+# cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
 # #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 # make_sum_stats(data_urban, 
 #                variables = c("dmspols_zhang", 
@@ -150,8 +150,8 @@ N <- data_woreda %>%
   filter(year %in% 1996) %>% 
   nrow() %>% 
   prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf Woreda}} & ")
-cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
+cat("\\multicolumn{4}{l}{{\\bf Woreda}} & ")
+cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
 #cat("\\multicolumn{7}{c}{ } \\\\ \n")
 make_sum_stats(data_woreda, 
                variables = c("dmspols_zhang", 
