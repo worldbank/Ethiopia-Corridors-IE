@@ -216,6 +216,21 @@ for(start_i in start_ids){
   for(var in ntl_var) data[[paste0(var, "_log")]] <- log(data[[var]] + 1)
   for(var in ntl_var) data[[paste0(var, "_ihs")]] <- calc_ihs(data[[var]])
   
+  # Binary variables for above NTL threshold -----------------------------------
+  # For woreda/non-grid dataset, this is done in the extraction phase, so this
+  # represents the proportion of cells. 
+  
+  data$dmspols_2  <- data$dmspols >= 2
+  data$dmspols_6  <- data$dmspols >= 6
+  data$dmspols_10 <- data$dmspols >= 10
+  data$dmspols_15 <- data$dmspols >= 15
+  
+  data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
+  data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
+  
+  data$viirs_mean_2 <- data$viirs_mean >= 2
+  data$viirs_mean_6 <- data$viirs_mean >= 6
+  
   # Dependent Variable Transformations -----------------------------------------
   # Inverse Hyperbolic Since Transformation 
   # This is used by Mitnik et. al. due to lots of zeros in DMSP-OLS 
@@ -251,15 +266,7 @@ for(start_i in start_ids){
   data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
   data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
   
-  #### Binary variables for above NTL threshold
-  # For woreda/non-grid dataset, this is done in the extraction phase, so this
-  # represents the proportion of cells. 
-  
-  data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
-  data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
-  
-  data$viirs_mean_2 <- data$viirs_mean >= 2
-  data$viirs_mean_6 <- data$viirs_mean >= 6
+
   
   # Other variable transformations ---------------------------------------------
   data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
@@ -322,7 +329,7 @@ for(start_i in start_ids){
   data$globcover_urban_log <- NULL
   data$globcover_cropland_log <- NULL
   data$dmspols_log <- NULL
-  data$dmspols_zhang <- NULL
+  #data$dmspols_zhang <- NULL
   data$viirs_max <- NULL
   data$viirs_mean <- NULL
   data$viirs_mean_2 <- NULL

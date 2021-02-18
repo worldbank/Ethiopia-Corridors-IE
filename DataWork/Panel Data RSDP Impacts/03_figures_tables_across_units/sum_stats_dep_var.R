@@ -28,7 +28,7 @@ if_zero_return <- function(x,
 data_woreda        <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda",                      "merged_datasets", "panel_data_clean.Rds"))
 #data_ntl           <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl",             "merged_datasets", "panel_data_clean.Rds"))
 #data_urban         <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
-#data_grid_near_rd  <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",       "merged_datasets", "grid_data_clean.Rds"))
+data_grid_near_rd  <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",       "merged_datasets", "grid_data_clean.Rds"))
 data_grid_full     <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",       "merged_datasets", "panel_data_clean.Rds"))
 
 # Function for Sum Stats -------------------------------------------------------
@@ -99,18 +99,18 @@ make_sum_stats(data_grid_full,
                              "globcover_urban"),
                ROUND_NUM_URBAN = 4)
 
-# cat("\\hline \n")
-# N <- data_grid_near_rd %>% dplyr::filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-# cat("\\multicolumn{4}{l}{{\\bf 1x1km Grid - Pixels Near Improved Road}} & ")
-# cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-# #cat("\\multicolumn{7}{c}{ } \\\\ \n")
-# make_sum_stats(data_grid_near_rd,
-#                variables = c("dmspols_zhang",
-#                              "dmspols_zhang_2",
-#                              "dmspols_zhang_6",
-#                              #"dmspols_zhang_base0na",
-#                              "globcover_urban"),
-#                ROUND_NUM_URBAN = 4)
+cat("\\hline \n")
+N <- data_grid_near_rd %>% dplyr::filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
+cat("\\multicolumn{4}{l}{{\\bf 1x1km Grid - Pixels Near Improved Road}} & ")
+cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
+#cat("\\multicolumn{7}{c}{ } \\\\ \n")
+make_sum_stats(data_grid_near_rd,
+               variables = c("dmspols_zhang",
+                             "dmspols_zhang_2",
+                             "dmspols_zhang_6",
+                             #"dmspols_zhang_base0na",
+                             "globcover_urban"),
+               ROUND_NUM_URBAN = 4)
 
 # cat("\\hline \n")
 # N <- data_ntl %>% 
