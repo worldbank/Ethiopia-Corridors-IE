@@ -1,7 +1,92 @@
 # Merge Datasets Together
 
+NEAR_CUTOFF <- 5 * 1000
+ALL_YEARS_IMPROVED_VAR <- F
+
 # Load Data / Create Dataset Lists ---------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data.Rds"))
+
+# Distance improved road -------------------------------------------------------
+data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_na)
+data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improvedroad_speedafter_",c(50,70,120))], 1, FUN = min_na)
+data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_na)
+
+# Years Since / Post Improved Variables --------------------------------------
+generate_road_improved_variables <- function(road_var, 
+                                             data,
+                                             all_years_improved_var,
+                                             NEAR_CUTOFF){
+  # DESCRIPTION: Creates variables indicating years since road improved,
+  # and first year road was improved.
+  
+  # INPUT:
+  # road_var: name of road variable that captures distance to road in meters
+  # data: dataset
+  # all_years_improved_var: T/F, whether to add a variable indicating all
+  # years near an improved road
+  
+  print(road_var)
+  final_vars <- c("year_roadTEMP", "years_since_roadTEMP", "post_roadTEMP")
+  
+  road_type <- road_var %>% str_replace_all("distance_", "")
+  data$distance_roadTEMP <- data[[road_var]]
+  
+  ## Variable for year of first improvement
+  data <- data %>%
+    
+    # Whether near improved road
+    mutate(near_roadTEMP = distance_roadTEMP <= NEAR_CUTOFF) %>%
+    
+    # Year road improved (if any). Only consider earliest improved road. If cell near
+    # area where another road was improved, we don't consider this. So:
+    # 0 0 0 0 2007 0 0 2010 0 0 0 --> would yield 2007, while all zeros returns NA
+    mutate(near_roadTEMP_X_year = near_roadTEMP * year) %>%
+    mutate(near_roadTEMP_X_year = na_if(near_roadTEMP_X_year, 0) %>% as.numeric())
+  
+  # Create variable indicating all years road improved: e.g., 2007;2010
+  if(all_years_improved_var){
+    data <- data %>%
+      group_by(cell_id) %>%
+      mutate(near_roadTEMP_all_years = paste(near_roadTEMP_X_year, collapse=";") %>% str_replace_all("NA;|;NA", "")) 
+    
+    final_vars <- c(final_vars, "near_roadTEMP_all_years")
+  }
+  
+  ## Variable for each cell of first year became near an improved road
+  data_dt <- as.data.table(data)
+  data <- data_dt[, year_roadTEMP:=min(near_roadTEMP_X_year,na.rm=T), by=list(cell_id)] %>% as.data.frame()
+  data$year_roadTEMP[data$year_roadTEMP %in% Inf] <- NA
+  
+  ## Years since road improved and binary 1/0 road improved variable
+  data$years_since_roadTEMP <- data$year - data$year_roadTEMP
+  data$post_roadTEMP <- data$years_since_roadTEMP >= 0
+  data$post_roadTEMP[is.na(data$post_roadTEMP)] <- 0
+  
+  # +/- 10 years aggregate
+  data$years_since_roadTEMP[data$years_since_roadTEMP >= 10] <- 10
+  data$years_since_roadTEMP[data$years_since_roadTEMP <= -10] <- -10
+  
+  # Subset variables and rename
+  data <- data %>%
+    dplyr::select(all_of(final_vars))
+  
+  # Prep variables
+  data$years_since_roadTEMP <- data$years_since_roadTEMP %>% as.factor() %>% relevel("-1")
+  data$post_roadTEMP <- data$post_roadTEMP %>% as.numeric()
+  
+  names(data) <- names(data) %>% str_replace_all("roadTEMP", road_type)
+  
+  return(data)
+}
+
+roadimproved_df <- lapply(c("distance_improvedroad", 
+                            "distance_improvedroad_50aboveafter", 
+                            "distance_improvedroad_below50after"),
+                          generate_road_improved_variables, 
+                          data, 
+                          ALL_YEARS_IMPROVED_VAR,
+                          NEAR_CUTOFF) %>% bind_cols()
+data <- bind_cols(data, roadimproved_df)
 
 # Road Variables ---------------------------------------------------------------
 # Variables for road length above Xkm in each year
@@ -123,6 +208,12 @@ data$dmspols_1996_bin42_2 <-  as.numeric(data$dmspols_1996_bin42 == 2)
 data$dmspols_1996_bin42_3 <-  as.numeric(data$dmspols_1996_bin42 == 3)
 data$dmspols_1996_bin42_4 <-  as.numeric(data$dmspols_1996_bin42 == 4)
 
+# Baseline NTL quantiles
+dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
+data$dmspols_1996_group[data$dmspols_1996 < dmspols_1996_median] <- "1"
+data$dmspols_1996_group[data$dmspols_1996 >= dmspols_1996_median] <- "2"
+data$ntl_group <- data$dmspols_1996_group
+
 # Baseline Variables - MA ------------------------------------------------------
 MA_vars <- names(data) %>% str_subset("^MA_")
 
@@ -144,15 +235,19 @@ data <- data %>%
          dmspols_zhang_ihs_pretnd96_92   = dmspols_zhang_ihs[year == 1996] - dmspols_zhang_ihs[year == 1992]) %>%
   ungroup()
 
+# Other ------------------------------------------------------------------------
+data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
+
 # Select Relevant Variables ----------------------------------------------------
 id_vars <- c("cell_id", "year")
 adm_vars <- c("W_CODE", "R_CODE", "Z_CODE", "woreda_id")
 road_length_vars <- names(data) %>% str_subset("road_length_") %>% str_subset("above")
 road_distance_vars <- c("distance_mst")
 dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% str_subset("above")
+years_since_improved_vars <- names(data) %>% str_subset("years_since_|distance_improvedroad_speedafter_")
 satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
 MA_vars <- names(data) %>% str_subset("MA_")
-other_vars <- c("gpw2000", "area_polygon", "distance_city_addisababa", "Pop2007")
+other_vars <- c("gpw2000", "area_polygon", "distance_city_addisababa", "Pop2007", "ntl_group", "far_addis")
 
 vars_all <- c(id_vars,
               adm_vars,
@@ -161,7 +256,8 @@ vars_all <- c(id_vars,
               dist_road_speed_vars,
               satellite_vars,
               MA_vars,
-              other_vars)
+              other_vars,
+              years_since_improved_vars)
 
 data <- data %>%
   dplyr::select(all_of(vars_all))
@@ -208,5 +304,4 @@ var_label(data$gpw2000) <- "Population in 2000 (Gridded Population of the World)
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))
 #write_dta(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.dta"))
-
 

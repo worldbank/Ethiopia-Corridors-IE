@@ -1,16 +1,16 @@
 # Event Study Figures: Urban
 
-sacco_listing %>%
-  list.files(pattern = "*.xlsx") %>%
-  lapply(read_excel) %>%
-  bind_rows()
-
-
-
 #### Parameters
 p_dodge_width <- 1
 
 # Load Data --------------------------------------------------------------------
+data_woreda <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "results_datasets",
+                                "did_coef_every_year.Rds")) %>%
+  filter(dep_var %in% c("dmspols_zhang_ihs",
+                        "dmspols_zhang_sum2_ihs",
+                        "dmspols_zhang_sum6_ihs",
+                        "globcover_urban_sum_ihs"))
+
 data_urban <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "results_datasets",
                                 "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_zhang_ihs",
@@ -36,6 +36,8 @@ data_grid <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_near
 
 # Prep Data --------------------------------------------------------------------
 data <- bind_rows(
+  data_woreda %>%
+    mutate(unit = "Woreda"),
   data_urban %>%
     mutate(unit = "Urban Cluster"),
   data_ntl %>%
@@ -127,6 +129,12 @@ make_figures_by_base_ntl <- function(unit_i,
 }
 
 for(addis_dist in c("All", "Far")){
+  
+  p <- make_figures_by_base_ntl("Woreda", addis_dist)
+  ggsave(p,
+         filename = file.path(paper_figures, paste0("eventstudy_woreda_",addis_dist,".png")),
+         height = 6.5, width = 12)
+  rm(p)
   
   p <- make_figures_by_base_ntl("NTL Cluster", addis_dist)
   ggsave(p,

@@ -31,30 +31,10 @@ data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speedaft
 data$distance_improvedroad_50aboveafter <- apply(data[,paste0("distance_improvedroad_speedafter_",c(50,70,120))], 1, FUN = min_na)
 data$distance_improvedroad_below50after <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45))], 1, FUN = min_na)
 
-data$distance_improvedroad_speedafter_20 <- NULL
-data$distance_improvedroad_speedafter_25 <- NULL
-data$distance_improvedroad_speedafter_30 <- NULL
-data$distance_improvedroad_speedafter_35 <- NULL
-data$distance_improvedroad_speedafter_45 <- NULL
-data$distance_improvedroad_speedafter_50 <- NULL
-data$distance_improvedroad_speedafter_70 <- NULL
-data$distance_improvedroad_speedafter_120 <- NULL
-
 ## Distance road
 data$distance_road <- apply(data[,paste0("distance_road_speed_",c(10,15,20,25,30,35,45,50,70,120))], 1, FUN = min_na)
 data$distance_road_50above <- apply(data[,paste0("distance_road_speed_",c(50,70,120))], 1, FUN = min_na)
 data$distance_road_below50 <- apply(data[,paste0("distance_road_speed_",c(10,15,20,25,30,35,45))], 1, FUN = min_na)
-
-data$distance_road_speed_10 <- NULL
-data$distance_road_speed_15 <- NULL
-data$distance_road_speed_20 <- NULL
-data$distance_road_speed_25 <- NULL
-data$distance_road_speed_30 <- NULL
-data$distance_road_speed_35 <- NULL
-data$distance_road_speed_45 <- NULL
-data$distance_road_speed_50 <- NULL
-data$distance_road_speed_70 <- NULL
-data$distance_road_speed_120 <- NULL
 
 # Years Since / Post Improved Variables --------------------------------------
 generate_road_improved_variables <- function(road_var, 
@@ -300,8 +280,8 @@ data <- data %>%
   filter(N_pos_max %in% 4)
 
 # Subset Clusters: Cluster Size ------------------------------------------------
-data <- data %>%
-  filter(cluster_n_cells < 100)
+#data <- data %>%
+#  filter(cluster_n_cells < 100)
 
 # Subset Clusters: Near Improved -----------------------------------------------
 data <- data %>%
