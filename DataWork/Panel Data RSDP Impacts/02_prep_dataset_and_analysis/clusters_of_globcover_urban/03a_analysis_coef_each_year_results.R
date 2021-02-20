@@ -15,6 +15,9 @@ ntl_group <- "All"
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
 
+data <- data %>%
+  filter(cluster_n_cells < 100)
+
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 

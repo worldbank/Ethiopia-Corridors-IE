@@ -5,7 +5,7 @@ p_dodge_width <- 1
 
 # Load Data --------------------------------------------------------------------
 data_woreda <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "results_datasets",
-                                "did_coef_every_year.Rds")) %>%
+                                 "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_zhang_ihs",
                         "dmspols_zhang_sum2_ihs",
                         "dmspols_zhang_sum6_ihs",
@@ -78,7 +78,8 @@ title <- "Impact of Roads"
 
 make_1_figure <- function(ntl_group_i,
                           unit_i,
-                          addis_distance_i){
+                          addis_distance_i,
+                          data){
   
   title <- ""
   
@@ -111,12 +112,14 @@ make_1_figure <- function(ntl_group_i,
 }
 
 make_figures_by_base_ntl <- function(unit_i,
-                                     addis_distance_i){
+                                     addis_distance_i,
+                                     data){
   
   p_all <- lapply(c("All", "1", "2"),
                   make_1_figure,
                   unit_i,
-                  addis_distance_i)
+                  addis_distance_i,
+                  data)
   
   p_arrange <- ggarrange(p_all[[1]],
                          p_all[[2]],
@@ -130,27 +133,36 @@ make_figures_by_base_ntl <- function(unit_i,
 
 for(addis_dist in c("All", "Far")){
   
-  p <- make_figures_by_base_ntl("Woreda", addis_dist)
+  p <- make_figures_by_base_ntl("Woreda", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_woreda_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
-  p <- make_figures_by_base_ntl("NTL Cluster", addis_dist)
+  p <- make_figures_by_base_ntl("NTL Cluster", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_ntlcluster_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
-  p <- make_figures_by_base_ntl("1x1km Grid", addis_dist)
+  p <- make_figures_by_base_ntl("1x1km Grid", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_1kmgrid_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
-  p <- make_figures_by_base_ntl("Urban Cluster", addis_dist)
+  p <- make_figures_by_base_ntl("Urban Cluster", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_urbancluster_",addis_dist,".png")),
+         height = 6.5, width = 12)
+  rm(p)
+  
+  
+  data_city <- data[((data$unit %in% "NTL Cluster") & (data$dep_var %in% c("IHS(NTL)", "NTL > 2", "NTL > 6"))) |
+                      ((data$unit %in% "Urban Cluster") & (data$dep_var %in% c("Urban (Globcover)"))),]
+  p <- make_figures_by_base_ntl(c("NTL Cluster", "Urban Cluster"), addis_dist, data_city)
+  ggsave(p,
+         filename = file.path(paper_figures, paste0("eventstudy_cities_",addis_dist,".png")),
          height = 6.5, width = 12)
   rm(p)
   
