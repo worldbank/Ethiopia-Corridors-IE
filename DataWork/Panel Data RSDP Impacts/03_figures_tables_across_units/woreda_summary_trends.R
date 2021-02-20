@@ -47,17 +47,21 @@ make_figure <- function(df, title){
 p1 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 1),
             paste0("Woredas, Max Light: 0-1 [N = ",N1,"]"))
 
-p2 <- mmake_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 2),
+p2 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 2),
             paste0("Woredas, Max Light: 2-5 [N = ",N2,"]"))
 
-p3 <- mmake_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 3),
-            paste0("Woredas, Max Light: 6-10 [N = ",N4,"]"))
+p3 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 3),
+            paste0("Woredas, Max Light: 6-9 [N = ",N3,"]"))
 
-p4 <- mmake_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 4),
-            paste0("Woredas, Max Light: 11+ [N = ",N4,"]"))
+p4 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 4),
+            paste0("Woredas, Max Light: 10+ [N = ",N4,"]"))
 
 p <- ggarrange(p1, p2, p3, p4,
                ncol = 1) %>%
   annotate_figure(top = text_grob("Outcome variables over time, by baseline levels of nighttime lights", color = "black", face = "bold", size = 14))
 
 ggsave(p, filename = file.path(paper_figures, "ntl_trends_by_baseline.png"), height = 8, width = 8.5)
+
+
+
+
