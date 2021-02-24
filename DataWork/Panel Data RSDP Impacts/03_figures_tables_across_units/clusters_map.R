@@ -1,5 +1,7 @@
 # Map of Clusters
 
+set.seed(42)
+
 # Load Data --------------------------------------------------------------------
 eth <- readRDS(file.path(data_file_path, "GADM", "RawData", "gadm36_ETH_0_sp.rds")) 
 

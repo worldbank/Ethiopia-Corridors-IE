@@ -86,6 +86,7 @@ library(leaflet)
 library(TTR)
 library(tidyselect)
 library(dvmisc)
+library(facetscales) # devtools::install_github("zeehio/facetscales")
 
 # Functions
 source("https://raw.githubusercontent.com/ramarty/fast-functions/master/R/functions_in_chunks.R")

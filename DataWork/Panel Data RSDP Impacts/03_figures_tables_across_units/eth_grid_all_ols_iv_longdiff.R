@@ -167,7 +167,7 @@ stargazer(lm_dmspols_zhang_ihs,
           lm_globcover_urban_addis,
          
           dep.var.labels.include = T,
-          dep.var.labels = c("NTL (IHS)", "NTL $>$ 2", "NTL $>$ 6", "Urban"),
+          dep.var.labels = c("NTL", "NTL $\\geq$ 2", "NTL $\\geq$ 6", "GlobCover-Urban"),
           dep.var.caption = "",
           omit = c("temp_avg", "precipitation"),
           covariate.labels = c("Imp Rd.",
@@ -181,6 +181,7 @@ stargazer(lm_dmspols_zhang_ihs,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
+          omit.table.layout = "n",
           out = file.path(paper_tables, 
                           "ols_near_road_5km_eth_grid_eth_grid_results.tex"))
 
@@ -202,7 +203,7 @@ stargazer(iv_cd_dmspols_zhang_ihs,
           iv_cd_globcover_urban_addis,
           
           dep.var.labels.include = T,
-          dep.var.labels = c("NTL (IHS)", "NTL $>$ 2", "NTL $>$ 6", "Urban"),
+          dep.var.labels = c("NTL", "NTL $\\geq$ 2", "NTL $\\geq$ 6", "GlobCover-Urban"),
           dep.var.caption = "",
           covariate.labels = c("Imp Rd.",
                                "Imp Rd.$\\times NTL_{96}$ Low",
@@ -215,6 +216,7 @@ stargazer(iv_cd_dmspols_zhang_ihs,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
+          omit.table.layout = "n",
           out = file.path(paper_tables,
                           "iv_near_mst_cost_distance_5km_eth_grid_results.tex"))
 
@@ -236,7 +238,7 @@ stargazer(iv_ld_dmspols_zhang_ihs,
           iv_ld_globcover_urban_addis,
         
           dep.var.labels.include = T,
-          dep.var.labels = c("NTL (IHS)", "NTL $>$ 2", "NTL $>$ 6", "Urban"),
+          dep.var.labels = c("NTL", "NTL $\\geq$ 2", "NTL $\\geq$ 6", "GlobCover-Urban"),
           dep.var.caption = "",
           covariate.labels = c("Imp Rd.",
                                "Imp Rd.$\\times NTL_{96}$ Low",
@@ -249,6 +251,7 @@ stargazer(iv_ld_dmspols_zhang_ihs,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
+          omit.table.layout = "n",
           out = file.path(paper_tables, 
                           "iv_near_mst_least_distance_5km_eth_grid_results.tex"))
 
@@ -264,6 +267,7 @@ stargazer(iv_cd_dmspols_zhang_ihs$stage1,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
+          omit.table.layout = "n",
           add.lines = list(
             c("1st Stage F-Stat", 
               lfe::waldtest(iv_cd_dmspols_zhang_ihs$stage1, ~near_mst_5km, lhs=iv_cd_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM)
@@ -284,6 +288,7 @@ stargazer(iv_cd_dmspols_zhang_ihs$stage1,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
+          omit.table.layout = "n",
           add.lines = list(
             c("1st Stage F-Stat", 
               lfe::waldtest(iv_cd_dmspols_zhang_ihs$stage1, ~near_mst_5km, lhs=iv_cd_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM)
@@ -303,6 +308,7 @@ stargazer(iv_ld_dmspols_zhang_ihs$stage1,
           float=FALSE,
           column.sep.width="-15pt",
           digits=2,
+          omit.table.layout = "n",
           add.lines = list(
             c("1st Stage F-Stat", 
               lfe::waldtest(iv_ld_dmspols_zhang_ihs$stage1, ~near_mst_mindist_5km, lhs=iv_ld_dmspols_zhang_ihs$stage1$lhs)[5] %>% round(ROUND_NUM)

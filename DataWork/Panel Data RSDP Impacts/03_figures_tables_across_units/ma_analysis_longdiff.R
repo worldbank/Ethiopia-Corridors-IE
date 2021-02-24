@@ -9,8 +9,8 @@ MA_ubanrural <- ""
 # Regressions ------------------------------------------------------------------
 for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
   for(log in c("_log")){
-    for(theta in c("3_8")){ # "1", "2", "3_8", "5", "8"
-      for(exclude in c("_exclude50km")){ # "_exclude20km", "_exclude50km", "_exclude100km"
+    for(theta in c("1", "2", "3_8", "5", "8")){ # "1", "2", "3_8", "5", "8"
+      for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude50km", "_exclude100km"
         for(MA_ubanrural in c("")){ # "_urban2", "_rural2"
           
           # dv_name <- ""
@@ -146,7 +146,7 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
                     ols11,
                     ols12,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "NTL$>2$", "NTL$>6$", "Urban"),
+                    dep.var.labels   = c("NTL", "NTL$\\geq$2", "NTL$\\geq6$", "GlobCover-Urban"),
                     omit = c("Z_CODE", "Constant"),
                     #keep=c("MA_var", "MA_var_1996", "dmspols_ihs_1996", "dmspols_ihs_pretnd96_92", "globcover_urban_sum_pretnd96_92.y"),
                     covariate.labels = c("MA",
@@ -167,6 +167,7 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
                     float=FALSE,
                     column.sep.width = "8pt",
                     digits = 2,
+                    omit.table.layout = "n",
                     #add.lines = list(
                     #  #c("Zone FEs", rep("Y", 10)),
                     #  c("MA IV, 50km Doughnut", rep("N", 5), rep("Y", 5))
@@ -187,7 +188,7 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
                     iv11,
                     iv12,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "NTL$>2$", "NTL$>6$", "Urban"),
+                    dep.var.labels   = c("NTL", "NTL$\\geq$2", "NTL$\\geq6$", "GlobCover-Urban"),
                     omit = c("Z_CODE", "Constant"),
                     order = c(5:9, 1:4),
                     #keep=c("MA_var", "MA_var_1996", "dmspols_ihs_1996", "dmspols_ihs_pretnd96_92", "globcover_urban_sum_pretnd96_92.y"),
@@ -209,6 +210,7 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
                     float=FALSE,
                     column.sep.width = "8pt",
                     digits = 2,
+                    omit.table.layout = "n",
                     #add.lines = list(
                     #  #c("Zone FEs", rep("Y", 10)),
                     #  c("MA IV, 50km Doughnut", rep("N", 5), rep("Y", 5))

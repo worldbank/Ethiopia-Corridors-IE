@@ -1,0 +1,73 @@
+# Woreda Summary Trends
+
+# Load Data --------------------------------------------------------------------
+unit <- "woreda" # "clusters_of_ntl", "clusters_of_globcover_urban"
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "panel_data_clean.Rds"))
+data12 <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "longdiff_data_clean_base1996_end2012.Rds"))
+data16 <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "longdiff_data_clean_base1996_end2016.Rds"))
+
+N1 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 1) %>% nrow()
+N2 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 2) %>% nrow()
+N3 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 3) %>% nrow()
+N4 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 4) %>% nrow()
+
+data12 <- data12 %>%
+  dplyr::select(cell_id, dmspols_1996_bin4, dmspols_zhang_ihs, dmspols_zhang_sum2_ihs, dmspols_zhang_sum6_ihs)
+
+data16 <- data16 %>%
+  dplyr::select(cell_id, globcover_urban_sum_ihs)
+
+data_diff <- merge(data12, data16, by = "cell_id")
+
+data_sum <- data_diff %>%
+  group_by(dmspols_1996_bin4, cell_id) %>%
+  pivot_longer(cols = -c(dmspols_1996_bin4, cell_id)) %>%
+  dplyr::filter(!is.na(value))
+
+data_sum$name[data_sum$name %in% "dmspols_zhang_sum2_ihs"] <- "NTL \u2265 2"
+data_sum$name[data_sum$name %in% "dmspols_zhang_sum6_ihs"] <- "NTL \u2265 6"
+data_sum$name[data_sum$name %in% "dmspols_zhang_ihs"] <- "NTL"
+data_sum$name[data_sum$name %in% "globcover_urban_sum_ihs"] <- "Urban (Globcover)"
+
+
+make_figure <- function(df, title){
+  
+  df %>%
+    ggplot() +
+    geom_histogram(aes(x = value),
+              #size = 1,
+              fill = "dodgerblue3",
+              bins = 20) +
+    labs(x = "Growth Rate",
+         y = NULL,
+         title = title) +
+    theme_minimal() + 
+    theme(plot.title = element_text(face = "bold", size = 11, hjust = 0.5)) +
+    scale_x_continuous(breaks = scales::pretty_breaks(n = 4)) +
+    facet_wrap(~name,
+               scales = "free_y",
+               nrow = 1) 
+  
+}
+
+p1 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 1),
+            paste0("Woredas, Max Light: 0-1 [N = ",N1,"]"))
+
+p2 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 2),
+            paste0("Woredas, Max Light: 2-5 [N = ",N2,"]"))
+
+p3 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 3),
+            paste0("Woredas, Max Light: 6-9 [N = ",N3,"]"))
+
+p4 <- make_figure(data_sum %>% filter(dmspols_1996_bin4 %in% 4),
+            paste0("Woredas, Max Light: 10+ [N = ",N4,"]"))
+
+p <- ggarrange(p1, p2, p3, p4,
+               ncol = 1) %>%
+  annotate_figure(top = text_grob("Growth rate from baseline to endline, by baseline levels of nighttime lights", color = "black", face = "bold", size = 14))
+
+ggsave(p, filename = file.path(paper_figures, "ntl_histogram_by_baseline.png"), height = 8, width = 8.5)
+
+
+
+

@@ -52,11 +52,11 @@ data <- data %>%
   
   ## Rename/Factor Dep Var
   mutate(dep_var = case_when(
-    dep_var == "dmspols_zhang_ihs" ~ "IHS(NTL)",
-    dep_var == "dmspols_zhang_sum2_ihs" ~ "NTL > 2",
-    dep_var == "dmspols_zhang_2" ~ "NTL > 2",
-    dep_var == "dmspols_zhang_sum6_ihs" ~ "NTL > 6",
-    dep_var == "dmspols_zhang_6" ~ "NTL > 6",
+    dep_var == "dmspols_zhang_ihs" ~ "NTL",
+    dep_var == "dmspols_zhang_sum2_ihs" ~ "NTL \u2265 2",
+    dep_var == "dmspols_zhang_2" ~ "NTL \u2265 2",
+    dep_var == "dmspols_zhang_sum6_ihs" ~ "NTL \u2265 6",
+    dep_var == "dmspols_zhang_6" ~ "NTL \u2265 6",
     dep_var == "dmspols_zhang_sum0greater_bin" ~ "Cluster Exists",
     dep_var == "globcover_urban_sum_above0" ~ "Cluster Exists",
     dep_var == "globcover_urban_sum_ihs" ~ "Urban (Globcover)",
@@ -158,7 +158,7 @@ for(addis_dist in c("All", "Far")){
   rm(p)
   
   
-  data_city <- data[((data$unit %in% "NTL Cluster") & (data$dep_var %in% c("IHS(NTL)", "NTL > 2", "NTL > 6"))) |
+  data_city <- data[((data$unit %in% "NTL Cluster") & (data$dep_var %in% c("NTL", "NTL \u2265 2", "NTL \u2265 6"))) |
                       ((data$unit %in% "Urban Cluster") & (data$dep_var %in% c("Urban (Globcover)"))),]
   p <- make_figures_by_base_ntl(c("NTL Cluster", "Urban Cluster"), addis_dist, data_city)
   ggsave(p,

@@ -9,9 +9,9 @@ MA_ubanrural <- ""
 
 # Regressions ------------------------------------------------------------------
 for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_urban"
-  for(theta in c("3_8")){ # "1","2","5","8"
+  for(theta in c("1", "2", "3_8", "5", "8")){ # "1","2","5","8"
     for(log in c("_log")){
-      for(exclude in c("_exclude50km")){ # "_exclude20km", "_exclude100km","_exclude100km"
+      for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude100km","_exclude100km"
         for(MA_ubanrural in c("")){ # "_urban2", "_rural2"
           
           ## Load/Subset Data
@@ -149,7 +149,7 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     ols11,
                     ols12,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "NTL$>2$", "NTL$>6$", "Urban"),
+                    dep.var.labels   = c("NTL", "NTL$\\geq$2", "NTL$\\geq6$", "GlobCover-Urban"),
                     #keep=c("MA_var"),
                     omit = c("temp_avg", "precipitation"),
                     covariate.labels = c("MA",
@@ -164,6 +164,7 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     float=FALSE,
                     column.sep.width = "8pt",
                     digits = 2,
+                    omit.table.layout = "n",
                     add.lines = list(
                       c("Year   FE", rep("Y", 16)),
                       c("Unit FE", rep("Y", 16))
@@ -185,7 +186,7 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     iv11,
                     iv12,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "NTL$>2$", "NTL$>6$", "Urban"),
+                    dep.var.labels   = c("NTL", "NTL$\\geq$2", "NTL$\\geq6$", "GlobCover-Urban"),
                     #keep=c("MA_var"),
                     omit = c("temp_avg", "precipitation"),
                     covariate.labels = c("MA",
@@ -200,6 +201,7 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     float=FALSE,
                     column.sep.width = "8pt",
                     digits = 2,
+                    omit.table.layout = "n",
                     add.lines = list(
                       c("Year   FE", rep("Y", 16)),
                       c("Unit FE", rep("Y", 16))

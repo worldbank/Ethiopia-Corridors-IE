@@ -12,7 +12,7 @@ improved_roads <- roads[roads$Speed2016 > roads$Speed1996,]
 lc_mst <- ggplot() +
   geom_polygon(data = eth,
                aes(x = long, y = lat, group = group),
-               fill = "cornsilk1", color = NA) +
+               fill = "gray90", color = NA, alpha = 0.9) +
   geom_path(data = improved_roads,
             aes(x = long, y = lat, group = group,
                 color = "Improved Roads"),
@@ -21,7 +21,7 @@ lc_mst <- ggplot() +
             aes(x = long, y = lat, group = group,
                 color = "MST"),
             size = 0.35) +
-  scale_color_manual(values = c("gray20", "red")) +
+  scale_color_manual(values = c("gray40", "red")) +
   labs(color = NULL,
        title = "Least Cost MST") +
   theme_void() +
@@ -31,7 +31,7 @@ lc_mst <- ggplot() +
 ld_mst <- ggplot() +
   geom_polygon(data = eth,
                aes(x = long, y = lat, group = group),
-               fill = "gray50", color = NA) + # cornsilk1
+               fill = "gray90", color = NA, alpha = 0.9) + # cornsilk1
   geom_path(data = improved_roads,
             aes(x = long, y = lat, group = group,
                 color = "Improved Roads"),
@@ -40,7 +40,7 @@ ld_mst <- ggplot() +
             aes(x = long, y = lat, group = group,
                 color = "MST"),
             size = 0.35) +
-  scale_color_manual(values = c("gray20", "red")) +
+  scale_color_manual(values = c("gray40", "red")) +
   labs(color = NULL,
        title = "Minimum Distance MST") +
   theme_void() +
@@ -48,14 +48,6 @@ ld_mst <- ggplot() +
   coord_quickmap()
 
 fig <- ggarrange(ld_mst, lc_mst, common.legend = T, legend = "right")
-ggsave(fig, filename = file.path(data_file_path, "Hypothetical Road Networks", "Outputs",
-                                 "figures", "mst_maps.png"),
-       height = 3.5, width = 7)
-
-ggsave(fig, filename = file.path(data_file_path, "Panel Data RSDP Impacts", 
-                                 "Data", "dmspols_grid_ethiopia", "outputs",
-                                 "figures", "mst_maps.png"),
-       height = 3.5, width = 7)
 
 ggsave(fig, filename = file.path(paper_figures, "mst_maps.png"),
-       height = 3.5, width = 7)
+       height = 2.5, width = 7)

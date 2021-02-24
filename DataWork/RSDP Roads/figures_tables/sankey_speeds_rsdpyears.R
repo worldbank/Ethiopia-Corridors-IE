@@ -142,14 +142,19 @@ riverplot_obj <- makeRiver(nodes1, edges1_2,
                            node_labels=labels,
                            node_styles=styles)
 
-png(file.path(data_file_path, "RSDP Roads", "Outputs", "figures", "sankey_speed_rsdpyears.png"),width = 4*480, height = 4*480,res=300, bg=PLOT_BACKGROUND_COLOR)
+png(file.path(paper_figures, "sankey_speed_rsdpyears.png"),width = 4*480, height = 4*480,res=300, bg=PLOT_BACKGROUND_COLOR)
 riverplot(riverplot_obj, nsteps=100, fix.pdf=T, plot_area=0.9, xscale=.9)
-text(.025,-.05,"1996",font=2,col=TEXT_COLOR) ##
-text(.25,-.05,"2002",font=2,col=TEXT_COLOR)
-text(.45,-.05,"2007",font=2,col=TEXT_COLOR)
-text(.65,-.05,"2010",font=2,col=TEXT_COLOR) ##
-text(.85,-.05,"2016",font=2,col=TEXT_COLOR) ##
-text(-.12,-.11, "Note: Width of lines corresponds to road segment length.",
+text(.025,-.05,"1996",font=1,col=TEXT_COLOR) 
+text(.25,-.05,"2002",font=1,col=TEXT_COLOR)
+text(.45,-.05,"2007",font=1,col=TEXT_COLOR)
+text(.65,-.05,"2010",font=1,col=TEXT_COLOR) 
+text(.85,-.05,"2016",font=1,col=TEXT_COLOR) 
+
+text(0.1375,-.11,"Phase I",font=2,col=TEXT_COLOR) 
+text(0.35,-.11,"Phase II",font=2,col=TEXT_COLOR)
+text(0.55,-.11,"Phase III",font=2,col=TEXT_COLOR)
+text(0.75,-.11,"Phase IV",font=2,col=TEXT_COLOR) 
+text(-.12,-.17, "Note: Width of lines corresponds to road segment length.",
      font=1,cex=.7,adj=0)
 dev.off()
 
