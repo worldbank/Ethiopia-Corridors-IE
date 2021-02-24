@@ -51,7 +51,7 @@ make_dmsp_figure <- function(df, title){
     theme(legend.position = "none",
           plot.background = element_rect(fill = "black",
                                          color = "black"),
-          plot.title = element_text(hjust = 0.5, face = "bold", color = "white"))
+          plot.title = element_text(hjust = 0.5, color = "white"))
   
 }
 
@@ -59,11 +59,11 @@ p_dmsp1996 <- make_dmsp_figure(dmsp1996_df, "1996")
 p_dmsp2012 <- make_dmsp_figure(dmsp2012_df, "2012")
 
 p_dmsp <- ggarrange(p_dmsp1996, p_dmsp2012, nrow = 1) %>%
-  annotate_figure(top = text_grob("Nighttime Lights", color = "white", size = 14)) +
+  annotate_figure(top = text_grob("Nighttime Lights", color = "white", face = "bold", size = 14, vjust = 1)) +
   bgcolor("black") + 
   border("black")
 
-#ggsave(p_dmsp,  filename = "~/Desktop/dmsp.png", height = 4, width = 8)
+ggsave(p_dmsp,  filename = "~/Desktop/dmsp.png", height = 4, width = 8)
 
 # GlobCover-Urban --------------------------------------------------------------
 #### Prep Data
@@ -99,7 +99,7 @@ make_gc_figure <- function(df, title){
     theme(legend.position = "none",
           plot.background = element_rect(fill = "black",
                                          color = "black"),
-          plot.title = element_text(hjust = 0.5, face = "bold", color = "white"))
+          plot.title = element_text(hjust = 0.5, color = "white"))
   
 }
 
@@ -107,7 +107,7 @@ p_gc1996 <- make_gc_figure(gc1996_df, "1996")
 p_gc2016 <- make_gc_figure(gc2016_df, "2016")
 
 p_gc <- ggarrange(p_gc1996, p_gc2016, nrow = 1) %>%
-  annotate_figure(top = text_grob("GlobCover-Urban", face = "bold", size = 14)) +
+  annotate_figure(top = text_grob("GlobCover-Urban", color = "white", face = "bold", size = 14, vjust = 1)) +
   bgcolor("black") + 
   border("black")
 
@@ -145,7 +145,7 @@ p_rsdp <- ggplot() +
        title = "Road Improvements") +
   theme(plot.background = element_rect(fill = "black",
                                        color = "black"),
-        plot.title = element_text(hjust = 0.5, color = "white"),
+        plot.title = element_text(hjust = 0.5, color = "white", face = "bold"),
         legend.title = element_text(color = "white", hjust = 0.5),
         legend.text = element_text(color = "white")) +
   coord_quickmap() 
