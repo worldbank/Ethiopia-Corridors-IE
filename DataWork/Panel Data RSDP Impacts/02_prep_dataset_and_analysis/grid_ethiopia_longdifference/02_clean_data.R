@@ -15,6 +15,11 @@ NEAR_THRESHOLD <- 0
 base_end_df <- data.frame(baseline = c(1996, 1996),
                           endline =  c(2012, 2016))
 
+str_remove_vec <- function(x, rx){
+  # Remove items in vector "x" that contain "rx"
+  x[!grepl(rx, x)]
+}
+
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
                           "merged_datasets", "panel_data_clean.Rds"))
@@ -39,12 +44,7 @@ for(i in 1:nrow(base_end_df)){
   base_year <- base_end_df$baseline[i]
   end_year <- base_end_df$endline[i]
   
-  #### Construct Variables Before First Difference
-  data$dmspols_zhang_2 <- as.numeric(data$dmspols_zhang >= 2)
-  data$dmspols_zhang_6 <- as.numeric(data$dmspols_zhang >= 6)
-  
   #### First Difference Dataset
-  
   ## First difference dataset of time varying variables 
   data_first_diff <- data %>%
     arrange(year) %>%
@@ -52,22 +52,10 @@ for(i in 1:nrow(base_end_df)){
     
     # First difference
     group_by(cell_id) %>%
-    summarize_at(names(data) %>% str_subset("dmspols|globcover|ndvi"), 
-                 diff) %>%
-    dplyr::select(-c(dmspols_ihs_1996_woreda, dmspols_zhang_ihs_1996_woreda, dmspols_zhang_1996,
-                     dmspols_zhang_sum2_1996_woreda,     dmspols_zhang_sum6_1996_woreda,
-                     dmspols_zhang_ihs_sum2_1996_woreda, dmspols_zhang_ihs_sum6_1996_woreda,
-                     dmspols_1996_bin3_1,
-                     dmspols_1996_bin3_2,
-                     dmspols_1996_bin3_3,
-                     dmspols_1996_bin4_1,
-                     dmspols_1996_bin4_2,
-                     dmspols_1996_bin4_3,
-                     dmspols_1996_bin4_4,
-                     dmspols_1996_bin42_1,
-                     dmspols_1996_bin42_2,
-                     dmspols_1996_bin42_3,
-                     dmspols_1996_bin42_4))
+    summarize_at(names(data) %>% 
+                   str_subset("dmspols|globcover|ndvi") %>%
+                   str_remove_vec(rx = "_1996"), 
+                 diff)
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
@@ -80,25 +68,18 @@ for(i in 1:nrow(base_end_df)){
                     distance_anyimproved_by2012,
                     distance_anyroad2012,
                     distance_anyroad2016, 
-                    dmspols_zhang_sum2_1996_woreda, 
-                    dmspols_zhang_sum6_1996_woreda,
-                    dmspols_zhang_ihs_sum2_1996_woreda, 
-                    dmspols_zhang_ihs_sum6_1996_woreda,
+                    #dmspols_zhang_sum2_1996_woreda, 
+                    #dmspols_zhang_sum6_1996_woreda,
+                    #dmspols_zhang_ihs_sum2_1996_woreda, 
+                    #dmspols_zhang_ihs_sum6_1996_woreda,
                     distance_city_addisababa,
-                    dmspols_zhang_ihs_1996_woreda,
-                    dmspols_ihs_1996_woreda,
+                    #dmspols_zhang_ihs_1996_woreda,
+                    #dmspols_ihs_1996_woreda,
                     dmspols_zhang_1996,
-                    dmspols_1996_bin3_1,
-                    dmspols_1996_bin3_2,
-                    dmspols_1996_bin3_3,
                     dmspols_1996_bin4_1,
                     dmspols_1996_bin4_2,
                     dmspols_1996_bin4_3,
                     dmspols_1996_bin4_4,
-                    dmspols_1996_bin42_1,
-                    dmspols_1996_bin42_2,
-                    dmspols_1996_bin42_3,
-                    dmspols_1996_bin42_4,
                     woreda_id,
                     W_CODE,
                     Z_CODE)) 
@@ -116,17 +97,11 @@ for(i in 1:nrow(base_end_df)){
   data_clean$near_mst_5km              <- as.numeric(data_clean$distance_mst <= 5*1000)
   data_clean$near_mst_mindist_5km      <- as.numeric(data_clean$distance_mst_mindist <= 5*1000)
   
-  ## NTL in Lit Cells
-  data_clean$dmspols_zhang_ihs_base0na <- data_clean$dmspols_zhang_ihs
-  data_clean$dmspols_zhang_ihs_base0na[data_clean$dmspols_zhang_1996 %in% 0] <- NA
-  
   #### Export
   file_name <- paste0("longdiff_data_clean_base",base_year,"_end",end_year)
   
   saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", 
                                 "merged_datasets", paste0(file_name, ".Rds")))
-  #write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", 
-  #                                "merged_datasets", paste0(file_name, ".dta")))
 }
 
 

@@ -156,6 +156,8 @@ data <- data %>%
          ndvi_cropland_1996     = ndvi_cropland[year == 1996],
          dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
          dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
+         dmspols_harmon_sum2_ihs_1996 = dmspols_harmon_sum2_ihs[year == 1996],
+         dmspols_harmon_sum6_ihs_1996 = dmspols_harmon_sum6_ihs[year == 1996],
          dmspols_1996           = dmspols[year == 1996],
          dmspols_log_1996       = dmspols_log[year == 1996],
          dmspols_2bin_1996      = dmspols_2bin[year == 1996],
@@ -171,7 +173,9 @@ data <- data %>%
          dmspols_sum33_1996     = dmspols_sum33[year == 1996],
          dmspols_ihs_1996       = dmspols_ihs[year == 1996],
          dmspols_zhang_log_1996 = dmspols_zhang_log[year == 1996],
-         dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996]) %>%
+         dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
+         dmspols_harmon_log_1996 = dmspols_harmon_log[year == 1996],
+         dmspols_harmon_ihs_1996 = dmspols_harmon_ihs[year == 1996]) %>%
   ungroup()
 
 ## bin3
@@ -197,16 +201,16 @@ data$dmspols_1996_bin4_3 <-  as.numeric(data$dmspols_1996_bin4 == 3)
 data$dmspols_1996_bin4_4 <-  as.numeric(data$dmspols_1996_bin4 == 4)
 
 ## bin4v2
-data$dmspols_1996_bin42 <- NA
-data$dmspols_1996_bin42[data$dmspols_sum2_1996 %in% 0] <- 1
-data$dmspols_1996_bin42[data$dmspols_sum2_1996 > 0]    <- 2
-data$dmspols_1996_bin42[data$dmspols_sum6_1996 > 0]    <- 3
-data$dmspols_1996_bin42[data$dmspols_sum15_1996 > 0]    <- 4
-
-data$dmspols_1996_bin42_1 <-  as.numeric(data$dmspols_1996_bin42 == 1)
-data$dmspols_1996_bin42_2 <-  as.numeric(data$dmspols_1996_bin42 == 2)
-data$dmspols_1996_bin42_3 <-  as.numeric(data$dmspols_1996_bin42 == 3)
-data$dmspols_1996_bin42_4 <-  as.numeric(data$dmspols_1996_bin42 == 4)
+# data$dmspols_1996_bin42 <- NA
+# data$dmspols_1996_bin42[data$dmspols_sum2_1996 %in% 0] <- 1
+# data$dmspols_1996_bin42[data$dmspols_sum2_1996 > 0]    <- 2
+# data$dmspols_1996_bin42[data$dmspols_sum6_1996 > 0]    <- 3
+# data$dmspols_1996_bin42[data$dmspols_sum15_1996 > 0]    <- 4
+# 
+# data$dmspols_1996_bin42_1 <-  as.numeric(data$dmspols_1996_bin42 == 1)
+# data$dmspols_1996_bin42_2 <-  as.numeric(data$dmspols_1996_bin42 == 2)
+# data$dmspols_1996_bin42_3 <-  as.numeric(data$dmspols_1996_bin42 == 3)
+# data$dmspols_1996_bin42_4 <-  as.numeric(data$dmspols_1996_bin42 == 4)
 
 # Baseline NTL quantiles
 dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
@@ -232,7 +236,9 @@ data <- data %>%
          dmspols_log_pretnd96_92         = dmspols_log[year == 1996]       - dmspols_log[year == 1992],
          dmspols_ihs_pretnd96_92         = dmspols_ihs[year == 1996]       - dmspols_ihs[year == 1992],
          dmspols_zhang_log_pretnd96_92   = dmspols_zhang_log[year == 1996] - dmspols_zhang_log[year == 1992],
-         dmspols_zhang_ihs_pretnd96_92   = dmspols_zhang_ihs[year == 1996] - dmspols_zhang_ihs[year == 1992]) %>%
+         dmspols_zhang_ihs_pretnd96_92   = dmspols_zhang_ihs[year == 1996] - dmspols_zhang_ihs[year == 1992],
+         dmspols_harmon_log_pretnd96_92   = dmspols_harmon_log[year == 1996] - dmspols_harmon_log[year == 1992],
+         dmspols_harmon_ihs_pretnd96_92   = dmspols_harmon_ihs[year == 1996] - dmspols_harmon_ihs[year == 1992]) %>%
   ungroup()
 
 # Other ------------------------------------------------------------------------

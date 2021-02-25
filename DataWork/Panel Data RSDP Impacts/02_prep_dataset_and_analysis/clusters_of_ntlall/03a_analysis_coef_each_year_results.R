@@ -13,7 +13,7 @@ addis_distance <- "All"
 ntl_group <- "All"
 
 # Load Data --------------------------------------------------------------------
-data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", "panel_data_clean.Rds"))
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", "panel_data_clean.Rds"))
 
 data <- data %>%
   filter(cluster_n_cells < 100)
@@ -22,9 +22,6 @@ data <- data %>%
 results_df <- data.frame(NULL)
 
 for(dep_var in c("dmspols_harmon_ihs",
-                 "dmspols_zhang_ihs",
-                 "dmspols_zhang_sum2_ihs",
-                 "dmspols_zhang_sum6_ihs",
                  "dmspols_harmon_sum2_ihs",
                  "dmspols_harmon_sum6_ihs",
                  "globcover_urban_sum_ihs",
@@ -43,7 +40,7 @@ for(dep_var in c("dmspols_harmon_ihs",
           ## Check if exists          
           filename <- paste0(dep_var, "-", indep_var, "-", controls, "-", addis_distance, "-", ntl_group, ".Rds")
           file <- file.path(panel_rsdp_imp_data_file_path, 
-                            "clusters_of_ntl", "results_datasets", 
+                            "clusters_of_ntlall", "results_datasets", 
                             "individual_datasets",
                             filename)
           

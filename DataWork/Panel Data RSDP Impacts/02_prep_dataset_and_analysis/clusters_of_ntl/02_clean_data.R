@@ -184,6 +184,7 @@ data <- data %>%
   # Baseline variables
   mutate(dmspols_1996 = dmspols[year == 1996],
          dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+         dmspols_harmon_1996 = dmspols_harmon[year == 1996],
          globcover_urban_1996 = globcover_urban[year == 1996],
          globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
          globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
@@ -194,7 +195,13 @@ data <- data %>%
          dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
          dmspols_zhang_sum33_ihs_1996 = dmspols_zhang_sum33_ihs[year == 1996],
          dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
-         dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996]) %>%
+         dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996],
+         
+         dmspols_harmon_sum2_ihs_1996 = dmspols_harmon_sum2_ihs[year == 1996],
+         dmspols_harmon_sum6_ihs_1996 = dmspols_harmon_sum6_ihs[year == 1996],
+         dmspols_harmon_sum33_ihs_1996 = dmspols_harmon_sum33_ihs[year == 1996],
+         dmspols_harmon_ihs_1996 = dmspols_harmon_ihs[year == 1996],
+         dmspols_harmon_sum_ihs_1996 = dmspols_harmon_sum_ihs[year == 1996]) %>%
   
   ungroup() 
 
@@ -233,6 +240,10 @@ data$dmspols_zhang_1 <- data$dmspols_zhang >= 1
 data$dmspols_zhang_2 <- data$dmspols_zhang >= 2
 data$dmspols_zhang_6 <- data$dmspols_zhang >= 6
 
+data$dmspols_harmon_1 <- data$dmspols_harmon >= 1
+data$dmspols_harmon_2 <- data$dmspols_harmon >= 2
+data$dmspols_harmon_6 <- data$dmspols_harmon >= 6
+
 # Log Counts -------------------------------------------------------------------
 data$globcover_urban_sum_log <- log(data$globcover_urban_sum + 1)
 data$dmspols_sum1_log <- log(data$dmspols_sum1 + 1)
@@ -243,6 +254,23 @@ data$dmspols_zhang_sum1_log <- log(data$dmspols_zhang_sum1 + 1)
 data$dmspols_zhang_sum2_log <- log(data$dmspols_zhang_sum2 + 1)
 data$dmspols_zhang_sum6_log <- log(data$dmspols_zhang_sum6 + 1)
 data$dmspols_zhang_sum33_log <- log(data$dmspols_zhang_sum33 + 1)
+
+data$dmspols_harmon_sum1_log <- log(data$dmspols_harmon_sum1 + 1)
+data$dmspols_harmon_sum2_log <- log(data$dmspols_harmon_sum2 + 1)
+data$dmspols_harmon_sum6_log <- log(data$dmspols_harmon_sum6 + 1)
+data$dmspols_harmon_sum33_log <- log(data$dmspols_harmon_sum33 + 1)
+
+
+data$dmspols_1996_bin4 <- NA
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 %in% 0] <- 1
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 > 0]    <- 2
+data$dmspols_1996_bin4[data$dmspols_sum6_1996 > 0]    <- 3
+data$dmspols_1996_bin4[data$dmspols_sum10_1996 > 0]    <- 4
+
+data$dmspols_1996_bin4_1 <-  as.numeric(data$dmspols_1996_bin4 == 1)
+data$dmspols_1996_bin4_2 <-  as.numeric(data$dmspols_1996_bin4 == 2)
+data$dmspols_1996_bin4_3 <-  as.numeric(data$dmspols_1996_bin4 == 3)
+data$dmspols_1996_bin4_4 <-  as.numeric(data$dmspols_1996_bin4 == 4)
 
 # Other variable transformations ---------------------------------------------
 data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
@@ -299,6 +327,14 @@ data <- data %>%
 data$dmspols_zhang_sum0greater_bin <- as.numeric(data$dmspols_zhang_sum0greater > 0)
 data$globcover_urban_sum_above0 <- as.numeric(data$globcover_urban_sum > 0)
 
+# Baseline Variables - MA ------------------------------------------------------
+MA_vars <- names(data) %>% str_subset("^MA_")
+
+data_MA_vars <- data[data$year %in% 1996, c("cell_id", MA_vars)]
+data_MA_vars <- data_MA_vars %>% rename_at(vars(-cell_id), ~ paste0(., '_1996'))
+
+data <- merge(data, data_MA_vars, by = "cell_id")
+
 # Pretrends Variables ----------------------------------------------------------
 data <- data %>%
   group_by(cell_id) %>%
@@ -309,7 +345,9 @@ data <- data %>%
          dmspols_log_pretnd96_92         = dmspols_log[year == 1996]       - dmspols_log[year == 1992],
          dmspols_ihs_pretnd96_92         = dmspols_ihs[year == 1996]       - dmspols_ihs[year == 1992],
          dmspols_zhang_log_pretnd96_92   = dmspols_zhang_log[year == 1996] - dmspols_zhang_log[year == 1992],
-         dmspols_zhang_ihs_pretnd96_92   = dmspols_zhang_ihs[year == 1996] - dmspols_zhang_ihs[year == 1992]) %>%
+         dmspols_zhang_ihs_pretnd96_92   = dmspols_zhang_ihs[year == 1996] - dmspols_zhang_ihs[year == 1992],
+         dmspols_harmon_log_pretnd96_92   = dmspols_harmon_log[year == 1996] - dmspols_harmon_log[year == 1992],
+         dmspols_harmon_ihs_pretnd96_92   = dmspols_harmon_ihs[year == 1996] - dmspols_harmon_ihs[year == 1992]) %>%
   ungroup()
 
 # Export -----------------------------------------------------------------------

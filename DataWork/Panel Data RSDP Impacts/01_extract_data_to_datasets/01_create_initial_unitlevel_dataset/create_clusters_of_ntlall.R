@@ -32,24 +32,24 @@ dmspols_2018 <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSP
 
 # Define raster layer of clusters ----------------------------------------------
 dmspols_2013_binary <- dmspols_2013
-dmspols_2013_binary[] <- as.numeric(dmspols_1996[] >= 1 |
-                                      dmspols_1997[] >= 1 |
-                                      dmspols_1998[] >= 1 |
-                                      dmspols_1999[] >= 1 |
-                                      dmspols_2000[] >= 1 |
-                                      dmspols_2001[] >= 1 |
-                                      dmspols_2002[] >= 1 |
-                                      dmspols_2003[] >= 1 |
-                                      dmspols_2004[] >= 1 |
-                                      dmspols_2005[] >= 1 |
-                                      dmspols_2006[] >= 1 |
-                                      dmspols_2007[] >= 1 |
-                                      dmspols_2008[] >= 1 |
-                                      dmspols_2009[] >= 1 |
-                                      dmspols_2010[] >= 1 |
-                                      dmspols_2011[] >= 1 |
-                                      dmspols_2012[] >= 1 |
-                                      dmspols_2013[] >= 1)
+dmspols_2013_binary[] <- as.numeric(dmspols_1996[] > 0 |
+                                      dmspols_1997[] > 0 |
+                                      dmspols_1998[] > 0 |
+                                      dmspols_1999[] > 0 |
+                                      dmspols_2000[] > 0 |
+                                      dmspols_2001[] > 0 |
+                                      dmspols_2002[] > 0 |
+                                      dmspols_2003[] > 0 |
+                                      dmspols_2004[] > 0 |
+                                      dmspols_2005[] > 0 |
+                                      dmspols_2006[] > 0 |
+                                      dmspols_2007[] > 0 |
+                                      dmspols_2008[] > 0 |
+                                      dmspols_2009[] > 0 |
+                                      dmspols_2010[] > 0 |
+                                      dmspols_2011[] > 0 |
+                                      dmspols_2012[] > 0 |
+                                      dmspols_2013[] > 0)
 dmspols_2013_binary <- dmspols_2013_binary %>% mask(eth_adm)
 dmspols_2013_clumps <- clump(dmspols_2013_binary, directions=8)
 
@@ -86,6 +86,8 @@ coordinates(points_sp) <- ~lon+lat
 crs(points_sp) <- CRS("+init=epsg:4326")
 points_sp <- spTransform(points_sp, CRS(UTM_ETH))
 
+saveRDS(points_sp, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "individual_datasets", "polygons_ALL_NO_SUBSET.Rds"))
+
 ## Back to dataframe
 points <- as.data.frame(points_sp)
 
@@ -100,41 +102,39 @@ clumps_sp@data <- clumps_sp@data %>%
   dplyr::select(-c(wardheirch_clust_id)) %>% 
   dplyr::mutate(cell_id = 1:n()) # prevous cell_id summed version; fresh, aggregated version
 
-saveRDS(clumps_sp, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "individual_datasets", "polygons_ALL_NO_SUBSET.Rds"))
-
 # Restrict to cells with more than 3 years persistent lights -------------------
-data <- lapply(1992:2018, function(year){
-  print(year)
-  
-  if(year %in% 1992:2018){
-    dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_calDMSP.tif")))
-  } else{
-    dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_simVIIRS.tif")))
-  }
-  
-  dmspols_vx <- velox(dmspols)
-  clumps_sp$dmspols_sum0greater <- dmspols_vx$extract(sp=clumps_sp, fun=function(x){sum(x > 0, na.rm=T)}) %>% as.numeric
-  clumps_sp$year <- year
-  return(clumps_sp@data)
-}) %>%
-  bind_rows()
-
-dataa <- data %>%
-  arrange(year) %>%
-  group_by(cell_id) %>%
-  
-  # Make binary value: if number of positive
-  mutate(dmspols_sum0greater_bin = dmspols_sum0greater > 0,
-         dmspols_sum0greater_bin = dmspols_sum0greater_bin %>% replace_na(0)) %>%
-  
-  # Sum binary value from last 3 time period
-  mutate(N_pos = runSum(dmspols_sum0greater_bin, n = 3)) %>%
-  
-  # For each cluster maximum "summed" value
-  mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
-  ungroup() %>%
-  
-  filter(N_pos_max %in% 3)
+# data <- lapply(1992:2013, function(year){
+#   print(year)
+#   
+#   if(year %in% 1992:2018){
+#     dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_calDMSP.tif")))
+#   } else{
+#     dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_simVIIRS.tif")))
+#   }
+#   
+#   dmspols_vx <- velox(dmspols)
+#   clumps_sp$dmspols_sum0greater <- dmspols_vx$extract(sp=clumps_sp, fun=function(x){sum(x > 0, na.rm=T)}) %>% as.numeric
+#   clumps_sp$year <- year
+#   return(clumps_sp@data)
+# }) %>%
+#   bind_rows()
+# 
+# dataa <- data %>%
+#   arrange(year) %>%
+#   group_by(cell_id) %>%
+#   
+#   # Make binary value: if number of positive
+#   mutate(dmspols_sum0greater_bin = dmspols_sum0greater > 0,
+#          dmspols_sum0greater_bin = dmspols_sum0greater_bin %>% replace_na(0)) %>%
+#   
+#   # Sum binary value from last 3 time period
+#   mutate(N_pos = runSum(dmspols_sum0greater_bin, n = 2)) %>%
+#   
+#   # For each cluster maximum "summed" value
+#   mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
+#   ungroup() %>%
+#   
+#   filter(N_pos_max %in% 2)
 
 # Export -----------------------------------------------------------------------
 # We save "polygon" and "points" file, where "points" is actually just the polygon.

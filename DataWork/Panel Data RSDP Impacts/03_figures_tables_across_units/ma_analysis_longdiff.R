@@ -1,13 +1,13 @@
 # Market Access Analysis
 
-unit  <- "woreda"
+unit  <- "clusters_of_ntl"
 log = "_log"
 theta = "3_8"
 exclude = "_exclude50km"
 MA_ubanrural <- ""
 
 # Regressions ------------------------------------------------------------------
-for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
+for(unit in c("clusters_of_globcover_urban")){ # "woreda", "clusters_of_ntl"
   for(log in c("_log")){
     for(theta in c("1", "2", "3_8", "5", "8")){ # "1", "2", "3_8", "5", "8"
       for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude50km", "_exclude100km"
@@ -52,9 +52,9 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
             #data$MA_varXdmspols_6bin_1996        <- data$MA_var * data$dmspols_6bin_1996
             data$MA_varXdmspols_zhang_sum2_ihs_1996 <- data$MA_var * data$dmspols_zhang_sum2_ihs_1996
             data$MA_varXdmspols_zhang_ihs_1996 <- data$MA_var * data$dmspols_zhang_ihs_1996
-            data$MA_varXdmspols_1996_bin3_1 <- data$MA_var * data$dmspols_1996_bin3_1
-            data$MA_varXdmspols_1996_bin3_2 <- data$MA_var * data$dmspols_1996_bin3_2
-            data$MA_varXdmspols_1996_bin3_3 <- data$MA_var * data$dmspols_1996_bin3_3
+            # data$MA_varXdmspols_1996_bin3_1 <- data$MA_var * data$dmspols_1996_bin3_1
+            # data$MA_varXdmspols_1996_bin3_2 <- data$MA_var * data$dmspols_1996_bin3_2
+            # data$MA_varXdmspols_1996_bin3_3 <- data$MA_var * data$dmspols_1996_bin3_3
             data$MA_varXdmspols_1996_bin4_1 <- data$MA_var * data$dmspols_1996_bin4_1
             data$MA_varXdmspols_1996_bin4_2 <- data$MA_var * data$dmspols_1996_bin4_2
             data$MA_varXdmspols_1996_bin4_3 <- data$MA_var * data$dmspols_1996_bin4_3
@@ -68,9 +68,9 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
             #data$MA_var_excXdmspols_6bin_1996        <- data$MA_var_exc * data$dmspols_6bin_1996
             data$MA_var_excXdmspols_zhang_sum2_ihs_1996 <- data$MA_var_exc * data$dmspols_zhang_sum2_ihs_1996
             data$MA_var_excXdmspols_zhang_ihs_1996 <- data$MA_var_exc * data$dmspols_zhang_ihs_1996
-            data$MA_var_excXdmspols_1996_bin3_1 <- data$MA_var_exc * data$dmspols_1996_bin3_1
-            data$MA_var_excXdmspols_1996_bin3_2 <- data$MA_var_exc * data$dmspols_1996_bin3_2
-            data$MA_var_excXdmspols_1996_bin3_3 <- data$MA_var_exc * data$dmspols_1996_bin3_3
+            # data$MA_var_excXdmspols_1996_bin3_1 <- data$MA_var_exc * data$dmspols_1996_bin3_1
+            # data$MA_var_excXdmspols_1996_bin3_2 <- data$MA_var_exc * data$dmspols_1996_bin3_2
+            # data$MA_var_excXdmspols_1996_bin3_3 <- data$MA_var_exc * data$dmspols_1996_bin3_3
             data$MA_var_excXdmspols_1996_bin4_1 <- data$MA_var_exc * data$dmspols_1996_bin4_1
             data$MA_var_excXdmspols_1996_bin4_2 <- data$MA_var_exc * data$dmspols_1996_bin4_2
             data$MA_var_excXdmspols_1996_bin4_3 <- data$MA_var_exc * data$dmspols_1996_bin4_3
@@ -83,55 +83,38 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
           data96 <- prep_data(data96, theta, MA_ubanrural, log)
           
           ## OLS
-          ols1   <- felm(dmspols_zhang_ihs ~ MA_var                                                                                             + MA_var_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92)
-          ols2   <- felm(dmspols_zhang_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4      + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          ols3   <- felm(dmspols_zhang_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                           + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
+          ols1   <- felm(dmspols_harmon_ihs ~ MA_var                                                                                             + MA_var_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96)
+          ols2   <- felm(dmspols_harmon_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4      + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
+          ols3   <- felm(dmspols_harmon_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                           + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
           
-          ols4   <- felm(dmspols_zhang_sum2_ihs ~ MA_var                                                                                        + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92)
-          ols5   <- felm(dmspols_zhang_sum2_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          ols6   <- felm(dmspols_zhang_sum2_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                      + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
+          ols4   <- felm(dmspols_harmon_sum2_ihs ~ MA_var                                                                                        + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96)
+          ols5   <- felm(dmspols_harmon_sum2_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
+          ols6   <- felm(dmspols_harmon_sum2_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                      + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
           
-          ols7   <- felm(dmspols_zhang_sum6_ihs ~ MA_var                                                                                         + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92)
-          ols8   <- felm(dmspols_zhang_sum6_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4  + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          ols9  <- felm(dmspols_zhang_sum6_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                        + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
+          ols7   <- felm(dmspols_harmon_sum6_ihs ~ MA_var                                                                                         + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96)
+          ols8   <- felm(dmspols_harmon_sum6_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4  + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
+          ols9  <- felm(dmspols_harmon_sum6_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                        + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
           
-          ols10  <- felm(globcover_urban_sum_ihs ~ MA_var                                                                                         + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96)
-          ols11   <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
-          ols12  <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                       + MA_var_1996 +  dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
-          
-          ## OLS
-          # ols1   <- felm(dmspols_zhang_ihs ~ MA_var_exc                                          + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92)
-          # ols2   <- felm(dmspols_zhang_ihs ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4      + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          # ols3   <- felm(dmspols_zhang_ihs ~ MA_var_exc + MA_var_excXdistance_city_addisababa    + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          # 
-          # ols4   <- felm(dmspols_zhang_sum2_ihs ~ MA_var_exc                                          + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92)
-          # ols5   <- felm(dmspols_zhang_sum2_ihs ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4      + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          # ols6   <- felm(dmspols_zhang_sum2_ihs ~ MA_var_exc + MA_var_excXdistance_city_addisababa    + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          # 
-          # ols7   <- felm(dmspols_zhang_sum6_ihs ~ MA_var_exc                                          + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92)
-          # ols8   <- felm(dmspols_zhang_sum6_ihs ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4      + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          # ols9  <- felm(dmspols_zhang_sum6_ihs ~ MA_var_exc + MA_var_excXdistance_city_addisababa    + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data92) 
-          # 
-          # ols10  <- felm(globcover_urban_sum_ihs ~ MA_var_exc                                          + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96)
-          # ols11   <- felm(globcover_urban_sum_ihs ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4      + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
-          # ols12  <- felm(globcover_urban_sum_ihs ~ MA_var_exc + MA_var_excXdistance_city_addisababa    + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
-          # 
+          ols10  <- felm(globcover_urban_sum_ihs ~ MA_var                                                                                         + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96)
+          ols11   <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
+          ols12  <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdistance_city_addisababa                                                       + MA_var_1996 +  dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92   | Z_CODE | 0 | Z_CODE, data = data96) 
+        
           ## IV
-          iv1  <- felm(dmspols_zhang_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data92)
-          iv2  <- felm(dmspols_zhang_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data92)
-          iv3  <- felm(dmspols_zhang_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data92) 
+          iv1  <- felm(dmspols_harmon_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data96)
+          iv2  <- felm(dmspols_harmon_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data96)
+          iv3  <- felm(dmspols_harmon_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data96) 
           
-          iv4  <- felm(dmspols_zhang_sum2_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data92)
-          iv5  <- felm(dmspols_zhang_sum2_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data92)
-          iv6  <- felm(dmspols_zhang_sum2_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data92) 
+          iv4  <- felm(dmspols_harmon_sum2_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data96)
+          iv5  <- felm(dmspols_harmon_sum2_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data96)
+          iv6  <- felm(dmspols_harmon_sum2_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data96) 
           
-          iv7  <- felm(dmspols_zhang_sum6_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data92)
-          iv8  <- felm(dmspols_zhang_sum6_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data92)
-          iv9 <- felm(dmspols_zhang_sum6_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data92) 
+          iv7  <- felm(dmspols_harmon_sum6_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data96)
+          iv8  <- felm(dmspols_harmon_sum6_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data96)
+          iv9 <- felm(dmspols_harmon_sum6_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data96) 
           
-          iv10 <- felm(globcover_urban_sum_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data96)
-          iv11  <- felm(globcover_urban_sum_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data96)
-          iv12 <- felm(globcover_urban_sum_ihs ~ MA_var_exc_1996 + dmspols_zhang_ihs_1996 + dmspols_zhang_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data96) 
+          iv10 <- felm(globcover_urban_sum_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var ~ MA_var_exc)                                                                             | Z_CODE, data = data96)
+          iv11  <- felm(globcover_urban_sum_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4      ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4)      | Z_CODE, data = data96)
+          iv12 <- felm(globcover_urban_sum_ihs ~ MA_var_exc_1996 + dmspols_harmon_ihs_1996 + dmspols_harmon_ihs_pretnd96_92 + globcover_urban_sum_ihs_pretnd96_92 | Z_CODE | (MA_var|MA_varXdistance_city_addisababa    ~ MA_var_exc + MA_var_excXdistance_city_addisababa)    | Z_CODE, data = data96) 
           
           stargazer(ols1,
                     ols2,

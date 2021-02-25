@@ -3,7 +3,7 @@
 # Exports dataframe of results, to be used to make figures
 
 #### Parameters
-OVERWRITE_FILES <- T
+OVERWRITE_FILES <- F
 
 #### Default
 dep_var <- "globcover_urban"
@@ -22,7 +22,15 @@ data$globcover_cropland <- as.numeric(data$globcover_cropland > 0)
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("globcover_urban", "globcover_cropland", "dmspols_zhang_base0na","dmspols_zhang_ihs_base0na", "ndvi","ndvi_cropland", "dmspols_zhang", "dmspols_zhang_ihs",  "dmspols_zhang_2", "dmspols_zhang_6", "dmspols", "dmspols_ihs")){
+for(dep_var in c("globcover_urban", "dmspols_zhang", 
+                 "dmspols_zhang_ihs",  
+                 "dmspols_zhang_2", 
+                 "dmspols_zhang_6", 
+                 "dmspols_harmon_ihs",  
+                 "dmspols_harmon_2", 
+                 "dmspols_harmon_6", 
+                 "dmspols", 
+                 "dmspols_ihs")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
     for(controls in c("", "+temp_avg+precipitation")){

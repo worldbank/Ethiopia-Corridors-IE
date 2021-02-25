@@ -21,17 +21,22 @@ data_urban <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_glob
 
 data_ntl <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "results_datasets",
                               "did_coef_every_year.Rds")) %>%
-  filter(dep_var %in% c("dmspols_zhang_ihs",
-                        "dmspols_zhang_sum2_ihs",
-                        "dmspols_zhang_sum6_ihs",
-                        "globcover_urban_sum_ihs",
-                        "dmspols_zhang_sum0greater_bin"))
+  filter(dep_var %in% c("dmspols_harmon_ihs",
+                        "dmspols_harmon_sum2_ihs",
+                        "dmspols_harmon_sum6_ihs",
+                        #"dmspols_zhang_ihs",
+                        #"dmspols_zhang_sum2_ihs",
+                        #"dmspols_zhang_sum6_ihs",
+                        "globcover_urban_sum_ihs"))
 
 data_grid <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "results_datasets",
                                "did_coef_every_year.Rds")) %>%
-  filter(dep_var %in% c("dmspols_zhang_ihs",
-                        "dmspols_zhang_2",
-                        "dmspols_zhang_6",
+  filter(dep_var %in% c(#"dmspols_zhang_ihs",
+                        #"dmspols_zhang_2",
+                        #"dmspols_zhang_6",
+                        "dmspols_harmon_ihs",
+                        "dmspols_harmon_2",
+                        "dmspols_harmon_6",
                         "globcover_urban"))
 
 # Prep Data --------------------------------------------------------------------
@@ -52,11 +57,17 @@ data <- data %>%
   
   ## Rename/Factor Dep Var
   mutate(dep_var = case_when(
+    dep_var == "dmspols_harmon_ihs" ~ "NTL",
     dep_var == "dmspols_zhang_ihs" ~ "NTL",
+    dep_var == "dmspols_harmon_sum2_ihs" ~ "NTL \u2265 2",
     dep_var == "dmspols_zhang_sum2_ihs" ~ "NTL \u2265 2",
+    dep_var == "dmspols_harmon_2" ~ "NTL \u2265 2",
     dep_var == "dmspols_zhang_2" ~ "NTL \u2265 2",
+    dep_var == "dmspols_harmon_sum6_ihs" ~ "NTL \u2265 6",
     dep_var == "dmspols_zhang_sum6_ihs" ~ "NTL \u2265 6",
+    dep_var == "dmspols_harmon_6" ~ "NTL \u2265 6",
     dep_var == "dmspols_zhang_6" ~ "NTL \u2265 6",
+    dep_var == "dmspols_harmon_sum0greater_bin" ~ "Cluster Exists",
     dep_var == "dmspols_zhang_sum0greater_bin" ~ "Cluster Exists",
     dep_var == "globcover_urban_sum_above0" ~ "Cluster Exists",
     dep_var == "globcover_urban_sum_ihs" ~ "Urban (Globcover)",

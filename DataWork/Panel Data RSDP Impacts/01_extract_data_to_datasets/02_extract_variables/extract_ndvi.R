@@ -5,7 +5,7 @@
 
 # NOTE: This script takes about an hour to run
 
-INCLUDE_NDVI_ONLY_IN_CROPLAND <- T
+INCLUDE_NDVI_ONLY_IN_CROPLAND <- F
 
 # Load Polygon Data ------------------------------------------------------------
 polygons <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons.Rds"))

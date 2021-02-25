@@ -20,7 +20,7 @@ ALL_YEARS_IMPROVED_VAR <- F # add variables indicate 2nd and 3rd year of treatme
 CHUNK_SIZE <- 200           # number of woredas in each chunk
 
 # Load Data --------------------------------------------------------------------
-data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data.Rds"))
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", "panel_data.Rds"))
 
 # Distance to aggregate road categories --------------------------------------
 # We calculate distance to roads by speed limit. Here we calculate distance
@@ -191,18 +191,22 @@ data <- data %>%
          dmspols_sum2_1996 = dmspols_sum2[year == 1996],
          dmspols_sum6_1996 = dmspols_sum6[year == 1996],
          dmspols_sum10_1996 = dmspols_sum10[year == 1996],
+         dmspols_harmon_sum2_1996 = dmspols_harmon_sum2[year == 1996],
+         dmspols_harmon_sum6_1996 = dmspols_harmon_sum6[year == 1996],
+         dmspols_harmon_sum10_1996 = dmspols_harmon_sum10[year == 1996],
          dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
          dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
-         dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
-         dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996],
-         
+         dmspols_zhang_sum33_ihs_1996 = dmspols_zhang_sum33_ihs[year == 1996],
          dmspols_harmon_sum2_ihs_1996 = dmspols_harmon_sum2_ihs[year == 1996],
          dmspols_harmon_sum6_ihs_1996 = dmspols_harmon_sum6_ihs[year == 1996],
+         dmspols_harmon_sum33_ihs_1996 = dmspols_harmon_sum33_ihs[year == 1996],
+         dmspols_zhang_ihs_1996 = dmspols_zhang_ihs[year == 1996],
+         dmspols_zhang_sum_ihs_1996 = dmspols_zhang_sum_ihs[year == 1996],
          dmspols_harmon_ihs_1996 = dmspols_harmon_ihs[year == 1996],
          dmspols_harmon_sum_ihs_1996 = dmspols_harmon_sum_ihs[year == 1996]) %>%
   
   ungroup() 
-  
+
 # Baseline NTL quantiles
 dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
 data$dmspols_1996_group[data$dmspols_1996 < dmspols_1996_median] <- "1"
@@ -247,25 +251,15 @@ data$globcover_urban_sum_log <- log(data$globcover_urban_sum + 1)
 data$dmspols_sum1_log <- log(data$dmspols_sum1 + 1)
 data$dmspols_sum2_log <- log(data$dmspols_sum2 + 1)
 data$dmspols_sum6_log <- log(data$dmspols_sum6 + 1)
+data$dmspols_sum33_log <- log(data$dmspols_sum33 + 1)
 data$dmspols_zhang_sum1_log <- log(data$dmspols_zhang_sum1 + 1)
 data$dmspols_zhang_sum2_log <- log(data$dmspols_zhang_sum2 + 1)
 data$dmspols_zhang_sum6_log <- log(data$dmspols_zhang_sum6 + 1)
+data$dmspols_zhang_sum33_log <- log(data$dmspols_zhang_sum33 + 1)
 data$dmspols_harmon_sum1_log <- log(data$dmspols_harmon_sum1 + 1)
 data$dmspols_harmon_sum2_log <- log(data$dmspols_harmon_sum2 + 1)
 data$dmspols_harmon_sum6_log <- log(data$dmspols_harmon_sum6 + 1)
-
-
-## bin4
-data$dmspols_1996_bin4 <- NA
-data$dmspols_1996_bin4[data$dmspols_sum2_1996 %in% 0] <- 1
-data$dmspols_1996_bin4[data$dmspols_sum2_1996 > 0]    <- 2
-data$dmspols_1996_bin4[data$dmspols_sum6_1996 > 0]    <- 3
-data$dmspols_1996_bin4[data$dmspols_sum10_1996 > 0]    <- 4
-
-data$dmspols_1996_bin4_1 <-  as.numeric(data$dmspols_1996_bin4 == 1)
-data$dmspols_1996_bin4_2 <-  as.numeric(data$dmspols_1996_bin4 == 2)
-data$dmspols_1996_bin4_3 <-  as.numeric(data$dmspols_1996_bin4 == 3)
-data$dmspols_1996_bin4_4 <-  as.numeric(data$dmspols_1996_bin4 == 4)
+data$dmspols_harmon_sum33_log <- log(data$dmspols_harmon_sum33 + 1)
 
 # Other variable transformations ---------------------------------------------
 data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
@@ -286,18 +280,17 @@ data$dmspols_zhang_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 data$dmspols_zhang_ihs_base0na <- data$dmspols_zhang_ihs
 data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 
-# Subset Clusters: Positive Urban Cluster in Row -------------------------------
+# Subset Clusters: Positive Lit Cluster in Row ---------------------------------
 # For each cell_id (cluster), determine number of positive values in a row
-
 data <- data %>%
   group_by(cell_id) %>%
   
-  # Make binary value: if number of positive
-  mutate(globcover_urban_sum_bin = globcover_urban_sum > 0,
-         globcover_urban_sum_bin = globcover_urban_sum_bin %>% replace_na(0)) %>%
-  
+  #Make binary value: if number of positive
+  mutate(dmspols_harmon_sum0greater_bin = dmspols_harmon_sum0greater > 0,
+         dmspols_harmon_sum0greater_bin = dmspols_harmon_sum0greater_bin %>% replace_na(0)) %>%
+
   # Sum binary value from last 3 time period
-  mutate(N_pos = runSum(globcover_urban_sum_bin, n = 4)) %>%
+  mutate(N_pos = runSum(dmspols_harmon_sum0greater_bin, n = 4)) %>%
   
   # For each cluster maximum "summed" value
   mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
@@ -306,29 +299,22 @@ data <- data %>%
   filter(N_pos_max %in% 4)
 
 # Subset Clusters: Cluster Size ------------------------------------------------
-#data <- data %>%
-#  filter(cluster_n_cells < 100)
+data <- data %>%
+  filter(cluster_n_cells < 100)
 
 # Subset Clusters: Near Improved -----------------------------------------------
-data <- data %>%
-  filter(distance_anyimproved_ever < NEAR_CUTOFF)
+#data <- data %>%
+#  filter(distance_anyimproved_ever < NEAR_CUTOFF)
 
-## First Year Cluster Appears --------------------------------------------------
+# First Lit Year ---------------------------------------------------------------
 data <- data %>%
-  mutate(globcover_urban_sum_bin_X_year = (globcover_urban_sum_bin * year) %>% ifelse(. == 0, NA, .)) %>%
+  mutate(dmspols_sum0greater_bin_X_year = (dmspols_sum0greater_bin * year) %>% ifelse(. == 0, NA, .)) %>%
   group_by(cell_id) %>%
-  mutate(first_year_urban = min(globcover_urban_sum_bin_X_year, na.rm=T)) 
+  mutate(first_year_lit = min(dmspols_sum0greater_bin_X_year, na.rm=T)) %>%
+  ungroup()
 
 data$dmspols_zhang_sum0greater_bin <- as.numeric(data$dmspols_zhang_sum0greater > 0)
 data$globcover_urban_sum_above0 <- as.numeric(data$globcover_urban_sum > 0)
-
-# Baseline Variables - MA ------------------------------------------------------
-MA_vars <- names(data) %>% str_subset("^MA_")
-
-data_MA_vars <- data[data$year %in% 1996, c("cell_id", MA_vars)]
-data_MA_vars <- data_MA_vars %>% rename_at(vars(-cell_id), ~ paste0(., '_1996'))
-
-data <- merge(data, data_MA_vars, by = "cell_id")
 
 # Pretrends Variables ----------------------------------------------------------
 data <- data %>%
@@ -341,10 +327,11 @@ data <- data %>%
          dmspols_ihs_pretnd96_92         = dmspols_ihs[year == 1996]       - dmspols_ihs[year == 1992],
          dmspols_zhang_log_pretnd96_92   = dmspols_zhang_log[year == 1996] - dmspols_zhang_log[year == 1992],
          dmspols_zhang_ihs_pretnd96_92   = dmspols_zhang_ihs[year == 1996] - dmspols_zhang_ihs[year == 1992],
+         
          dmspols_harmon_log_pretnd96_92   = dmspols_harmon_log[year == 1996] - dmspols_harmon_log[year == 1992],
          dmspols_harmon_ihs_pretnd96_92   = dmspols_harmon_ihs[year == 1996] - dmspols_harmon_ihs[year == 1992]) %>%
   ungroup()
 
 # Export -----------------------------------------------------------------------
-saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
+saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", "panel_data_clean.Rds"))
 

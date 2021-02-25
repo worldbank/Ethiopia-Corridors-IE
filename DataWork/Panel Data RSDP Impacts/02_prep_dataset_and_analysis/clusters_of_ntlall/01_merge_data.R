@@ -3,7 +3,7 @@
 # Load Data / Create Dataset Lists -----------------------------------------------
 
 #### Load dataset to merge into
-points_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "individual_datasets", "dmspols.Rds"))
+points_all <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "individual_datasets", "dmspols.Rds"))
 
 #### Names of datasets to merge in
 # Separate by:
@@ -24,7 +24,7 @@ DATASETS_TIME_VARYING <- c("viirs.Rds",
                            "temperature.Rds",
                            "precipitation.Rds",
                            "ndvi.Rds",
-                           "ma2_market_access.Rds",
+                           #"ma2_market_access.Rds",
                            "globcover.Rds",
                            "dmspolsharmon.Rds",
                            "dmspols_intercalibrated_zhang.Rds",
@@ -35,17 +35,17 @@ DATASETS_TIME_VARYING <- c("viirs.Rds",
 # Merge ------------------------------------------------------------------------
 for(dataset in DATASETS_TIME_VARYING){
   print(dataset)
-  dataset_temp <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "individual_datasets", dataset)) 
+  dataset_temp <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "individual_datasets", dataset)) 
   points_all <- merge(points_all, dataset_temp, by=c("cell_id", "year"), all=T)
 }
 
 for(dataset in DATASETS_TIME_INVARIANT){
   print(dataset)
-  dataset_temp <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "individual_datasets", dataset))
+  dataset_temp <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "individual_datasets", dataset))
   points_all <- merge(points_all, dataset_temp, by="cell_id", all=T)
 }
 
 # Export -----------------------------------------------------------------------
-saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", "panel_data.Rds"))
+saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", "panel_data.Rds"))
 
 

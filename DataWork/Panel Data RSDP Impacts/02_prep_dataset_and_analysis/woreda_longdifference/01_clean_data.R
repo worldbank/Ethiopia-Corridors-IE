@@ -18,12 +18,12 @@ base_end_df <- data.frame(baseline = c(1996, 1996),
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))
 
 ## Make sure have woreda in both years. Check why this always wouldn't be case?
-data <- data %>%
-  group_by(cell_id) %>%
-  mutate(N_woreda = n()) %>%
-  filter(N_woreda == max(N_woreda))
+# data <- data %>%
+#   group_by(cell_id) %>%
+#   mutate(N_woreda = n()) %>%
+#   filter(N_woreda == max(N_woreda))
 
-data <- data[,!grepl("MA_ntl2000_|MA_poplog2000_|MA_gcu2000_", names(data))]
+data <- data[,!grepl("MA_ntl2000_|MA_poplog2000_|MA_gcu2000_|_ic_|_rural33|_rural2|_urban33|_urban2|_urban6|_rural6", names(data))]
 
 # Clean Data -------------------------------------------------------------------
 str_remove_vec <- function(x, rx){
@@ -52,7 +52,7 @@ for(i in 1:nrow(base_end_df)){
     summarize_at(names(data) %>% 
                    str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_") %>%
                    str_remove_vec(rx = "_1996") %>%
-                   str_remove_vec(rx = "_pretnd96_92$"), 
+                   str_remove_vec(rx = "_pretnd96_92"), 
                  diff) #%>%
     
     # Remove select variables

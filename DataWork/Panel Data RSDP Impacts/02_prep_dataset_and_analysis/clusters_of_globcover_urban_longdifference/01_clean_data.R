@@ -22,6 +22,8 @@ data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_
 data <- data %>%
   dplyr::select(-c(dmspols_1996_group, dmspols_zhang_1996_group))
 
+data <- data[,!grepl("MA_ntl2000_|MA_poplog2000_|MA_gcu2000_|_ic_|_rural33|_rural2|_urban33|_urban2|_urban6|_rural6", names(data))]
+
 # Clean Data -------------------------------------------------------------------
 for(i in 1:nrow(base_end_df)){
 
@@ -43,14 +45,14 @@ for(i in 1:nrow(base_end_df)){
     group_by(cell_id) %>%
     summarize_at(names(data) %>% 
                    str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_") %>%
-                   str_remove_vec(rx = "_1996$") %>%
-                   str_remove_vec(rx = "_pretnd96_92$"), 
+                   str_remove_vec(rx = "_1996") %>%
+                   str_remove_vec(rx = "_pretnd96_92"), 
                  diff) 
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(ends_with("_1996"),
+    dplyr::select(c(contains("_1996"),
                     ends_with("_pretnd96_92"),
                     cell_id, R_CODE, Z_CODE,  distance_mst, 
                     area_polygon, distance_city_addisababa)) 

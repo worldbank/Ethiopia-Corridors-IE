@@ -4,21 +4,23 @@
 sdf <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "points.Rds"))
 
 # Add Data ---------------------------------------------------------------------
-extract_dmspols_to_points <- function(year, sdf){
+extract_dmspols_harmon_to_points <- function(year, sdf){
   print(year)
-  if(year %in% 1992:2018){
-    dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_calDMSP.tif")))
+  if(year %in% 1992:2013){
+    dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_calDMSP.tif"))) %>% crop(sdf)
   } else{
-    dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_simVIIRS.tif")))
+    dmspols <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", paste0("Harmonized_DN_NTL_",year,"_simVIIRS.tif"))) %>% crop(sdf)
   }
   
-  dmspols_vx <- velox(dmspols)
-  
   if(grepl("grid", DATASET_TYPE)){
-    sdf$dmspols <- dmspols_vx$extract_points(sp=sdf) %>% as.numeric
+    sdf$dmspols_harmon <- raster::extract(dmspols, sdf) %>% as.numeric()
+    
+    #sdf$dmspols_harmon <- dmspols_vx$extract_points(sp=sdf) %>% as.numeric
   } else {
+    dmspols_vx <- velox(dmspols)
+    
     # Average NTL value
-    sdf$dmspols   <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x, na.rm=T)}, small = T) %>% as.numeric
+    sdf$dmspols_harmon   <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x, na.rm=T)}, small = T) %>% as.numeric
     
     # Proportion of unit above NTL threshold
     sdf$dmspols_harmon_1 <- dmspols_vx$extract(sp=sdf, fun=function(x){mean(x >= 1, na.rm=T)}, small = T) %>% as.numeric
@@ -49,8 +51,8 @@ extract_dmspols_to_points <- function(year, sdf){
   return(sdf@data)
 }
 
-sdf_all <- lapply(1992:2018, extract_dmspols_to_points, sdf) %>% bind_rows
+sdf_all <- lapply(1992:2018, extract_dmspols_harmon_to_points, sdf) %>% bind_rows
 
 # Export -----------------------------------------------------------------------
-saveRDS(sdf_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "dmspols.Rds"))
+saveRDS(sdf_all, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "dmspolsharmon.Rds"))
 

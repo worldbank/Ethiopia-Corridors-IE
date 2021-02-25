@@ -24,6 +24,7 @@ DATASETS_TIME_VARYING <- c("viirs.Rds",
                            "ndvi.Rds",
                            "globcover.Rds",
                            "dmspols_intercalibrated_zhang.Rds",
+                           "dmspolsharmon.Rds",
                            #"distance_roads_improved_by_speedlimit_before.Rds",
                            "distance_roads_improved_by_speedlimit_after.Rds",
                            "distance_roads_by_speedlimit.Rds")

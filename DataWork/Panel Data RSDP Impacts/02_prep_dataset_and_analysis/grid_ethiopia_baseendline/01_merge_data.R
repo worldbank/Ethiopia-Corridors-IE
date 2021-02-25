@@ -35,6 +35,7 @@ DATASETS_TIME_VARYING <- c("viirs.Rds",
                            "precipitation.Rds",
                            "ndvi.Rds",
                            "dmspols.Rds",
+                           "dmspolsharmon.Rds",
                            "dmspols_intercalibrated_zhang.Rds")
 
 # Merge ------------------------------------------------------------------------
