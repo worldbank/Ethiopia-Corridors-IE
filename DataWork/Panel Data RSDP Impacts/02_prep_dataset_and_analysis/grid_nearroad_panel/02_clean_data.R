@@ -308,8 +308,8 @@ for(start_i in start_ids){
   ## Nighttime lights groups
   ntl_non0_med <- data$dmspols_1996_woreda[data$dmspols_1996_woreda > 0] %>% median(na.rm=T)
   data$ntl_group <- NA
-  data$ntl_group[data$dmspols_1996_woreda <= ntl_non0_med] <- "1"
-  data$ntl_group[data$dmspols_1996_woreda > ntl_non0_med] <- "2"
+  data$ntl_group[data$dmspols_1996_woreda < 6] <- "1"
+  data$ntl_group[data$dmspols_1996_woreda >= 6] <- "2"
   
   # bin3
   # data$dmspols_1996_bin3 <- NA
@@ -322,7 +322,7 @@ for(start_i in start_ids){
   data$dmspols_1996_bin4[data$dmspols_sum2_1996_woreda %in% 0] <- 1
   data$dmspols_1996_bin4[data$dmspols_sum2_1996_woreda > 0]    <- 2
   data$dmspols_1996_bin4[data$dmspols_sum6_1996_woreda > 0]    <- 3
-  data$dmspols_1996_bin4[data$dmspols_sum10_1996_woreda > 0]    <- 4
+  data$dmspols_1996_bin4[data$dmspols_sum10_1996_woreda > 0]   <- 4
   
   # Remove Stuff Don't Need ----------------------------------------------------
   # Reduces dataset size if grid dataset where need to trim size of dataset

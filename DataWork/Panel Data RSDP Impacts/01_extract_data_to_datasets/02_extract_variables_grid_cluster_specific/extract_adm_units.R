@@ -35,6 +35,7 @@ points$R_CODE <- points_OVER_woreda$R_CODE
 points$woreda_pop2007 <- points_OVER_woreda$Pop2007
 points$woreda_density2007 <- points_OVER_woreda$Density
 
+
 # Export -----------------------------------------------------------------------
 saveRDS(points@data, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "adm_units.Rds"))
 

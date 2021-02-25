@@ -33,21 +33,18 @@ gc_clumps <- clump(gc_binary, directions=8)
 clumps_unique_values <- unique(gc_clumps[])[!is.na(unique(gc_clumps[]))]
 
 # Polygonize clusters ----------------------------------------------------------
-clumps_sp <- lapply(clumps_unique_values, function(clump_i){
-  print(paste(clump_i, "/", length(clumps_unique_values)))
-  clump_i_sp <- rasterToPolygons(gc_clumps, 
-                                 fun=function(x){x==clump_i}, 
-                                 n=4, na.rm=TRUE, 
+## Polgyzonize raster grids
+clump_sp_all <- rasterToPolygons(gc_clumps, 
+                                 n=4, 
+                                 na.rm=TRUE, 
                                  digits=12, 
                                  dissolve=F)
-  clump_i_sp$cell_id <- clump_i
-  clump_i_sp$cluster_n_cells <- nrow(clump_i_sp)
-  return(clump_i_sp)
-}) %>% do.call(what="rbind")
+clump_sp_all$cluster_n_cells <- 1
 
-clumps_sp <- raster::aggregate(clumps_sp, 
-                               by="cell_id",
-                               list(list(mean, 'cluster_n_cells')))
+## Collapse grids of same cluster
+clumps_sp <- raster::aggregate(clump_sp_all, 
+                               by="clumps",
+                               list(list(sum, 'cluster_n_cells')))
 
 # Group together close together clusters ---------------------------------------
 
@@ -62,8 +59,6 @@ points_sp <- coordinates(clumps_sp) %>%
 coordinates(points_sp) <- ~lon+lat
 crs(points_sp) <- CRS("+init=epsg:4326")
 points_sp <- spTransform(points_sp, CRS(UTM_ETH))
-
-saveRDS(points_sp, file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "individual_datasets", "polygons_ALL_NO_SUBSET.Rds"))
 
 ## Back to dataframe
 points <- as.data.frame(points_sp)

@@ -22,7 +22,10 @@ CHUNK_SIZE <- 200           # number of woredas in each chunk
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data.Rds"))
 
-# Distance to aggregate road categories --------------------------------------
+#data <- data %>%
+#  filter(cluster_n_cells > 1)
+
+# Distance to aggregate road categories ----------------------------------------
 # We calculate distance to roads by speed limit. Here we calculate distance
 # to any road, road 50 km/hr and above and roads less than 50 km/hr
 
@@ -205,6 +208,7 @@ data <- data %>%
   
 # Baseline NTL quantiles
 dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
+dmspols_1996_median <- 2
 data$dmspols_1996_group[data$dmspols_1996 < dmspols_1996_median] <- "1"
 data$dmspols_1996_group[data$dmspols_1996 >= dmspols_1996_median] <- "2"
 
@@ -214,13 +218,6 @@ data$dmspols_zhang_1996_group[data$dmspols_zhang_1996 >= dmspols_zhang_1996_medi
 
 # Default NTL Group
 data$ntl_group <- data$dmspols_1996_group
-
-## bin4
-data$dmspols_1996_bin4 <- NA
-data$dmspols_1996_bin4[data$dmspols_sum2_1996 %in% 0] <- 1
-data$dmspols_1996_bin4[data$dmspols_sum2_1996 > 0]    <- 2
-data$dmspols_1996_bin4[data$dmspols_sum6_1996 > 0]    <- 3
-data$dmspols_1996_bin4[data$dmspols_sum10_1996 > 0]    <- 4
 
 # data$dmspols_1996_group <- data$dmspols_1996_group %>% as.factor()
 # data$dmspols_zhang_1996_group <- data$dmspols_zhang_1996_group %>% as.factor()
@@ -289,25 +286,8 @@ data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 # Subset Clusters: Positive Urban Cluster in Row -------------------------------
 # For each cell_id (cluster), determine number of positive values in a row
 
-data <- data %>%
-  group_by(cell_id) %>%
-  
-  # Make binary value: if number of positive
-  mutate(globcover_urban_sum_bin = globcover_urban_sum > 0,
-         globcover_urban_sum_bin = globcover_urban_sum_bin %>% replace_na(0)) %>%
-  
-  # Sum binary value from last 3 time period
-  mutate(N_pos = runSum(globcover_urban_sum_bin, n = 4)) %>%
-  
-  # For each cluster maximum "summed" value
-  mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
-  ungroup() %>%
-  
-  filter(N_pos_max %in% 4)
-
 # Subset Clusters: Cluster Size ------------------------------------------------
-#data <- data %>%
-#  filter(cluster_n_cells < 100)
+
 
 # Subset Clusters: Near Improved -----------------------------------------------
 data <- data %>%

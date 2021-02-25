@@ -209,6 +209,7 @@ data <- data %>%
 
 # Baseline NTL quantiles
 dmspols_1996_median <- data$dmspols_1996[data$dmspols_1996 > 0] %>% median(na.rm=T) 
+dmspols_1996_median <- 2
 data$dmspols_1996_group[data$dmspols_1996 < dmspols_1996_median] <- "1"
 data$dmspols_1996_group[data$dmspols_1996 >= dmspols_1996_median] <- "2"
 
@@ -282,11 +283,15 @@ data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 
 # Subset Clusters: Positive Lit Cluster in Row ---------------------------------
 # For each cell_id (cluster), determine number of positive values in a row
+
+data$dmspols_harmon_sum0greater_through2013 <- data$dmspols_harmon_sum0greater
+data$dmspols_harmon_sum0greater_through2013[data$year >= 2014] <- 0
+
 data <- data %>%
   group_by(cell_id) %>%
   
   #Make binary value: if number of positive
-  mutate(dmspols_harmon_sum0greater_bin = dmspols_harmon_sum0greater > 0,
+  mutate(dmspols_harmon_sum0greater_bin = dmspols_harmon_sum0greater_through2013 > 0,
          dmspols_harmon_sum0greater_bin = dmspols_harmon_sum0greater_bin %>% replace_na(0)) %>%
 
   # Sum binary value from last 3 time period
@@ -295,12 +300,11 @@ data <- data %>%
   # For each cluster maximum "summed" value
   mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
   ungroup() %>%
-  
   filter(N_pos_max %in% 4)
 
 # Subset Clusters: Cluster Size ------------------------------------------------
-data <- data %>%
-  filter(cluster_n_cells < 100)
+# data <- data %>%
+#  filter(cluster_n_cells < 100)
 
 # Subset Clusters: Near Improved -----------------------------------------------
 #data <- data %>%

@@ -56,21 +56,18 @@ dmspols_2013_clumps <- clump(dmspols_2013_binary, directions=8)
 clumps_unique_values <- unique(dmspols_2013_clumps[])[!is.na(unique(dmspols_2013_clumps[]))]
 
 # Polygonize clusters ----------------------------------------------------------
-clumps_sp <- lapply(clumps_unique_values, function(clump_i){
-  print(clump_i)
-  clump_i_sp <- rasterToPolygons(dmspols_2013_clumps, 
-                                 fun=function(x){x==clump_i}, 
-                                 n=4, na.rm=TRUE, 
+## Polgyzonize raster grids
+clump_sp_all <- rasterToPolygons(dmspols_2013_clumps, 
+                                 n=4, 
+                                 na.rm=TRUE, 
                                  digits=12, 
                                  dissolve=F)
-  clump_i_sp$cell_id <- clump_i
-  clump_i_sp$cluster_n_cells <- nrow(clump_i_sp)
-  return(clump_i_sp)
-}) %>% do.call(what="rbind")
+clump_sp_all$cluster_n_cells <- 1
 
-clumps_sp <- raster::aggregate(clumps_sp, 
-                               by="cell_id",
-                               list(list(mean, 'cluster_n_cells')))
+## Collapse grids of same cluster
+clumps_sp <- raster::aggregate(clump_sp_all, 
+                               by="clumps",
+                               list(list(sum, 'cluster_n_cells')))
 
 # Group together close together clusters ---------------------------------------
 

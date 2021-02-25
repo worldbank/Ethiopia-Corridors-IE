@@ -15,8 +15,39 @@ ntl_group <- "All"
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
 
+data <- data %>% group_by(cell_id) %>% mutate(dmspols_1996sum = dmspols_sum[year == 1996])
+
+## Keep
 data <- data %>%
-  filter(cluster_n_cells < 100)
+  group_by(cell_id) %>%
+  
+  # Make binary value: if number of positive
+  mutate(globcover_urban_sum_bin = globcover_urban_sum > 0,
+         globcover_urban_sum_bin = globcover_urban_sum_bin %>% replace_na(0)) %>%
+  
+  # Sum binary value from last 3 time period
+  mutate(N_pos = runSum(globcover_urban_sum_bin, n = 4)) %>%
+  
+  # For each cluster maximum "summed" value
+  mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
+  ungroup() %>%
+  
+  filter(N_pos_max %in% 4)
+
+cluster_size <- data %>%
+  filter(year == 2016) %>%
+  pull(cluster_n_cells)
+cluster_size_99 <- quantile(cluster_size, 0.99) %>% as.numeric()
+data <- data[data$cluster_n_cells < cluster_size_99,]
+
+m <- data$dmspols_1996sum[data$dmspols_1996sum > 0] %>% median(na.rm=T)
+data$ntl_group <- NA
+data$ntl_group[data$dmspols_1996sum <= m] <- "1"
+data$ntl_group[data$dmspols_1996sum > m] <- "2"
+
+# data$ntl_group <- NA
+# data$ntl_group[data$dmspols_sum6_1996 == 0] <- "1"
+# data$ntl_group[data$dmspols_sum6_1996 > 0] <- "2"
 
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
@@ -55,15 +86,14 @@ results_df <- data.frame(NULL)
 # "dmspols_sum2_log",
 # "dmspols_sum6_log"
 
-for(dep_var in c("dmspols_zhang_ihs",
-                 "dmspols_zhang_sum2_ihs",
-                 "dmspols_zhang_sum6_ihs",
-                 "globcover_urban_sum_ihs",
-                 "globcover_urban_sum_above0")){
+for(dep_var in c("dmspols_harmon_ihs",
+                 #"dmspols_harmon_sum2_ihs",
+                 #"dmspols_harmon_sum6_ihs",
+                 "globcover_urban_sum_ihs")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
-    for(controls in c("", "+temp_avg+precipitation")){
-    #for(controls in c("")){
+    for(controls in c("+temp_avg+precipitation")){
+      #for(controls in c("")){
       
       #for(addis_distance in c("All", "Far")){
       for(addis_distance in c("All", "Far")){

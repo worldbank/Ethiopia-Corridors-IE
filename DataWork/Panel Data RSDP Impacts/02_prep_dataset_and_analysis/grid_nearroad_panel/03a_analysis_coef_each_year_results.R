@@ -3,7 +3,7 @@
 # Exports dataframe of results, to be used to make figures
 
 #### Parameters
-OVERWRITE_FILES <- F
+OVERWRITE_FILES <- T
 
 #### Default
 dep_var <- "globcover_urban"
@@ -19,25 +19,35 @@ data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad"
 data$globcover_urban    <- as.numeric(data$globcover_urban    > 0)
 data$globcover_cropland <- as.numeric(data$globcover_cropland > 0)
 
+data <- data %>% group_by(woreda_id) %>% mutate(dmspols_1996sum = sum(dmspols[year == 1996], na.rm=T))
+
+m <- data$dmspols_1996sum[data$dmspols_1996sum > 0] %>% median(na.rm=T)
+data$ntl_group <- NA
+data$ntl_group[data$dmspols_1996sum <= m] <- "1"
+data$ntl_group[data$dmspols_1996sum > m] <- "2"
+
+# data$ntl_group <- NA
+# data$ntl_group[data$dmspols_sum2_1996_woreda == 0] <- "1"
+# data$ntl_group[data$dmspols_sum2_1996_woreda > 0] <- "2"
+
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("globcover_urban", "dmspols_zhang", 
-                 "dmspols_zhang_ihs",  
-                 "dmspols_zhang_2", 
-                 "dmspols_zhang_6", 
-                 "dmspols_harmon_ihs",  
-                 "dmspols_harmon_2", 
-                 "dmspols_harmon_6", 
-                 "dmspols", 
-                 "dmspols_ihs")){
+for(dep_var in c("globcover_urban", 
+                 #"dmspols_zhang", 
+                 #"dmspols_zhang_ihs",  
+                 #"dmspols_zhang_2", 
+                 #"dmspols_zhang_6", 
+                 #"dmspols_harmon_2", 
+                 #"dmspols_harmon_6",
+                 "dmspols_harmon_ihs")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
-    for(controls in c("", "+temp_avg+precipitation")){
+    for(controls in c("+temp_avg+precipitation")){
     #for(controls in c("")){
       
       #for(addis_distance in c("All", "Far")){
-      for(addis_distance in c("All", "Far")){
+      for(addis_distance in c("All")){
         
         #for(ntl_group in c("All", "1", "2")){
         for(ntl_group in c("All", "1", "2")){

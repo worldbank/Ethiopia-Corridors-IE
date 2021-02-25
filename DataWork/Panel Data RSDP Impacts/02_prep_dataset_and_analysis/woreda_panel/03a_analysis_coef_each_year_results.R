@@ -15,16 +15,27 @@ ntl_group <- "All"
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))
 
+data <- data %>% group_by(cell_id) %>% mutate(dmspols_1996sum = dmspols_sum[year == 1996])
+
+m <- data$dmspols_1996sum[data$dmspols_1996sum > 0] %>% median(na.rm=T)
+data$ntl_group <- NA
+data$ntl_group[data$dmspols_1996sum <= m] <- "1"
+data$ntl_group[data$dmspols_1996sum > m] <- "2"
+
+# data$ntl_group <- NA
+# data$ntl_group[data$dmspols_sum6_1996 == 0] <- "1"
+# data$ntl_group[data$dmspols_sum6_1996 > 0] <- "2"
+
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("dmspols_zhang_ihs",
-                 "dmspols_zhang_sum2_ihs",
-                 "dmspols_zhang_sum6_ihs",
+for(dep_var in c("dmspols_harmon_ihs",
+                 #"dmspols_zhang_sum2_ihs",
+                 #"dmspols_zhang_sum6_ihs",
                  "globcover_urban_sum_ihs")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
-    for(controls in c("", "+temp_avg+precipitation")){
+    for(controls in c("+temp_avg+precipitation")){
     #for(controls in c("")){
       
       #for(addis_distance in c("All", "Far")){

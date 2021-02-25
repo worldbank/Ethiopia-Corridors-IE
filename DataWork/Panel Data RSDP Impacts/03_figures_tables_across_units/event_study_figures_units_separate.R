@@ -6,20 +6,20 @@ p_dodge_width <- 1
 # Load Data --------------------------------------------------------------------
 data_woreda <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "results_datasets",
                                  "did_coef_every_year.Rds")) %>%
-  filter(dep_var %in% c("dmspols_zhang_ihs",
-                        "dmspols_zhang_sum2_ihs",
-                        "dmspols_zhang_sum6_ihs",
+  filter(dep_var %in% c("dmspols_harmon_ihs",
+                        #"dmspols_zhang_sum2_ihs",
+                        #"dmspols_zhang_sum6_ihs",
                         "globcover_urban_sum_ihs"))
 
 data_urban <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "results_datasets",
                                 "did_coef_every_year.Rds")) %>%
-  filter(dep_var %in% c("dmspols_zhang_ihs",
-                        "dmspols_zhang_sum2_ihs",
-                        "dmspols_zhang_sum6_ihs",
+  filter(dep_var %in% c("dmspols_harmon_ihs",
+                        "dmspols_harmon_sum2_ihs",
+                        "dmspols_harmon_sum6_ihs",
                         "globcover_urban_sum_ihs",
                         "globcover_urban_sum_above0"))
 
-data_ntl <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "results_datasets",
+data_ntl <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "results_datasets",
                               "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_harmon_ihs",
                         "dmspols_harmon_sum2_ihs",
@@ -96,8 +96,12 @@ make_1_figure <- function(ntl_group_i,
   
   #if(addis_distance_i %in% "Far") title <- paste0(title, ", Areas >100km Addis Ababa")
   if(ntl_group_i %in% "All") title <- paste0(title, "All Units")
-  if(ntl_group_i %in% "1") title <- paste0(title, "Baseline NTL Below Median")
-  if(ntl_group_i %in% "2") title <- paste0(title, "Baseline NTL Above Median")
+  # if(ntl_group_i %in% "1") title <- paste0(title, "Baseline NTL Below Median")
+  # if(ntl_group_i %in% "2") title <- paste0(title, "Baseline NTL Above Median")
+  if(ntl_group_i %in% "1") title <- paste0(title, "Dark")
+  if(ntl_group_i %in% "2") title <- paste0(title, "Low")
+  if(ntl_group_i %in% "3") title <- paste0(title, "Med")
+  if(ntl_group_i %in% "4") title <- paste0(title, "High")
   
   p <- data %>%
     filter(unit %in% all_of(unit_i),
@@ -135,6 +139,9 @@ make_figures_by_base_ntl <- function(unit_i,
   p_arrange <- ggarrange(p_all[[1]],
                          p_all[[2]],
                          p_all[[3]],
+                         
+                        # p_all[[4]],
+                        # p_all[[5]],
                          nrow = 3,
                          common.legend = T,
                          legend = "bottom")
@@ -142,30 +149,31 @@ make_figures_by_base_ntl <- function(unit_i,
   return(p_arrange)
 }
 
-for(addis_dist in c("All", "Far")){
+addis_dist <- "All"
+for(addis_dist in c("All", "Far")){ # "All", "Far"
   
   p <- make_figures_by_base_ntl("Woreda", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_woreda_",addis_dist,".png")),
-         height = 6.5, width = 12)
+         height = 6.5, width = 7)
   rm(p)
   
   p <- make_figures_by_base_ntl("NTL Cluster", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_ntlcluster_",addis_dist,".png")),
-         height = 6.5, width = 12)
+         height = 6.5, width = 7)
   rm(p)
   
   p <- make_figures_by_base_ntl("1x1km Grid", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_1kmgrid_",addis_dist,".png")),
-         height = 6.5, width = 12)
+         height = 6.5, width = 7)
   rm(p)
   
   p <- make_figures_by_base_ntl("Urban Cluster", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_urbancluster_",addis_dist,".png")),
-         height = 6.5, width = 12)
+         height = 6.5, width = 7)
   rm(p)
   
   
@@ -174,7 +182,7 @@ for(addis_dist in c("All", "Far")){
   p <- make_figures_by_base_ntl(c("NTL Cluster", "Urban Cluster"), addis_dist, data_city)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_cities_",addis_dist,".png")),
-         height = 6.5, width = 12)
+         height = 6.5, width = 7)
   rm(p)
   
 }
