@@ -60,11 +60,11 @@ make_sum_stats <- function(data,
     }
     
     mean_1996 <- data[[var]][data$year %in% 1996] %>% mean(na.rm = T) %>% round(ROUND_NUM)
-    mean_2012 <- data[[var]][data$year %in% 2010] %>% mean(na.rm = T) %>% round(ROUND_NUM)
+    mean_2012 <- data[[var]][data$year %in% 2012] %>% mean(na.rm = T) %>% round(ROUND_NUM)
     mean_2016 <- data[[var]][data$year %in% 2016] %>% mean(na.rm = T) %>% round(ROUND_NUM) %>% if_na_return()
     
     sumNon_1996 <- sum(data[[var]][data$year %in% 1996] > 0, na.rm = T) 
-    sumNon_2012 <- sum(data[[var]][data$year %in% 2010] > 0, na.rm = T) 
+    sumNon_2012 <- sum(data[[var]][data$year %in% 2012] > 0, na.rm = T) 
     sumNon_2016 <- sum(data[[var]][data$year %in% 2016] > 0, na.rm = T) %>% if_zero_return()
     
     cat(var_name, " & ",
@@ -85,7 +85,7 @@ sink(file.path(paper_tables,
 cat("\\begin{tabular}{l | ccc | ccc } \n")
 cat("\\hline \n")
 cat("Variable & \\multicolumn{3}{c|}{Average} & \\multicolumn{3}{c}{Number of Units with Value $>$ 0} \\\\ \n")
-cat("         & 1996 & 2010 & 2016           &  1996 & 2010 & 2016                  \\\\ \n")
+cat("         & 1996 & 2013 & 2016           &  1996 & 2013 & 2016                  \\\\ \n")
 cat("\\hline \n")
 
 N <- data_ntl %>%

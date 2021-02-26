@@ -47,7 +47,7 @@ for(dep_var in c("globcover_urban",
     #for(controls in c("")){
       
       #for(addis_distance in c("All", "Far")){
-      for(addis_distance in c("All")){
+      for(addis_distance in c("All", "Far")){
         
         #for(ntl_group in c("All", "1", "2")){
         for(ntl_group in c("All", "1", "2")){
