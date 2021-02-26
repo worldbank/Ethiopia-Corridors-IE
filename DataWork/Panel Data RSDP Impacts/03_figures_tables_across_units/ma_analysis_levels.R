@@ -9,7 +9,7 @@ MA_ubanrural <- ""
 
 # Regressions ------------------------------------------------------------------
 for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_urban"
-  for(theta in c("1", "2", "3_8", "5", "8")){ # "1","2","5","8"
+  for(theta in c("1","2","5","8")){ # 
     for(log in c("_log")){
       for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude100km","_exclude100km"
         for(MA_ubanrural in c("")){ # "_urban2", "_rural2"
@@ -89,34 +89,34 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
           ols2  <- felm(dmspols_harmon_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
           ols3  <- felm(dmspols_harmon_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
           
-          ols4  <- felm(dmspols_harmon_sum2_ihs ~ MA_var                                       + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data)
-          ols5  <- felm(dmspols_harmon_sum2_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
-          ols6  <- felm(dmspols_harmon_sum2_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
+          #ols4  <- felm(dmspols_harmon_sum2_ihs ~ MA_var                                       + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data)
+          #ols5  <- felm(dmspols_harmon_sum2_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
+          #ols6  <- felm(dmspols_harmon_sum2_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
           
-          ols7  <- felm(dmspols_harmon_sum6_ihs ~ MA_var                                       + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data)
-          ols8  <- felm(dmspols_harmon_sum6_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
-          ols9 <- felm(dmspols_harmon_sum6_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
+          #ols7  <- felm(dmspols_harmon_sum6_ihs ~ MA_var                                       + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data)
+          #ols8  <- felm(dmspols_harmon_sum6_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
+          #ols9 <- felm(dmspols_harmon_sum6_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
           
-          ols10 <- felm(globcover_urban_sum_ihs ~ MA_var                                       + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data)
-          ols11  <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
-          ols12 <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
+          ols4 <- felm(globcover_urban_sum_ihs ~ MA_var                                       + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data)
+          ols5  <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
+          ols6 <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
           
           ## IV Regressions
           iv1  <- felm(dmspols_harmon_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data) 
           iv2  <- felm(dmspols_harmon_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
           iv3  <- felm(dmspols_harmon_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data) 
           
-          iv4  <- felm(dmspols_harmon_sum2_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data) 
-          iv5  <- felm(dmspols_harmon_sum2_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
-          iv6  <- felm(dmspols_harmon_sum2_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data) 
+          #iv4  <- felm(dmspols_harmon_sum2_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data) 
+          #iv5  <- felm(dmspols_harmon_sum2_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
+          #iv6  <- felm(dmspols_harmon_sum2_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data) 
           
-          iv7  <- felm(dmspols_harmon_sum6_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data)
-          iv8  <- felm(dmspols_harmon_sum6_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
-          iv9  <- felm(dmspols_harmon_sum6_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data) 
+          #iv7  <- felm(dmspols_harmon_sum6_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data)
+          #iv8  <- felm(dmspols_harmon_sum6_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
+          #iv9  <- felm(dmspols_harmon_sum6_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data) 
           
-          iv10 <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data) 
-          iv11  <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
-          iv12 <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data)
+          iv4 <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data) 
+          iv5  <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
+          iv6 <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data)
           
           ## OLS Stargazer
           stargazer(ols1,
@@ -125,14 +125,8 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     ols4,
                     ols5,
                     ols6,
-                    ols7,
-                    ols8,
-                    ols9,
-                    ols10,
-                    ols11,
-                    ols12,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "NTL$\\geq$2", "NTL$\\geq6$", "GlobCover-Urban"),
+                    dep.var.labels   = c("NTL", "GlobCover-Urban"), # "NTL$\\geq$2", "NTL$\\geq6$",
                     #keep=c("MA_var"),
                     omit = c("temp_avg", "precipitation"),
                     covariate.labels = c("MA",
@@ -149,8 +143,8 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     digits = 2,
                     omit.table.layout = "n",
                     add.lines = list(
-                      c("Year   FE", rep("Y", 16)),
-                      c("Unit FE", rep("Y", 16))
+                      c("Year   FE", rep("Y", 8)),
+                      c("Unit FE", rep("Y", 8))
                     ),
                     out=file.path(paper_tables,
                                   paste0("MA_table",log,"_theta",theta,exclude,"_",unit,MA_ubanrural,"_ols.tex")))
@@ -162,14 +156,8 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     iv4,
                     iv5,
                     iv6,
-                    iv7,
-                    iv8,
-                    iv9,
-                    iv10,
-                    iv11,
-                    iv12,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "NTL$\\geq$2", "NTL$\\geq6$", "GlobCover-Urban"),
+                    dep.var.labels   = c("NTL", "GlobCover-Urban"), # "NTL$\\geq$2", "NTL$\\geq6$",
                     #keep=c("MA_var"),
                     omit = c("temp_avg", "precipitation"),
                     covariate.labels = c("MA",
@@ -186,8 +174,8 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     digits = 2,
                     omit.table.layout = "n",
                     add.lines = list(
-                      c("Year   FE", rep("Y", 16)),
-                      c("Unit FE", rep("Y", 16))
+                      c("Year   FE", rep("Y", 8)),
+                      c("Unit FE", rep("Y", 8))
                     ),
                     out=file.path(paper_tables,
                                   paste0("MA_table",log,"_theta",theta,exclude,"_",unit,MA_ubanrural,"_iv.tex")))

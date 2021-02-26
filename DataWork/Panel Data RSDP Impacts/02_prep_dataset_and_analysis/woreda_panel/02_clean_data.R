@@ -159,6 +159,7 @@ data <- data %>%
          dmspols_harmon_sum2_ihs_1996 = dmspols_harmon_sum2_ihs[year == 1996],
          dmspols_harmon_sum6_ihs_1996 = dmspols_harmon_sum6_ihs[year == 1996],
          dmspols_1996           = dmspols[year == 1996],
+         dmspols_sum_1996       = dmspols_sum[year == 1996],
          dmspols_log_1996       = dmspols_log[year == 1996],
          dmspols_2bin_1996      = dmspols_2bin[year == 1996],
          dmspols_6bin_1996      = dmspols_6bin[year == 1996],
@@ -199,6 +200,18 @@ data$dmspols_1996_bin4_1 <-  as.numeric(data$dmspols_1996_bin4 == 1)
 data$dmspols_1996_bin4_2 <-  as.numeric(data$dmspols_1996_bin4 == 2)
 data$dmspols_1996_bin4_3 <-  as.numeric(data$dmspols_1996_bin4 == 3)
 data$dmspols_1996_bin4_4 <-  as.numeric(data$dmspols_1996_bin4 == 4)
+
+# m <- quantile(data$dmspols_sum_1996[data$dmspols_sum_1996 > 0], c(0.25, .5, 0.75)) %>% as.numeric()
+# 
+# data$dmspols_1996_bin4_1 <- 0
+# data$dmspols_1996_bin4_2 <- 0
+# data$dmspols_1996_bin4_3 <- 0
+# data$dmspols_1996_bin4_4 <- 0
+# 
+# data$dmspols_1996_bin4_1[data$dmspols_sum_1996                                <= m[1]] <- 1
+# data$dmspols_1996_bin4_2[data$dmspols_sum_1996 > m[1] & data$dmspols_sum_1996 <= m[2]] <- 2
+# data$dmspols_1996_bin4_3[data$dmspols_sum_1996 > m[2] & data$dmspols_sum_1996 <= m[3]] <- 3
+# data$dmspols_1996_bin4_4[data$dmspols_sum_1996 > m[3]]                                 <- 4
 
 ## bin4v2
 # data$dmspols_1996_bin42 <- NA

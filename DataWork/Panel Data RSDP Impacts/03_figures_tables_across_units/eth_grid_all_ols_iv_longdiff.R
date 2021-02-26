@@ -118,50 +118,50 @@ df2016 <- df2016 %>%
 
 # OLS --------------------------------------------------------------------------
 lm_dmspols_ihs <- felm(dmspols_harmon_ihs ~ near_anyimproved_5km | 0 | 0 | W_CODE, data = df2016)
-lm_dmspols_2   <- felm(dmspols_harmon_2   ~ near_anyimproved_5km | 0 | 0 | W_CODE, data = df2016)
-lm_dmspols_6   <- felm(dmspols_harmon_6   ~ near_anyimproved_5km | 0 | 0 | W_CODE, data = df2016)
+#lm_dmspols_2   <- felm(dmspols_harmon_2   ~ near_anyimproved_5km | 0 | 0 | W_CODE, data = df2016)
+#lm_dmspols_6   <- felm(dmspols_harmon_6   ~ near_anyimproved_5km | 0 | 0 | W_CODE, data = df2016)
 lm_globcover_urban <- felm(globcover_urban   ~ near_anyimproved_5km | 0 | 0 | W_CODE, data = df2016)
 
 lm_dmspols_ihs_addis <- felm(dmspols_harmon_ihs ~ near_anyimproved_5km + near_anyimproved_5kmXdistance_city_addisababa | 0 | 0 | W_CODE, data = df2016)
-lm_dmspols_2_addis   <- felm(dmspols_harmon_2   ~ near_anyimproved_5km + near_anyimproved_5kmXdistance_city_addisababa | 0 | 0 | W_CODE, data = df2016)
-lm_dmspols_6_addis   <- felm(dmspols_harmon_6   ~ near_anyimproved_5km + near_anyimproved_5kmXdistance_city_addisababa | 0 | 0 | W_CODE, data = df2016)
+#lm_dmspols_2_addis   <- felm(dmspols_harmon_2   ~ near_anyimproved_5km + near_anyimproved_5kmXdistance_city_addisababa | 0 | 0 | W_CODE, data = df2016)
+#lm_dmspols_6_addis   <- felm(dmspols_harmon_6   ~ near_anyimproved_5km + near_anyimproved_5kmXdistance_city_addisababa | 0 | 0 | W_CODE, data = df2016)
 lm_globcover_urban_addis   <- felm(globcover_urban   ~ near_anyimproved_5km + near_anyimproved_5kmXdistance_city_addisababa | 0 | 0 | W_CODE, data = df2016)
 
 lm_dmspols_ihs_basentl <- felm(dmspols_harmon_ihs ~ near_anyimproved_5km + near_anyimproved_5kmXdmspols_1996_bin4_2 + near_anyimproved_5kmXdmspols_1996_bin4_3 + near_anyimproved_5kmXdmspols_1996_bin4_4 | 0 | 0 | W_CODE, data = df2016)
-lm_dmspols_2_basentl   <- felm(dmspols_harmon_2   ~ near_anyimproved_5km + near_anyimproved_5kmXdmspols_1996_bin4_2 + near_anyimproved_5kmXdmspols_1996_bin4_3 + near_anyimproved_5kmXdmspols_1996_bin4_4 | 0 | 0 | W_CODE, data = df2016)
-lm_dmspols_6_basentl   <- felm(dmspols_harmon_6   ~ near_anyimproved_5km + near_anyimproved_5kmXdmspols_1996_bin4_2 + near_anyimproved_5kmXdmspols_1996_bin4_3 + near_anyimproved_5kmXdmspols_1996_bin4_4 | 0 | 0 | W_CODE, data = df2016)
+#lm_dmspols_2_basentl   <- felm(dmspols_harmon_2   ~ near_anyimproved_5km + near_anyimproved_5kmXdmspols_1996_bin4_2 + near_anyimproved_5kmXdmspols_1996_bin4_3 + near_anyimproved_5kmXdmspols_1996_bin4_4 | 0 | 0 | W_CODE, data = df2016)
+#lm_dmspols_6_basentl   <- felm(dmspols_harmon_6   ~ near_anyimproved_5km + near_anyimproved_5kmXdmspols_1996_bin4_2 + near_anyimproved_5kmXdmspols_1996_bin4_3 + near_anyimproved_5kmXdmspols_1996_bin4_4 | 0 | 0 | W_CODE, data = df2016)
 lm_globcover_urban_basentl   <- felm(globcover_urban   ~ near_anyimproved_5km + near_anyimproved_5kmXdmspols_1996_bin4_2 + near_anyimproved_5kmXdmspols_1996_bin4_3 + near_anyimproved_5kmXdmspols_1996_bin4_4 | 0 | 0 | W_CODE, data = df2016)
 
 # MST - Cost Distance ----------------------------------------------------------
 iv_cd_dmspols_ihs <- felm(dmspols_harmon_ihs ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_5km) | W_CODE, data = df2016)
-iv_cd_dmspols_2   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_5km) | W_CODE, data = df2016)
-iv_cd_dmspols_6   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_5km) | W_CODE, data = df2016)
+#iv_cd_dmspols_2   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_5km) | W_CODE, data = df2016)
+#iv_cd_dmspols_6   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_5km) | W_CODE, data = df2016)
 iv_cd_globcover_urban   <- felm(globcover_urban   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_5km) | W_CODE, data = df2016)
 
 iv_cd_dmspols_ihs_addis <- felm(dmspols_harmon_ihs ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_5km + near_mst_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
-iv_cd_dmspols_2_addis   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_5km + near_mst_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
-iv_cd_dmspols_6_addis   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_5km + near_mst_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
+#iv_cd_dmspols_2_addis   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_5km + near_mst_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
+#iv_cd_dmspols_6_addis   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_5km + near_mst_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
 iv_cd_globcover_urban_addis   <- felm(globcover_urban   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_5km + near_mst_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
 
 iv_cd_dmspols_ihs_basentl <- felm(dmspols_harmon_ihs ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_5km + near_mst_5kmXdmspols_1996_bin4_2 + near_mst_5kmXdmspols_1996_bin4_3 + near_mst_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
-iv_cd_dmspols_2_basentl   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_5km + near_mst_5kmXdmspols_1996_bin4_2 + near_mst_5kmXdmspols_1996_bin4_3 + near_mst_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
-iv_cd_dmspols_6_basentl   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_5km + near_mst_5kmXdmspols_1996_bin4_2 + near_mst_5kmXdmspols_1996_bin4_3 + near_mst_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
+#iv_cd_dmspols_2_basentl   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_5km + near_mst_5kmXdmspols_1996_bin4_2 + near_mst_5kmXdmspols_1996_bin4_3 + near_mst_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
+#iv_cd_dmspols_6_basentl   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_5km + near_mst_5kmXdmspols_1996_bin4_2 + near_mst_5kmXdmspols_1996_bin4_3 + near_mst_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
 iv_cd_globcover_urban_basentl   <- felm(globcover_urban   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_5km + near_mst_5kmXdmspols_1996_bin4_2 + near_mst_5kmXdmspols_1996_bin4_3 + near_mst_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
 
 # MST - Least Distance ---------------------------------------------------------
 iv_ld_dmspols_ihs <- felm(dmspols_harmon_ihs ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_mindist_5km) | W_CODE, data = df2016)
-iv_ld_dmspols_2   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_mindist_5km) | W_CODE, data = df2016)
-iv_ld_dmspols_6   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_mindist_5km) | W_CODE, data = df2016)
+#iv_ld_dmspols_2   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_mindist_5km) | W_CODE, data = df2016)
+#iv_ld_dmspols_6   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_mindist_5km) | W_CODE, data = df2016)
 iv_ld_globcover_urban   <- felm(globcover_urban   ~ 1 | 0 | (near_anyimproved_5km ~ near_mst_mindist_5km) | W_CODE, data = df2016)
 
 iv_ld_dmspols_ihs_addis <- felm(dmspols_harmon_ihs ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_mindist_5km + near_mst_mindist_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
-iv_ld_dmspols_2_addis   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_mindist_5km + near_mst_mindist_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
-iv_ld_dmspols_6_addis   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_mindist_5km + near_mst_mindist_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
+#iv_ld_dmspols_2_addis   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_mindist_5km + near_mst_mindist_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
+#iv_ld_dmspols_6_addis   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_mindist_5km + near_mst_mindist_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
 iv_ld_globcover_urban_addis   <- felm(globcover_urban   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdistance_city_addisababa ~ near_mst_mindist_5km + near_mst_mindist_5kmXdistance_city_addisababa) | W_CODE, data = df2016)
 
 iv_ld_dmspols_ihs_basentl <- felm(dmspols_harmon_ihs ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_mindist_5km + near_mst_mindist_5kmXdmspols_1996_bin4_2 + near_mst_mindist_5kmXdmspols_1996_bin4_3 + near_mst_mindist_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
-iv_ld_dmspols_2_basentl   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_mindist_5km + near_mst_mindist_5kmXdmspols_1996_bin4_2 + near_mst_mindist_5kmXdmspols_1996_bin4_3 + near_mst_mindist_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
-iv_ld_dmspols_6_basentl   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_mindist_5km + near_mst_mindist_5kmXdmspols_1996_bin4_2 + near_mst_mindist_5kmXdmspols_1996_bin4_3 + near_mst_mindist_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
+#iv_ld_dmspols_2_basentl   <- felm(dmspols_harmon_2   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_mindist_5km + near_mst_mindist_5kmXdmspols_1996_bin4_2 + near_mst_mindist_5kmXdmspols_1996_bin4_3 + near_mst_mindist_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
+#iv_ld_dmspols_6_basentl   <- felm(dmspols_harmon_6   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_mindist_5km + near_mst_mindist_5kmXdmspols_1996_bin4_2 + near_mst_mindist_5kmXdmspols_1996_bin4_3 + near_mst_mindist_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
 iv_ld_globcover_urban_basentl   <- felm(globcover_urban   ~ 1 | 0 | (near_anyimproved_5km|near_anyimproved_5kmXdmspols_1996_bin4_2|near_anyimproved_5kmXdmspols_1996_bin4_3|near_anyimproved_5kmXdmspols_1996_bin4_4 ~ near_mst_mindist_5km + near_mst_mindist_5kmXdmspols_1996_bin4_2 + near_mst_mindist_5kmXdmspols_1996_bin4_3 + near_mst_mindist_5kmXdmspols_1996_bin4_4) | W_CODE, data = df2016)
 
 # OLS - Stargazer --------------------------------------------------------------
@@ -169,20 +169,20 @@ stargazer(lm_dmspols_ihs,
           lm_dmspols_ihs_basentl,
           lm_dmspols_ihs_addis,
           
-          lm_dmspols_2,
-          lm_dmspols_2_basentl,
-          lm_dmspols_2_addis,
+          #lm_dmspols_2,
+          #lm_dmspols_2_basentl,
+          #lm_dmspols_2_addis,
           
-          lm_dmspols_6,
-          lm_dmspols_6_basentl,
-          lm_dmspols_6_addis,
+          #lm_dmspols_6,
+          #lm_dmspols_6_basentl,
+          #lm_dmspols_6_addis,
           
           lm_globcover_urban,
           lm_globcover_urban_basentl,
           lm_globcover_urban_addis,
           
           dep.var.labels.include = T,
-          dep.var.labels = c("NTL", "NTL $\\geq$ 2", "NTL $\\geq$ 6", "GlobCover-Urban"),
+          dep.var.labels = c("NTL", "GlobCover-Urban"), #  "NTL $\\geq$ 2", "NTL $\\geq$ 6",
           dep.var.caption = "",
           omit = c("temp_avg", "precipitation"),
           covariate.labels = c("Imp Rd.",
@@ -205,20 +205,20 @@ stargazer(iv_cd_dmspols_ihs,
           iv_cd_dmspols_ihs_basentl,
           iv_cd_dmspols_ihs_addis,
           
-          iv_cd_dmspols_2,
-          iv_cd_dmspols_2_basentl,
-          iv_cd_dmspols_2_addis,
+          #iv_cd_dmspols_2,
+          #iv_cd_dmspols_2_basentl,
+          #iv_cd_dmspols_2_addis,
           
-          iv_cd_dmspols_6,
-          iv_cd_dmspols_6_basentl,
-          iv_cd_dmspols_6_addis,
+          #iv_cd_dmspols_6,
+          #iv_cd_dmspols_6_basentl,
+          #iv_cd_dmspols_6_addis,
           
           iv_cd_globcover_urban,
           iv_cd_globcover_urban_basentl,
           iv_cd_globcover_urban_addis,
           
           dep.var.labels.include = T,
-          dep.var.labels = c("NTL", "NTL $\\geq$ 2", "NTL $\\geq$ 6", "GlobCover-Urban"),
+          dep.var.labels = c("NTL", "GlobCover-Urban"), # "NTL $\\geq$ 2", "NTL $\\geq$ 6",
           dep.var.caption = "",
           covariate.labels = c("Imp Rd.",
                                "Imp Rd.$\\times NTL_{96}$ Low",
@@ -240,20 +240,20 @@ stargazer(iv_ld_dmspols_ihs,
           iv_ld_dmspols_ihs_basentl,
           iv_ld_dmspols_ihs_addis,
           
-          iv_ld_dmspols_2,
-          iv_ld_dmspols_2_basentl,
-          iv_ld_dmspols_2_addis,
+          #iv_ld_dmspols_2,
+          #iv_ld_dmspols_2_basentl,
+          #iv_ld_dmspols_2_addis,
           
-          iv_ld_dmspols_6,
-          iv_ld_dmspols_6_basentl,
-          iv_ld_dmspols_6_addis,
+          #iv_ld_dmspols_6,
+          #iv_ld_dmspols_6_basentl,
+          #iv_ld_dmspols_6_addis,
           
           iv_ld_globcover_urban,
           iv_ld_globcover_urban_basentl,
           iv_ld_globcover_urban_addis,
           
           dep.var.labels.include = T,
-          dep.var.labels = c("NTL", "NTL $\\geq$ 2", "NTL $\\geq$ 6", "GlobCover-Urban"),
+          dep.var.labels = c("NTL", "GlobCover-Urban"), # "NTL $\\geq$ 2", "NTL $\\geq$ 6", 
           dep.var.caption = "",
           covariate.labels = c("Imp Rd.",
                                "Imp Rd.$\\times NTL_{96}$ Low",
