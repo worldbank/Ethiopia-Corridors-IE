@@ -25,7 +25,7 @@ lc_mst <- ggplot() +
             aes(x = long, y = lat, group = group,
                 color = "MST"),
             size = 0.35) +
-  scale_color_manual(values = c("dodgerblue1", "darkorange")) +
+  scale_color_manual(values = c("dodgerblue1", "red")) +
   labs(color = NULL,
        title = "Least Cost MST") +
   theme_void() +
@@ -44,7 +44,7 @@ ld_mst <- ggplot() +
             aes(x = long, y = lat, group = group,
                 color = "MST"),
             size = 0.35) +
-  scale_color_manual(values = c("dodgerblue1", "darkorange")) +
+  scale_color_manual(values = c("dodgerblue1", "red")) +
   labs(color = NULL,
        title = "Minimum Distance MST") +
   theme_void() +

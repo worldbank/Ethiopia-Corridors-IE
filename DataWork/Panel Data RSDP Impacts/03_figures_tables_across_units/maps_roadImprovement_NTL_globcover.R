@@ -1,23 +1,5 @@
 # Road Improvement Map
 
-a <- roads[roads$rsdp_phase %in% 4,]
-a$color <- sample(x = c("red", 
-                        "blue",
-                        "green",
-                        "orange",
-                        "yellow", 
-                        "black", 
-                        "purple"),
-                  size = nrow(a),
-                  replace = T)
-
-leaflet() %>%
-  addTiles() %>%
-  addPolylines(data = a,
-               color = ~color,
-               popup = ~LINKNAME)
-
-
 # Load Data --------------------------------------------------------------------
 roads <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 eth_adm <- readRDS(file.path(data_file_path, "GADM", "RawData", "gadm36_ETH_0_sp.rds"))
@@ -109,7 +91,7 @@ make_gc_figure <- function(df, title){
     #             fill = "black") +
     geom_polygon(data = eth_adm,
                  aes(x = long, y = lat, group = group),
-                 color = "black", fill = "black",
+                 color = "black", fill = NA,
                  size = .15) +
     geom_raster(data = df[df$value > 0,] , 
                 aes(x = x, y = y),
@@ -152,7 +134,7 @@ roads_improved_tidy <- merge(roads_improved_tidy, roads_improved@data, by = "id"
 p_rsdp <- ggplot() +
   geom_polygon(data = eth_adm,
                aes(x = long, y = lat, group = group),
-               fill = NA, color = "white", size=.2) +
+               fill = "black", color = "black", size=.2) + # gray40
   geom_path(data = roads_existing,
             aes(x = long, y = lat, group = group),
             color = "gray",
