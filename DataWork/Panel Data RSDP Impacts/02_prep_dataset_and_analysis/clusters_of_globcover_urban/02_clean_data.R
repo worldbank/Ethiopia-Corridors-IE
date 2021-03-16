@@ -25,6 +25,13 @@ data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_
 #data <- data %>%
 #  filter(cluster_n_cells > 1)
 
+# dataframes?
+data$globcover_cropland <- data$globcover_cropland %>% as.vector()
+data$globcover_cropland_sum <- data$globcover_cropland_sum  %>% as.vector()
+data$globcover_urban      <- data$globcover_urban %>% as.vector()
+data$globcover_urban_sum  <- data$globcover_urban_sum  %>% as.vector()
+
+
 # Distance to aggregate road categories ----------------------------------------
 # We calculate distance to roads by speed limit. Here we calculate distance
 # to any road, road 50 km/hr and above and roads less than 50 km/hr
@@ -191,6 +198,10 @@ data <- data %>%
          globcover_urban_1996 = globcover_urban[year == 1996],
          globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
          globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
+         
+         globcover_cropland_1996 = globcover_cropland[year == 1996],
+         globcover_cropland_sum_1996 = globcover_cropland_sum[year == 1996],
+         globcover_cropland_sum_ihs_1996 = globcover_cropland_sum_ihs[year == 1996],
          dmspols_sum2_1996 = dmspols_sum2[year == 1996],
          dmspols_sum6_1996 = dmspols_sum6[year == 1996],
          dmspols_sum10_1996 = dmspols_sum10[year == 1996],
@@ -294,6 +305,8 @@ data <- data %>%
   filter(distance_anyimproved_ever < NEAR_CUTOFF)
 
 ## First Year Cluster Appears --------------------------------------------------
+data$globcover_urban_sum_bin <- as.numeric(data$globcover_urban_sum > 0)
+
 data <- data %>%
   mutate(globcover_urban_sum_bin_X_year = (globcover_urban_sum_bin * year) %>% ifelse(. == 0, NA, .)) %>%
   group_by(cell_id) %>%

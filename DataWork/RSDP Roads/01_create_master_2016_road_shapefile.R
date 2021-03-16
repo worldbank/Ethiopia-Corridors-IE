@@ -67,8 +67,6 @@ clean_roads_data <- function(roads, year){
     names(roads_out)[names(roads_out) %in% "LINKLENGTH"] <- paste0("LINKLENGTH_yearshape_", year)
     names(roads_out)[names(roads_out) %in% "Speed"] <- paste0("Speed_yearshape_", year)
     
-
-  
   return(roads_out)
   
 }

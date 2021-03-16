@@ -13,7 +13,7 @@
 # For each level, the (1) first set of code preps analysis datasets and the (2)
 # second set of code runs the analysis, producing any tables and/or figures
 
-# GRID LEVEL ANALYSIS ==========================================================
+# GRID LEVEL, NEAR ROAD ========================================================
 
 # Grid Level, Near Roads Subset, Panel -----------------------------------------
 codepath_grid_nearroad_panel <- file.path(rsdp_impact_analysis_code_file_path, "grid_nearroad_panel")
@@ -33,44 +33,70 @@ source(file.path(codepath_grid_nearroad_panel, "03a_analysis_coef_each_year_resu
 source(file.path(codepath_grid_nearroad_panel, "03b_analysis_coef_each_year_results_append.R"))
 source(file.path(codepath_grid_nearroad_panel, "03c_analysis_coef_each_year_figures.R"))
 
+# Grid Level, All Ethiopia =====================================================
 
-# Grid Level, All Ethiopia Cells, Long Difference ------------------------------
+# ** Panel ---------------------------------------------------------------------
+codepath_grid_ethiopia_panel <- file.path(rsdp_impact_analysis_code_file_path, "grid_ethiopia_baseendline")
+
+source(file.path(codepath_grid_ethiopia_panel, "01_merge_data.R"))
+source(file.path(codepath_grid_ethiopia_panel, "02_clean_data.R"))
+
+# ** Long Difference -----------------------------------------------------------
 codepath_grid_ethiopia_longdifference <- file.path(rsdp_impact_analysis_code_file_path, "grid_ethiopia_longdifference")
 
-# Merges individual datasets of extracted variables
-source(file.path(codepath_grid_ethiopia_longdifference, "01_merge_data.R"))
+source(file.path(codepath_grid_ethiopia_longdifference, "01_clean_data.R"))
 
-# Creates variables needed for analysis and creates first difference datasets
-# Different datasets are created for using different baseline and endline years.
-# Needed as DMSP-OLS ends in 2013, globcover ends in 2018 and roads data ends
-# in 2016
-source(file.path(codepath_grid_ethiopia_longdifference, "02_clean_data.R"))
+# WOREDA =======================================================================
 
-
-# WOREDA LEVEL ANALYSIS ========================================================
-
-# Woreda Level, Panel ----------------------------------------------------------
-
+# ** Panel ---------------------------------------------------------------------
 codepath_woreda_panel <- file.path(rsdp_impact_analysis_code_file_path, "woreda_panel")
 
-# Merges individual datasets of extracted variables
 source(file.path(codepath_woreda_panel, "01_merge_data.R"))
-
-# Creates variables needed for analysis
 source(file.path(codepath_woreda_panel, "02_clean_data.R"))
 
+# ** Long Difference -----------------------------------------------------------
+codepath_woreda_longdiff <- file.path(rsdp_impact_analysis_code_file_path, "woreda_longdifference")
 
-# Woreda Level, Long Difference -----------------------------------------------------
+source(file.path(codepath_woreda_longdiff, "01_clean_data.R"))
 
-# Creates variables needed for analysis and creates first difference datasets
-# Different datasets are created for using different baseline and endline years.
-# Needed as DMSP-OLS ends in 2013, globcover ends in 2018 and roads data ends
-# in 2016
-# ** This dataset relies on the clean panel dataset, consequently, the
-# 01_merge_data.R and 02_clean_data.R should be run before running this script
-source(file.path(codepath_woreda_panel, "01_clean_data.R"))
+# GLOBCOVER-URBAN ==============================================================
 
+# ** Panel ---------------------------------------------------------------------
+codepath_gc_panel <- file.path(rsdp_impact_analysis_code_file_path, "clusters_of_globcover_urban")
 
+source(file.path(codepath_gc_panel, "01_merge_data.R"))
+source(file.path(codepath_gc_panel, "02_clean_data.R"))
+
+# ** Long Difference -----------------------------------------------------------
+codepath_gc_longdiff <- file.path(rsdp_impact_analysis_code_file_path, "clusters_of_globcover_urban_longdifference")
+
+source(file.path(codepath_gc_longdiff, "01_clean_data.R"))
+
+# NTL-All ======================================================================
+
+# ** Panel ---------------------------------------------------------------------
+codepath_ntlall_panel <- file.path(rsdp_impact_analysis_code_file_path, "clusters_of_ntlall")
+
+source(file.path(codepath_ntlall_panel, "01_merge_data.R"))
+source(file.path(codepath_ntlall_panel, "02_clean_data.R"))
+
+# ** Long Difference -----------------------------------------------------------
+codepath_ntlall_longdiff <- file.path(rsdp_impact_analysis_code_file_path, "clusters_of_ntlall_longdifference")
+
+source(file.path(codepath_ntlall_longdiff, "01_clean_data.R"))
+
+# NTL ==========================================================================
+
+# ** Panel ---------------------------------------------------------------------
+#codepath_ntl_panel <- file.path(rsdp_impact_analysis_code_file_path, "clusters_of_ntl")
+
+#source(file.path(codepath_ntl_panel, "01_merge_data.R"))
+#source(file.path(codepath_ntl_panel, "02_clean_data.R"))
+
+# ** Long Difference -----------------------------------------------------------
+#codepath_ntl_longdiff <- file.path(rsdp_impact_analysis_code_file_path, "clusters_of_ntl_longdifference")
+
+#source(file.path(codepath_ntl_longdiff, "01_clean_data.R"))
 
 
 

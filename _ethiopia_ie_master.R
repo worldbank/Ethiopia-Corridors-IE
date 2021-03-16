@@ -86,6 +86,7 @@ library(leaflet)
 library(TTR)
 library(tidyselect)
 library(dvmisc)
+library(purrr)
 library(facetscales) # devtools::install_github("zeehio/facetscales")
 
 # Functions
@@ -94,3 +95,7 @@ source(file.path(code_file_path, "Functions", "commonly_used.R"))
 source(file.path(code_file_path, "Functions", "rename_lm_vars.R"))
 
 
+str_remove_vec <- function(x, rx){
+  # Remove items in vector "x" that contain "rx"
+  x[!grepl(rx, x)]
+}

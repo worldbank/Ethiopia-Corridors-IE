@@ -59,3 +59,16 @@ mean(woreda_data_clean$N_year_treated >= 1)
 mean(ntl_data_clean$N_year_treated >= 1)
 mean(glob_data_clean$N_year_treated >= 1)
 
+
+
+grid_eth <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",
+                              "merged_datasets", "panel_data_clean.Rds"))
+
+grid_table <- grid_eth %>%
+  filter(year %in% 2012) %>%
+  filter(dmspols > 0) %>%
+  group_by(near_anyimproved_ever_5km) %>%
+  dplyr::summarise(N = n())
+
+grid_table
+

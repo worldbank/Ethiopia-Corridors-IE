@@ -12,8 +12,8 @@ NEAR_THRESHOLD <- 0
 # - DMSP-OLS until 2012
 # - Globcover until 2018
 # - Roads until 2016 (for globcover, could use roads in 2016 and globcover in 2018)
-base_end_df <- data.frame(baseline = c(1996, 1996),
-                          endline =  c(2012, 2016))
+base_end_df <- data.frame(baseline = c(1996, 1996, 1996),
+                          endline =  c(2012, 2009, 2016))
 
 str_remove_vec <- function(x, rx){
   # Remove items in vector "x" that contain "rx"
@@ -68,6 +68,17 @@ for(i in 1:nrow(base_end_df)){
                     distance_anyimproved_by2012,
                     distance_anyroad2012,
                     distance_anyroad2016, 
+                    
+                    dmspols_harmon_ihs_1996,
+                    globcover_urban_1996,
+                    globcover_cropland_1996,
+                    
+                    distance_rsdp123,
+                    distance_rsdp123_targettedlocs,
+                    distance_rsdp123_mst_euc,
+                    distance_rsdp123_mst_lc,
+                    distance_rsdp123_mst_euc_region,
+                    distance_rsdp123_mst_lc_region,
                     #dmspols_zhang_sum2_1996_woreda, 
                     #dmspols_zhang_sum6_1996_woreda,
                     #dmspols_zhang_ihs_sum2_1996_woreda, 

@@ -50,6 +50,9 @@ data <- data %>%
 data <- data %>%
   group_by(cell_id) %>%
   mutate(dmspols_zhang_1996 = dmspols_zhang[year == 1996],
+         dmspols_harmon_ihs_1996 = dmspols_harmon_ihs[year == 1996],
+         globcover_urban_1996 = globcover_urban[year == 1996],
+         globcover_cropland_1996 = globcover_cropland[year == 1996],
          dmspols_1996 = dmspols[year == 1996],
          dmspols_harmon_1996 = dmspols_harmon[year == 1996],
          dmspols_2_1996 = dmspols_2[year == 1996],

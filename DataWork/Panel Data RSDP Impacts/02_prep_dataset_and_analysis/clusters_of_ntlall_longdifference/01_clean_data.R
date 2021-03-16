@@ -11,16 +11,18 @@ NEAR_THRESHOLD <- 0
 # - DMSP-OLS until 2012
 # - Globcover until 2018
 # - Roads until 2016 (for globcover, could use roads in 2016 and globcover in 2018)
-base_end_df <- data.frame(baseline = c(1996, 1996),
-                          endline =  c(2012, 2016))
+base_end_df <- data.frame(baseline = c(1996, 1996, 1996),
+                          endline =  c(2012, 2009, 2016))
 
 # Load Data --------------------------------------------------------------------
-data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", "panel_data_clean.Rds"))
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", "panel_data_clean.Rds"))
 
 ## Remove select variabes
 # These are characters and cause code to break when first differencing
 data <- data %>%
   dplyr::select(-c(dmspols_1996_group, dmspols_zhang_1996_group))
+
+data <- data[,!grepl("MA_ntl2000_|MA_poplog2000_|MA_gcu2000_|_ic_|_rural33|_rural2|_urban33|_urban2|_urban6|_rural6", names(data))]
 
 # Clean Data -------------------------------------------------------------------
 for(i in 1:nrow(base_end_df)){
@@ -43,15 +45,17 @@ for(i in 1:nrow(base_end_df)){
     group_by(cell_id) %>%
     summarize_at(names(data) %>% 
                    str_subset("MA|road_length|dmspols|globcover|viirs|temp|precipitation|ndvi|distance_road_") %>%
-                   str_remove_vec(rx = "_1996$") %>%
+                   str_remove_vec(rx = "_1996") %>%
+                   str_remove_vec(rx = "distance_rsdp123") %>%
                    str_remove_vec(rx = "_pretnd96_92$"), 
                  diff)
   
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
-    dplyr::select(c(ends_with("_1996"),
+    dplyr::select(c(contains("_1996"),
                     ends_with("_pretnd96_92"),
+                    contains("distance_rsdp123"),
                     cell_id, R_CODE, Z_CODE,  distance_mst, 
                     area_polygon, distance_city_addisababa)) 
   
@@ -61,9 +65,9 @@ for(i in 1:nrow(base_end_df)){
   #### Export
   file_name <- paste0("longdiff_data_clean_base",base_year,"_end",end_year)
   
-  saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", 
+  saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", 
                           paste0(file_name, ".Rds")))
-  write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl", "merged_datasets", 
+  write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", 
                             paste0(file_name, ".dta")))
 }
 

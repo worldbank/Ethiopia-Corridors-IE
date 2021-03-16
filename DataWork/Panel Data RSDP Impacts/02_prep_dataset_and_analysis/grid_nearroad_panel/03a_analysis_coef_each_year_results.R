@@ -15,6 +15,9 @@ ntl_group <- "All"
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "grid_data_clean.Rds"))
 
+data$dmspols_harmon_ihs2013 <- data$dmspols_harmon_ihs
+data$dmspols_harmon_ihs2013[data$year >= 2013] <- NA
+
 ## Quick Fix - move into cleaning script later
 data$globcover_urban    <- as.numeric(data$globcover_urban    > 0)
 data$globcover_cropland <- as.numeric(data$globcover_cropland > 0)
@@ -33,21 +36,24 @@ data$ntl_group[data$dmspols_1996sum > m] <- "2"
 # Estimate Model ---------------------------------------------------------------
 results_df <- data.frame(NULL)
 
-for(dep_var in c("globcover_urban", 
-                 #"dmspols_zhang", 
-                 #"dmspols_zhang_ihs",  
-                 #"dmspols_zhang_2", 
-                 #"dmspols_zhang_6", 
-                 #"dmspols_harmon_2", 
-                 #"dmspols_harmon_6",
-                 "dmspols_harmon_ihs")){
+for(dep_var in c(#"globcover_urban", 
+  "globcover_cropland"
+ #"dmspols_harmon_ihs",
+  #"dmspols_harmon_ihs2013"
+  #"dmspols_zhang", 
+  #"dmspols_zhang_ihs",  
+  #"dmspols_zhang_2", 
+  #"dmspols_zhang_6", 
+  #"dmspols_harmon_2", 
+  #"dmspols_harmon_6",
+)){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     
     for(controls in c("+temp_avg+precipitation")){
-    #for(controls in c("")){
+      #for(controls in c("")){
       
       #for(addis_distance in c("All", "Far")){
-      for(addis_distance in c("All", "Far")){
+      for(addis_distance in c("All")){
         
         #for(ntl_group in c("All", "1", "2")){
         for(ntl_group in c("All", "1", "2")){

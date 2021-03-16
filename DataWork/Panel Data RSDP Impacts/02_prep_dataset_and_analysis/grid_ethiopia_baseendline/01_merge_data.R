@@ -2,7 +2,7 @@
 
 #### Parameters
 # Vector of all baseline and endline years that would later use
-YEARS_USE <- c(1996, 2012, 2016)
+YEARS_USE <- c(1996, 2009, 2012, 2016)
 
 # Load Data / Create Dataset Lists -----------------------------------------------
 
@@ -25,8 +25,11 @@ DATASETS_TIME_INVARIANT <- c("distance_roads_any_improved_ever.Rds",
                              "distance_roads_any_2016_ever.Rds",
                              "distance_hypothetical_road_least_cost_mst.Rds",
                              "distance_hypothetical_road_min_dist_mst.Rds",
+                             "distance_rsdp_iii_roads_mst_and_targetted_areas.Rds",
+                             "distance_rsdp_iv_roads_mst_and_targetted_areas.Rds",
                              "distance_cities.Rds",
-                             "adm_units.Rds")
+                             "adm_units.Rds",
+                             "ddistance_woreda_populous_location.Rds")
 
 DATASETS_TIME_VARYING <- c("viirs.Rds",
                            #"distance_roads_improved_by_speedlimit_after.Rds",
@@ -61,9 +64,4 @@ for(dataset in DATASETS_TIME_INVARIANT){
 
 # Export -----------------------------------------------------------------------
 saveRDS(points_all, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", "merged_datasets", "panel_data.Rds"))
-
-
-
-
-
 

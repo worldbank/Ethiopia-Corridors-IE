@@ -15,6 +15,9 @@ ntl_group <- "All"
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", "panel_data_clean.Rds"))
 
+data$dmspols_harmon_ihs2013 <- data$dmspols_harmon_ihs
+data$dmspols_harmon_ihs2013[data$year >= 2013] <- NA
+
 data <- data %>% group_by(cell_id) %>% mutate(dmspols_1996sum = dmspols_sum[year == 1996])
 
 cluster_size <- data %>%
@@ -41,8 +44,10 @@ data$ntl_group[data$dmspols_1996sum > m] <- "2"
 results_df <- data.frame(NULL)
 
 for(dep_var in c("dmspols_harmon_ihs",
+                 "dmspols_harmon_ihs2013",
                  #"dmspols_harmon_sum2_ihs",
                  #"dmspols_harmon_sum6_ihs",
+                 "globcover_cropland_sum_ihs",
                  "globcover_urban_sum_ihs")){
   for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
     

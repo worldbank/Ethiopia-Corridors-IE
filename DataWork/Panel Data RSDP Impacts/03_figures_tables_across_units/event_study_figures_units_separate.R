@@ -7,26 +7,31 @@ p_dodge_width <- 1
 data_woreda <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "results_datasets",
                                  "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_harmon_ihs",
+                        #"dmspols_harmon_ihs2013",
                         #"dmspols_zhang_sum2_ihs",
                         #"dmspols_zhang_sum6_ihs",
+                        "globcover_cropland_sum_ihs",
                         "globcover_urban_sum_ihs"))
 
 data_urban <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "results_datasets",
                                 "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_harmon_ihs",
-                        "dmspols_harmon_sum2_ihs",
-                        "dmspols_harmon_sum6_ihs",
+                        #"dmspols_harmon_ihs2013",
+                        #"dmspols_harmon_sum2_ihs",
+                        #"dmspols_harmon_sum6_ihs",
                         "globcover_urban_sum_ihs",
-                        "globcover_urban_sum_above0"))
+                        "globcover_cropland_sum_ihs"))
 
 data_ntl <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "results_datasets",
                               "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_harmon_ihs",
-                        "dmspols_harmon_sum2_ihs",
-                        "dmspols_harmon_sum6_ihs",
+                        #"dmspols_harmon_ihs2013",
+                        #"dmspols_harmon_sum2_ihs",
+                        #"dmspols_harmon_sum6_ihs",
                         #"dmspols_zhang_ihs",
                         #"dmspols_zhang_sum2_ihs",
                         #"dmspols_zhang_sum6_ihs",
+                        "globcover_cropland_sum_ihs",
                         "globcover_urban_sum_ihs"))
 
 data_grid <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "results_datasets",
@@ -35,8 +40,10 @@ data_grid <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_near
                         #"dmspols_zhang_2",
                         #"dmspols_zhang_6",
                         "dmspols_harmon_ihs",
-                        "dmspols_harmon_2",
-                        "dmspols_harmon_6",
+                        #"dmspols_harmon_ihs2013",
+                        #"dmspols_harmon_2",
+                        #"dmspols_harmon_6",
+                        "globcover_cropland",
                         "globcover_urban"))
 
 # Prep Data --------------------------------------------------------------------
@@ -58,6 +65,7 @@ data <- data %>%
   ## Rename/Factor Dep Var
   mutate(dep_var = case_when(
     dep_var == "dmspols_harmon_ihs" ~ "NTL",
+    dep_var == "dmspols_harmon_ihs2013" ~ "NTL [2013]",
     dep_var == "dmspols_zhang_ihs" ~ "NTL",
     dep_var == "dmspols_harmon_sum2_ihs" ~ "NTL \u2265 2",
     dep_var == "dmspols_zhang_sum2_ihs" ~ "NTL \u2265 2",
@@ -70,8 +78,10 @@ data <- data %>%
     dep_var == "dmspols_harmon_sum0greater_bin" ~ "Cluster Exists",
     dep_var == "dmspols_zhang_sum0greater_bin" ~ "Cluster Exists",
     dep_var == "globcover_urban_sum_above0" ~ "Cluster Exists",
-    dep_var == "globcover_urban_sum_ihs" ~ "Urban (Globcover)",
-    dep_var == "globcover_urban" ~ "Urban (Globcover)"
+    dep_var == "globcover_urban_sum_ihs" ~ "Urban",
+    dep_var == "globcover_urban" ~ "Urban",
+    dep_var == "globcover_cropland_sum_ihs" ~ "Cropland",
+    dep_var == "globcover_cropland" ~ "Cropland"
   )) %>%
   mutate(indep_var = case_when(
     indep_var == "years_since_improvedroad" ~ "All",
@@ -173,8 +183,8 @@ for(addis_dist in c("All")){ # "All", "Far"
   rm(p)
   
   
-  data_city <- data[((data$unit %in% "NTL Cluster") & (data$dep_var %in% c("NTL", "NTL \u2265 2", "NTL \u2265 6"))) |
-                      ((data$unit %in% "Urban Cluster") & (data$dep_var %in% c("Urban (Globcover)"))),]
+  data_city <- data[((data$unit %in% "NTL Cluster") & (data$dep_var %in% c("NTL", "NTL \u2265 6"))) |
+                      ((data$unit %in% "Urban Cluster") & (data$dep_var %in% c("Urban"))),]
   p <- make_figures_by_base_ntl(c("NTL Cluster", "Urban Cluster"), addis_dist, data_city)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_cities_",addis_dist,".png")),

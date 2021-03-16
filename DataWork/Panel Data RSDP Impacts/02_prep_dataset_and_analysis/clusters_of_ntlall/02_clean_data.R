@@ -22,6 +22,12 @@ CHUNK_SIZE <- 200           # number of woredas in each chunk
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntlall", "merged_datasets", "panel_data.Rds"))
 
+# dataframes?
+data$globcover_cropland <- data$globcover_cropland %>% as.vector()
+data$globcover_cropland_sum <- data$globcover_cropland_sum  %>% as.vector()
+data$globcover_urban      <- data$globcover_urban %>% as.vector()
+data$globcover_urban_sum  <- data$globcover_urban_sum  %>% as.vector()
+
 # Distance to aggregate road categories --------------------------------------
 # We calculate distance to roads by speed limit. Here we calculate distance
 # to any road, road 50 km/hr and above and roads less than 50 km/hr
@@ -188,6 +194,11 @@ data <- data %>%
          globcover_urban_1996 = globcover_urban[year == 1996],
          globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
          globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
+         
+         globcover_cropland_1996 = globcover_cropland[year == 1996],
+         globcover_cropland_sum_1996 = globcover_cropland_sum[year == 1996],
+         globcover_cropland_sum_ihs_1996 = globcover_cropland_sum_ihs[year == 1996],
+         
          dmspols_sum2_1996 = dmspols_sum2[year == 1996],
          dmspols_sum6_1996 = dmspols_sum6[year == 1996],
          dmspols_sum10_1996 = dmspols_sum10[year == 1996],
@@ -280,6 +291,18 @@ data$dmspols_zhang_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 
 data$dmspols_zhang_ihs_base0na <- data$dmspols_zhang_ihs
 data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
+
+## bin4
+data$dmspols_1996_bin4 <- NA
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 %in% 0] <- 1
+data$dmspols_1996_bin4[data$dmspols_sum2_1996 > 0]    <- 2
+data$dmspols_1996_bin4[data$dmspols_sum6_1996 > 0]    <- 3
+data$dmspols_1996_bin4[data$dmspols_sum10_1996 > 0]    <- 4
+
+data$dmspols_1996_bin4_1 <-  as.numeric(data$dmspols_1996_bin4 == 1)
+data$dmspols_1996_bin4_2 <-  as.numeric(data$dmspols_1996_bin4 == 2)
+data$dmspols_1996_bin4_3 <-  as.numeric(data$dmspols_1996_bin4 == 3)
+data$dmspols_1996_bin4_4 <-  as.numeric(data$dmspols_1996_bin4 == 4)
 
 # Subset Clusters: Positive Lit Cluster in Row ---------------------------------
 # For each cell_id (cluster), determine number of positive values in a row

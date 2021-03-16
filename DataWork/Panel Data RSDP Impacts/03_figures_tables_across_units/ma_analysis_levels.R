@@ -101,6 +101,10 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
           ols5  <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
           ols6 <- felm(globcover_urban_sum_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
           
+          ols7 <- felm(globcover_cropland_sum_ihs ~ MA_var                                       + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data)
+          ols8  <- felm(globcover_cropland_sum_ihs ~ MA_var + MA_varXdmspols_1996_bin4_2 + MA_varXdmspols_1996_bin4_3 + MA_varXdmspols_1996_bin4_4 + temp_avg + precipitation | year + cell_id | 0  | Z_CODE, data = data)
+          ols9 <- felm(globcover_cropland_sum_ihs ~ MA_var + MA_varXdistance_city_addisababa + temp_avg + precipitation | year + cell_id | 0                     | Z_CODE, data = data) 
+          
           ## IV Regressions
           iv1  <- felm(dmspols_harmon_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data) 
           iv2  <- felm(dmspols_harmon_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
@@ -118,6 +122,10 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
           iv5  <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
           iv6 <- felm(globcover_urban_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data)
           
+          iv7 <- felm(globcover_cropland_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var ~ MA_var_exc) |                                                                       Z_CODE, data = data) 
+          iv8  <- felm(globcover_cropland_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdmspols_1996_bin4_2|MA_varXdmspols_1996_bin4_3|MA_varXdmspols_1996_bin4_4 ~ MA_var_exc + MA_var_excXdmspols_1996_bin4_2 + MA_var_excXdmspols_1996_bin4_3 + MA_var_excXdmspols_1996_bin4_4) | Z_CODE, data = data) 
+          iv9 <- felm(globcover_cropland_sum_ihs ~ temp_avg + precipitation   | year + cell_id | (MA_var|MA_varXdistance_city_addisababa ~ MA_var_exc + MA_var_excXdistance_city_addisababa) | Z_CODE, data = data)
+          
           ## OLS Stargazer
           stargazer(ols1,
                     ols2,
@@ -125,8 +133,11 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     ols4,
                     ols5,
                     ols6,
+                    ols7,
+                    ols8,
+                    ols9,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "GlobCover-Urban"), # "NTL$\\geq$2", "NTL$\\geq6$",
+                    dep.var.labels   = c("NTL", "Urban", "Cropland"), # "NTL$\\geq$2", "NTL$\\geq6$",
                     #keep=c("MA_var"),
                     omit = c("temp_avg", "precipitation"),
                     covariate.labels = c("MA",
@@ -156,8 +167,11 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                     iv4,
                     iv5,
                     iv6,
+                    iv7,
+                    iv8,
+                    iv9,
                     dep.var.labels.include = T,
-                    dep.var.labels   = c("NTL", "GlobCover-Urban"), # "NTL$\\geq$2", "NTL$\\geq6$",
+                    dep.var.labels   = c("NTL", "Urban", "Cropland"), # "NTL$\\geq$2", "NTL$\\geq6$",
                     #keep=c("MA_var"),
                     omit = c("temp_avg", "precipitation"),
                     covariate.labels = c("MA",

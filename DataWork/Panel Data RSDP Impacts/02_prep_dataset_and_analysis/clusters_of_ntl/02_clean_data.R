@@ -185,6 +185,11 @@ data <- data %>%
   mutate(dmspols_1996 = dmspols[year == 1996],
          dmspols_zhang_1996 = dmspols_zhang[year == 1996],
          dmspols_harmon_1996 = dmspols_harmon[year == 1996],
+         
+         globcover_cropland_1996 = globcover_cropland[year == 1996],
+         globcover_cropland_sum_1996 = globcover_cropland_sum[year == 1996],
+         globcover_cropland_sum_ihs_1996 = globcover_cropland_sum_ihs[year == 1996],
+         
          globcover_urban_1996 = globcover_urban[year == 1996],
          globcover_urban_sum_1996 = globcover_urban_sum[year == 1996],
          globcover_urban_sum_ihs_1996 = globcover_urban_sum_ihs[year == 1996],
@@ -292,22 +297,25 @@ data$dmspols_zhang_ihs_base0na <- data$dmspols_zhang_ihs
 data$dmspols_zhang_ihs_base0na[data$dmspols_zhang_1996 %in% 0] <- NA
 
 # Subset Clusters: Positive Lit Cluster in Row ---------------------------------
+data$dmspols_sum0greater_bin <- as.numeric(data$dmspols_sum0greater > 0)
+
 # For each cell_id (cluster), determine number of positive values in a row
 data <- data %>%
-  group_by(cell_id) %>%
+  ungroup() %>%
+  dplyr::group_by(cell_id) %>%
   
   # Make binary value: if number of positive
-  mutate(dmspols_sum0greater_bin = dmspols_sum0greater > 0,
+  dplyr::mutate(dmspols_sum0greater_bin = dmspols_sum0greater > 0,
          dmspols_sum0greater_bin = dmspols_sum0greater_bin %>% replace_na(0)) %>%
   
   # Sum binary value from last 3 time period
-  mutate(N_pos = runSum(dmspols_sum0greater_bin, n = 4)) %>%
+  dplyr::mutate(N_pos = runSum(dmspols_sum0greater_bin, n = 4)) %>%
   
   # For each cluster maximum "summed" value
-  mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
-  ungroup() %>%
+  dplyr::mutate(N_pos_max = max(N_pos, na.rm=T)) %>%
+  dplyr::ungroup() %>%
   
-  filter(N_pos_max %in% 4)
+  dplyr::filter(N_pos_max %in% 4)
 
 # Subset Clusters: Cluster Size ------------------------------------------------
 #data <- data %>%
@@ -318,6 +326,7 @@ data <- data %>%
 #  filter(distance_anyimproved_ever < NEAR_CUTOFF)
 
 # First Lit Year ---------------------------------------------------------------
+
 data <- data %>%
   mutate(dmspols_sum0greater_bin_X_year = (dmspols_sum0greater_bin * year) %>% ifelse(. == 0, NA, .)) %>%
   group_by(cell_id) %>%
