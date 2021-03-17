@@ -56,28 +56,29 @@ for(region in c("All", unique(eth$NAME_1))){
     
     print(i)
     
+    ## Grab ith point and other points
+    points_sdf_i <- points_sdf[i,]
+    points_sdf_noti <- points_sdf[(i+1):nrow(points_sdf),]
+    
+    ## For other points, only use X closest points; points further away have very
+    # little chance of having a direct connection.
+    dist <- gDistance(points_sdf_i, points_sdf_noti, byid=T) %>% as.vector()
+    points_sdf_noti <- points_sdf_noti[rank(dist) <= 50,]
+
     path_i <- shortestPath(cost_t, 
-                           points_sdf[i,], 
-                           points_sdf[(i+1):nrow(points_sdf),], 
+                           points_sdf_i, 
+                           points_sdf_noti, 
                            output = "SpatialLines")
     
     cost_i <- costDistance(cost_t, 
-                           points_sdf[i,], 
-                           points_sdf[(i+1):nrow(points_sdf),])
-    
-    #s <- woreda_points[-i,]
-    #s$cost <- cost_i %>% as.vector()
-    #plot(cost_r)
-    #plot(s[s$cost %in% Inf,], add=T)
+                           points_sdf_i, 
+                           points_sdf_noti)
     
     path_i$temp <- 1:length(path_i)
     path_i$cost <- cost_i %>% as.vector()
-    path_i$origin <- points_sdf$uid[i]
-    path_i$dest <- points_sdf$uid[(i+1):nrow(points_sdf)]
+    path_i$origin <- points_sdf_i$uid
+    path_i$dest <- points_sdf_noti$uid
     
-    #path_cost_i <- SpatialLinesDataFrame(sl = path_i, data = data.frame(cost=as.numeric(cost_i),
-    #                                                                    origin=markets_all_long_origin$origin[i],
-    #                                                                    dest=markets_all_long_origin$dest[i]), match.ID = FALSE)
     return(path_i)
   }
   

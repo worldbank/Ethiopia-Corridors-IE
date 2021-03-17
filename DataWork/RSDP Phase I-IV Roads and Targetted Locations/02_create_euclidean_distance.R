@@ -35,6 +35,11 @@ for(region in c("All", unique(eth$NAME_1))){
     coords_i <- coords[i,]
     coords_noti <- coords[(i+1):(nrow(coords)),]
     
+    ## For other points, only use X closest points; points further away have very
+    # little chance of having a direct connection.
+    dist <- sqrt((coords_i$long - coords_noti$long)^2 + (coords_i$lat - coords_noti$lat)^2)
+    coords_noti <- coords_noti[rank(dist) <= 50,]
+    
     coords_noti_orig <- coords_noti
     coords_noti_orig$lat <- coords_i$lat
     coords_noti_orig$long <- coords_i$long
@@ -51,8 +56,8 @@ for(region in c("All", unique(eth$NAME_1))){
     
     path_i$cost <- gLength(path_i, byid = T) %>% as.numeric()
     
-    path_i$origin <- coords$uid[i]
-    path_i$dest <- coords$uid[(i+1):nrow(coords)]
+    path_i$origin <- coords_i$uid
+    path_i$dest <- coords_noti_orig$uid
     path_i$m <- NULL
     
     return(path_i)
