@@ -4,8 +4,8 @@
 mst_cost <- readRDS(file.path(data_file_path, "RSDP Phase I-III Roads and Targetted Locations", "FinalData", 
                             "rsdpi_iii_targetted_loc_leastcost_mst.Rds"))
 
-mst_dist <- readRDS(file.path(data_file_path, "RSDP Phase I-III Roads and Targetted Locations", "FinalData", 
-                             "rsdpi_iii_targetted_loc_eucdist_mst.Rds"))
+mst_dist <- readRDS(file.path(data_file_path, "RSDP Phase I-IV Roads and Targetted Locations", "FinalData", 
+                             "rsdpi_iv_targetted_loc_eucdist_mst.Rds"))
 mst_dist <- spTransform(mst_dist, CRS("+init=epsg:4326"))
 
 roads <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
