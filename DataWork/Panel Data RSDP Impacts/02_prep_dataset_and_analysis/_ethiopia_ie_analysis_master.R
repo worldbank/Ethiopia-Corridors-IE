@@ -29,9 +29,9 @@ source(file.path(codepath_grid_nearroad_panel, "02_clean_data.R"))
 #      result is saved in a separate file, as this takes a while.
 #  (b) Appends the above results
 #  (c) Makes figures of results
-source(file.path(codepath_grid_nearroad_panel, "03a_analysis_coef_each_year_results.R"))
-source(file.path(codepath_grid_nearroad_panel, "03b_analysis_coef_each_year_results_append.R"))
-source(file.path(codepath_grid_nearroad_panel, "03c_analysis_coef_each_year_figures.R"))
+#source(file.path(codepath_grid_nearroad_panel, "03a_analysis_coef_each_year_results.R"))
+#source(file.path(codepath_grid_nearroad_panel, "03b_analysis_coef_each_year_results_append.R"))
+#source(file.path(codepath_grid_nearroad_panel, "03c_analysis_coef_each_year_figures.R"))
 
 # Grid Level, All Ethiopia =====================================================
 

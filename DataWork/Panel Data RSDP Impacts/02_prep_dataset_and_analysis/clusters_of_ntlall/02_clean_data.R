@@ -334,6 +334,8 @@ data <- data %>%
 #  filter(distance_anyimproved_ever < NEAR_CUTOFF)
 
 # First Lit Year ---------------------------------------------------------------
+data$dmspols_sum0greater_bin <- as.numeric(data$dmspols_sum0greater > 0)
+
 data <- data %>%
   mutate(dmspols_sum0greater_bin_X_year = (dmspols_sum0greater_bin * year) %>% ifelse(. == 0, NA, .)) %>%
   group_by(cell_id) %>%

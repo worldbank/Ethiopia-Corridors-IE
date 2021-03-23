@@ -79,6 +79,13 @@ for(i in 1:nrow(base_end_df)){
                     distance_rsdp123_mst_lc,
                     distance_rsdp123_mst_euc_region,
                     distance_rsdp123_mst_lc_region,
+                    
+                    distance_rsdp1234,
+                    distance_rsdp1234_targettedlocs,
+                    distance_rsdp1234_mst_euc,
+                    distance_rsdp1234_mst_lc,
+                    distance_rsdp1234_mst_euc_region,
+                    distance_rsdp1234_mst_lc_region,
                     #dmspols_zhang_sum2_1996_woreda, 
                     #dmspols_zhang_sum6_1996_woreda,
                     #dmspols_zhang_ihs_sum2_1996_woreda, 

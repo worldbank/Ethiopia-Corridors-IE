@@ -266,7 +266,10 @@ adm_vars <- c("W_CODE", "R_CODE", "Z_CODE", "woreda_id")
 road_length_vars <- names(data) %>% str_subset("road_length_") %>% str_subset("above")
 road_distance_vars <- c("distance_mst", "distance_rsdp123", "distance_rsdp123_targettedlocs", 
                         "distance_rsdp123_mst_euc", "distance_rsdp123_mst_lc",
-                        "distance_rsdp123_mst_euc_region", "distance_rsdp123_mst_lc_region")
+                        "distance_rsdp123_mst_euc_region", "distance_rsdp123_mst_lc_region",
+                        "distance_rsdp1234", "distance_rsdp1234_targettedlocs", 
+                        "distance_rsdp1234_mst_euc", "distance_rsdp1234_mst_lc",
+                        "distance_rsdp1234_mst_euc_region", "distance_rsdp1234_mst_lc_region")
 dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% str_subset("above")
 years_since_improved_vars <- names(data) %>% str_subset("years_since_|distance_improvedroad_speedafter_")
 satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
