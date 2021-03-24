@@ -9,9 +9,11 @@
 ROUND_NUM <- 1 # number of digits to round numbers
 
 # dmspols_grid_ethiopia, woreda, clusters_of_ntlall, clusters_of_globcover_urban
-DATASET_TYPE <- "woreda"
+DATASET_TYPE <- "clusters_of_ntlall"
 
 for(DATASET_TYPE in c("woreda",
+                      "clusters_of_globcover_urban",
+                      "clusters_of_ntlall",
                       "dmspols_grid_ethiopia")){
   
   # Load Data --------------------------------------------------------------------
@@ -24,10 +26,12 @@ for(DATASET_TYPE in c("woreda",
                                  2016,
                                  ".Rds")))
   
+  df_NROW_ORIGINAL <- nrow(df)
+  
   # Dataset specific parameters and variables ------------------------------------
   # Distances in meters
   
-  if(DATASET_TYPE %in% "dmspols_grid_ethiopia"){
+  if(DATASET_TYPE %in% c("dmspols_grid_ethiopia")){
     CLUSTER_VAR <- "W_CODE"
     
     NEAR_TARGETTED_LOCATION <- 5000
@@ -41,9 +45,9 @@ for(DATASET_TYPE in c("woreda",
     df$dv_dmspols_1996 <- df$dmspols_harmon_ihs_1996
     df$dv_gcurban_1996 <- df$globcover_urban_1996
     df$dv_gccrop_1996  <- df$globcover_cropland_1996
-  
     
-  } else{
+    
+  } else if (DATASET_TYPE %in% "woreda"){
     CLUSTER_VAR <- 0
     
     NEAR_TARGETTED_LOCATION <- 0
@@ -53,6 +57,23 @@ for(DATASET_TYPE in c("woreda",
     df$dv_dmspols <- df$dmspols_harmon_ihs
     df$dv_gcurban <- df$globcover_urban_sum_ihs
     df$dv_gccrop  <- df$globcover_cropland_sum_ihs
+    
+    df$dv_dmspols_1996 <- df$dmspols_harmon_ihs_1996
+    df$dv_gcurban_1996 <- df$globcover_urban_1996
+    df$dv_gccrop_1996  <- df$globcover_cropland_1996
+    
+  } else if (DATASET_TYPE %in% c("clusters_of_ntlall",
+                                 "clusters_of_globcover_urban")){
+    
+    CLUSTER_VAR <- 0
+    
+    NEAR_TARGETTED_LOCATION <- 5000
+    RM_DISTANE_ADDIS <- 20000
+    NEAR_ROAD <- 5000
+    
+    df$dv_dmspols <- df$dmspols_harmon_ihs
+    df$dv_gcurban <- df$globcover_urban
+    df$dv_gccrop  <- df$globcover_cropland
     
     df$dv_dmspols_1996 <- df$dmspols_harmon_ihs_1996
     df$dv_gcurban_1996 <- df$globcover_urban_1996
@@ -102,7 +123,7 @@ for(DATASET_TYPE in c("woreda",
   
   df$distance_city_addisababa <- df$distance_city_addisababa / 1000 / 100 # 100km scale
   df$distance_rsdp1234_targettedlocs_log         <- log(df$distance_rsdp1234_targettedlocs + 1)
-
+  
   # Summary Stats ----------------------------------------------------------------
   df_neartc <- df %>%
     mutate(N_units = 1) %>%
@@ -150,8 +171,8 @@ for(DATASET_TYPE in c("woreda",
       df_dv_i$value[(df_dv_i$near_rsdp1234 %in% T) & (df_dv_i$type %in% "mean_change")] %>% round(4),
       df_dv_i$value[(df_dv_i$near_rsdp1234 %in% F) & (df_dv_i$type %in% "mean_change")] %>% round(4),
       
-      df_dv_i$value[(df_dv_i$near_rsdp1234 %in% T) & (df_dv_i$type %in% "mean_1996")] %>% round(3),
-      df_dv_i$value[(df_dv_i$near_rsdp1234 %in% F) & (df_dv_i$type %in% "mean_1996")] %>% round(3),
+      df_dv_i$value[(df_dv_i$near_rsdp1234 %in% T) & (df_dv_i$type %in% "mean_1996")] %>% round(4),
+      df_dv_i$value[(df_dv_i$near_rsdp1234 %in% F) & (df_dv_i$type %in% "mean_1996")] %>% round(4),
       
       df_dv_i$value[(df_dv_i$near_rsdp1234 %in% T) & (df_dv_i$type %in% "g0_1996")] %>% round(3),
       df_dv_i$value[(df_dv_i$near_rsdp1234 %in% F) & (df_dv_i$type %in% "g0_1996")] %>% round(3),
@@ -205,9 +226,15 @@ for(DATASET_TYPE in c("woreda",
   lm_globcover_urban_addis <- as.formula(paste("dv_gcurban ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdistance_city_addisababa | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
   lm_globcover_crop_addis  <- as.formula(paste("dv_gccrop  ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdistance_city_addisababa | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
   
-  lm_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdmspols_1996_bin4_2 + near_rsdp1234Xdmspols_1996_bin4_3 + near_rsdp1234Xdmspols_1996_bin4_4 | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
-  lm_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdmspols_1996_bin4_2 + near_rsdp1234Xdmspols_1996_bin4_3 + near_rsdp1234Xdmspols_1996_bin4_4 | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
-  lm_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdmspols_1996_bin4_2 + near_rsdp1234Xdmspols_1996_bin4_3 + near_rsdp1234Xdmspols_1996_bin4_4 | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
+  if(DATASET_TYPE %in% "clusters_of_ntlall"){
+    lm_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
+    lm_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
+    lm_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
+  } else{
+    lm_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdmspols_1996_bin4_2 + near_rsdp1234Xdmspols_1996_bin4_3 + near_rsdp1234Xdmspols_1996_bin4_4 | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
+    lm_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdmspols_1996_bin4_2 + near_rsdp1234Xdmspols_1996_bin4_3 + near_rsdp1234Xdmspols_1996_bin4_4 | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
+    lm_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ near_rsdp1234 + distance_rsdp1234_targettedlocs_log + near_rsdp1234Xdmspols_1996_bin4_2 + near_rsdp1234Xdmspols_1996_bin4_3 + near_rsdp1234Xdmspols_1996_bin4_4 | 0 | 0 | ", CLUSTER_VAR)) %>% felm(data = df)
+  }
   
   # MST - Cost Distance --------------------------------------------------------
   iv_cd_dmspols_ihs     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc) | ", CLUSTER_VAR)) %>% felm(data = df)
@@ -218,9 +245,15 @@ for(DATASET_TYPE in c("woreda",
   iv_cd_globcover_urban_addis <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_lc + near_mst_lcXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   iv_cd_globcover_crop_addis  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_lc + near_mst_lcXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   
-  iv_cd_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc + near_mst_lcXdmspols_1996_bin4_2 + near_mst_lcXdmspols_1996_bin4_3 + near_mst_lcXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_cd_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc + near_mst_lcXdmspols_1996_bin4_2 + near_mst_lcXdmspols_1996_bin4_3 + near_mst_lcXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_cd_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc + near_mst_lcXdmspols_1996_bin4_2 + near_mst_lcXdmspols_1996_bin4_3 + near_mst_lcXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  if(DATASET_TYPE %in% "clusters_of_ntlall"){
+    iv_cd_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc) | ", CLUSTER_VAR)) %>% felm(data = df)
+  } else{
+    iv_cd_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc + near_mst_lcXdmspols_1996_bin4_2 + near_mst_lcXdmspols_1996_bin4_3 + near_mst_lcXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc + near_mst_lcXdmspols_1996_bin4_2 + near_mst_lcXdmspols_1996_bin4_3 + near_mst_lcXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc + near_mst_lcXdmspols_1996_bin4_2 + near_mst_lcXdmspols_1996_bin4_3 + near_mst_lcXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  }
   
   # MST - Least Distance -------------------------------------------------------
   iv_ld_dmspols_ihs     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc) | ", CLUSTER_VAR)) %>% felm(data = df)
@@ -231,9 +264,15 @@ for(DATASET_TYPE in c("woreda",
   iv_ld_globcover_urban_addis <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_euc + near_mst_eucXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   iv_ld_globcover_crop_addis  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_euc + near_mst_eucXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   
-  iv_ld_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc + near_mst_eucXdmspols_1996_bin4_2 + near_mst_eucXdmspols_1996_bin4_3 + near_mst_eucXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_ld_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc + near_mst_eucXdmspols_1996_bin4_2 + near_mst_eucXdmspols_1996_bin4_3 + near_mst_eucXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_ld_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc + near_mst_eucXdmspols_1996_bin4_2 + near_mst_eucXdmspols_1996_bin4_3 + near_mst_eucXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  if(DATASET_TYPE %in% "clusters_of_ntlall"){
+    iv_ld_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc) | ", CLUSTER_VAR)) %>% felm(data = df)
+  } else{
+    iv_ld_dmspols_ihs_basentl     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc + near_mst_eucXdmspols_1996_bin4_2 + near_mst_eucXdmspols_1996_bin4_3 + near_mst_eucXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_urban_basentl <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc + near_mst_eucXdmspols_1996_bin4_2 + near_mst_eucXdmspols_1996_bin4_3 + near_mst_eucXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_crop_basentl  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc + near_mst_eucXdmspols_1996_bin4_2 + near_mst_eucXdmspols_1996_bin4_3 + near_mst_eucXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  }
   
   # MST Regions - Cost Distance ------------------------------------------------
   iv_cd_dmspols_ihs_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
@@ -244,9 +283,15 @@ for(DATASET_TYPE in c("woreda",
   iv_cd_globcover_urban_addis_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_lc_region + near_mst_lc_regionXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   iv_cd_globcover_crop_addis_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_lc_region + near_mst_lc_regionXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   
-  iv_cd_dmspols_ihs_basentl_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc_region + near_mst_lc_regionXdmspols_1996_bin4_2 + near_mst_lc_regionXdmspols_1996_bin4_3 + near_mst_lc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_cd_globcover_urban_basentl_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc_region + near_mst_lc_regionXdmspols_1996_bin4_2 + near_mst_lc_regionXdmspols_1996_bin4_3 + near_mst_lc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_cd_globcover_crop_basentl_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc_region + near_mst_lc_regionXdmspols_1996_bin4_2 + near_mst_lc_regionXdmspols_1996_bin4_3 + near_mst_lc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  if(DATASET_TYPE %in% "clusters_of_ntlall"){
+    iv_cd_dmspols_ihs_basentl_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_urban_basentl_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_crop_basentl_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_lc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
+  } else{
+    iv_cd_dmspols_ihs_basentl_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc_region + near_mst_lc_regionXdmspols_1996_bin4_2 + near_mst_lc_regionXdmspols_1996_bin4_3 + near_mst_lc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_urban_basentl_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc_region + near_mst_lc_regionXdmspols_1996_bin4_2 + near_mst_lc_regionXdmspols_1996_bin4_3 + near_mst_lc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_cd_globcover_crop_basentl_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_lc_region + near_mst_lc_regionXdmspols_1996_bin4_2 + near_mst_lc_regionXdmspols_1996_bin4_3 + near_mst_lc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  }
   
   # MST Regions - Least Distance -------------------------------------------------------
   iv_ld_dmspols_ihs_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
@@ -257,9 +302,120 @@ for(DATASET_TYPE in c("woreda",
   iv_ld_globcover_urban_addis_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_euc_region + near_mst_euc_regionXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   iv_ld_globcover_crop_addis_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdistance_city_addisababa ~ near_mst_euc_region + near_mst_euc_regionXdistance_city_addisababa) | ", CLUSTER_VAR)) %>% felm(data = df)
   
-  iv_ld_dmspols_ihs_basentl_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc_region + near_mst_euc_regionXdmspols_1996_bin4_2 + near_mst_euc_regionXdmspols_1996_bin4_3 + near_mst_euc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_ld_globcover_urban_basentl_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc_region + near_mst_euc_regionXdmspols_1996_bin4_2 + near_mst_euc_regionXdmspols_1996_bin4_3 + near_mst_euc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
-  iv_ld_globcover_crop_basentl_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc_region + near_mst_euc_regionXdmspols_1996_bin4_2 + near_mst_euc_regionXdmspols_1996_bin4_3 + near_mst_euc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  if(DATASET_TYPE %in% "clusters_of_ntlall"){
+    iv_ld_dmspols_ihs_basentl_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_urban_basentl_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_crop_basentl_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234 ~ near_mst_euc_region) | ", CLUSTER_VAR)) %>% felm(data = df)
+  } else{
+    iv_ld_dmspols_ihs_basentl_regions     <- as.formula(paste("dv_dmspols ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc_region + near_mst_euc_regionXdmspols_1996_bin4_2 + near_mst_euc_regionXdmspols_1996_bin4_3 + near_mst_euc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_urban_basentl_regions <- as.formula(paste("dv_gcurban ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc_region + near_mst_euc_regionXdmspols_1996_bin4_2 + near_mst_euc_regionXdmspols_1996_bin4_3 + near_mst_euc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+    iv_ld_globcover_crop_basentl_regions  <- as.formula(paste("dv_gccrop  ~ distance_rsdp1234_targettedlocs_log | 0 | (near_rsdp1234|near_rsdp1234Xdmspols_1996_bin4_2|near_rsdp1234Xdmspols_1996_bin4_3|near_rsdp1234Xdmspols_1996_bin4_4 ~ near_mst_euc_region + near_mst_euc_regionXdmspols_1996_bin4_2 + near_mst_euc_regionXdmspols_1996_bin4_3 + near_mst_euc_regionXdmspols_1996_bin4_4) | ", CLUSTER_VAR)) %>% felm(data = df)
+  }
+  
+  # Grab Stats as Dataframe ---------------------------------------------------
+  summary_stats_df <- data.frame(n_original = df_NROW_ORIGINAL,
+                                 n = nrow(df),
+                                 n_treated = sum(df$near_rsdp1234 %in% 1),
+                                 n_control = sum(df$near_rsdp1234 %in% 0)) %>%
+    mutate(dataset = DATASET_TYPE,
+           rsdp = "RSDP I-V")
+  
+  saveRDS(summary_stats_df,
+          file.path(project_file_path, "Data", "Panel Data RSDP Impacts",
+                    "Data", DATASET_TYPE, "results_datasets", 
+                    "iv_rsdp1234_summary_stats.Rds"))
+  
+  # Grab Results as Dataframe ---------------------------------------------------
+  ## OLS
+  results_df <- bind_rows(
+    
+    bind_rows(
+      lm_post_confint_tidy(lm_dmspols_ihs)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
+      lm_post_confint_tidy(lm_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
+      lm_post_confint_tidy(lm_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      
+      lm_post_confint_tidy(lm_globcover_urban)         %>% mutate(dv = "globcover_urban", interaction = "none"),
+      lm_post_confint_tidy(lm_globcover_urban_basentl) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
+      lm_post_confint_tidy(lm_globcover_urban_addis)   %>% mutate(dv = "globcover_urban", interaction = "addis"),
+      
+      lm_post_confint_tidy(lm_globcover_crop)         %>% mutate(dv = "globcover_crop", interaction = "none"),
+      lm_post_confint_tidy(lm_globcover_crop_basentl) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
+      lm_post_confint_tidy(lm_globcover_crop_addis)   %>% mutate(dv = "globcover_crop", interaction = "addis")
+    ) %>% 
+      mutate(olsiv = "ols", ivtype = "OLS"),
+    
+    ## MST - Cost Distance
+    bind_rows(
+      lm_post_confint_tidy(iv_cd_dmspols_ihs)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
+      lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
+      lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_cd_globcover_urban)         %>% mutate(dv = "globcover_urban", interaction = "none"),
+      lm_post_confint_tidy(iv_cd_globcover_urban_basentl) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
+      lm_post_confint_tidy(iv_cd_globcover_urban_addis)   %>% mutate(dv = "globcover_urban", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_cd_globcover_crop)         %>% mutate(dv = "globcover_crop", interaction = "none"),
+      lm_post_confint_tidy(iv_cd_globcover_crop_basentl) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
+      lm_post_confint_tidy(iv_cd_globcover_crop_addis)   %>% mutate(dv = "globcover_crop", interaction = "addis")
+    ) %>% 
+      mutate(olsiv = "iv", ivtype = "Cost Distance"),
+    
+    ## MST - Least Distance
+    bind_rows(
+      lm_post_confint_tidy(iv_ld_dmspols_ihs)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
+      lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
+      lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_ld_globcover_urban)         %>% mutate(dv = "globcover_urban", interaction = "none"),
+      lm_post_confint_tidy(iv_ld_globcover_urban_basentl) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
+      lm_post_confint_tidy(iv_ld_globcover_urban_addis)   %>% mutate(dv = "globcover_urban", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_ld_globcover_crop)         %>% mutate(dv = "globcover_crop", interaction = "none"),
+      lm_post_confint_tidy(iv_ld_globcover_crop_basentl) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
+      lm_post_confint_tidy(iv_ld_globcover_crop_addis)   %>% mutate(dv = "globcover_crop", interaction = "addis")
+    ) %>% 
+      mutate(olsiv = "iv", ivtype = "Least Distance"),
+    
+    ## MST - Cost Distance
+    bind_rows(
+      lm_post_confint_tidy(iv_cd_dmspols_ihs_regions)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
+      lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
+      lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_cd_globcover_urban_regions)         %>% mutate(dv = "globcover_urban", interaction = "none"),
+      lm_post_confint_tidy(iv_cd_globcover_urban_basentl_regions) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
+      lm_post_confint_tidy(iv_cd_globcover_urban_addis_regions)   %>% mutate(dv = "globcover_urban", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_cd_globcover_crop_regions)         %>% mutate(dv = "globcover_crop", interaction = "none"),
+      lm_post_confint_tidy(iv_cd_globcover_crop_basentl_regions) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
+      lm_post_confint_tidy(iv_cd_globcover_crop_addis_regions)   %>% mutate(dv = "globcover_crop", interaction = "addis")
+    ) %>% 
+      mutate(olsiv = "iv", ivtype = "Cost Distance - Regional"),
+    
+    ## MST - Least Distance
+    bind_rows(
+      lm_post_confint_tidy(iv_ld_dmspols_ihs_regions)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
+      lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
+      lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_ld_globcover_urban_regions)         %>% mutate(dv = "globcover_urban", interaction = "none"),
+      lm_post_confint_tidy(iv_ld_globcover_urban_basentl_regions) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
+      lm_post_confint_tidy(iv_ld_globcover_urban_addis_regions)   %>% mutate(dv = "globcover_urban", interaction = "addis"),
+      
+      lm_post_confint_tidy(iv_ld_globcover_crop_regions)         %>% mutate(dv = "globcover_crop", interaction = "none"),
+      lm_post_confint_tidy(iv_ld_globcover_crop_basentl_regions) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
+      lm_post_confint_tidy(iv_ld_globcover_crop_addis_regions)   %>% mutate(dv = "globcover_crop", interaction = "addis")
+    ) %>% 
+      mutate(olsiv = "iv", ivtype = "Least Distance - Regional")
+    
+  ) %>%
+    mutate(dataset = DATASET_TYPE,
+           rsdp = "RSDP I-V")
+  
+  saveRDS(results_df,
+          file.path(project_file_path, "Data", "Panel Data RSDP Impacts",
+                    "Data", DATASET_TYPE, "results_datasets", 
+                    "iv_rsdp1234_results.Rds"))
   
   # OLS - Stargazer --------------------------------------------------------------
   make_stargzer <- function(lm_dmspols_ihs,

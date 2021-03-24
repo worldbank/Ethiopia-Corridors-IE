@@ -1,8 +1,8 @@
 # Create Minimal Spanning Tree
 
 # Load Data --------------------------------------------------------------------
-mst_cost <- readRDS(file.path(data_file_path, "RSDP Phase I-III Roads and Targetted Locations", "FinalData", 
-                            "rsdpi_iii_targetted_loc_leastcost_mst.Rds"))
+mst_cost <- readRDS(file.path(data_file_path, "RSDP Phase I-IV Roads and Targetted Locations", "FinalData", 
+                            "rsdpi_iv_targetted_loc_leastcost_mst.Rds"))
 
 mst_dist <- readRDS(file.path(data_file_path, "RSDP Phase I-IV Roads and Targetted Locations", "FinalData", 
                              "rsdpi_iv_targetted_loc_eucdist_mst.Rds"))
@@ -25,7 +25,7 @@ lc_mst <- ggplot() +
             aes(x = long, y = lat, group = group,
                 color = "MST"),
             size = 0.35) +
-  scale_color_manual(values = c("dodgerblue1", "darkorange")) +
+  scale_color_manual(values = c("dodgerblue1", "red")) +
   labs(color = NULL,
        title = "Least Cost MST") +
   theme_void() +
@@ -44,7 +44,7 @@ ld_mst <- ggplot() +
             aes(x = long, y = lat, group = group,
                 color = "MST"),
             size = 0.35) +
-  scale_color_manual(values = c("dodgerblue1", "darkorange")) +
+  scale_color_manual(values = c("dodgerblue1", "red")) +
   labs(color = NULL,
        title = "Minimum Distance MST") +
   theme_void() +
@@ -53,5 +53,5 @@ ld_mst <- ggplot() +
 
 fig <- ggarrange(ld_mst, lc_mst, common.legend = T, legend = "right")
 
-ggsave(fig, filename = file.path(paper_figures, "mst_maps_rsdp123.png"),
+ggsave(fig, filename = file.path(paper_figures, "mst_maps_rsdp1234.png"),
        height = 2.5, width = 7)

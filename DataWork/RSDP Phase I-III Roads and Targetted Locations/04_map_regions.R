@@ -1,5 +1,10 @@
 # Create Minimal Spanning Tree
 
+leaflet() %>%
+  addTiles() %>%
+  addPolylines(data = improved_roads, color = "red", weight=8) %>%
+  addPolylines(data = mst_cost, color = "blue")
+
 # Load Data --------------------------------------------------------------------
 mst_cost <- readRDS(file.path(data_file_path, "RSDP Phase I-III Roads and Targetted Locations", "FinalData", 
                             "rsdpi_iii_targetted_loc_leastcost_mst_region_appended.Rds"))
@@ -53,5 +58,5 @@ ld_mst <- ggplot() +
 
 fig <- ggarrange(ld_mst, lc_mst, common.legend = T, legend = "right")
 
-ggsave(fig, filename = file.path(paper_figures, "mst_maps_rsdp123_regions.png"),
+ggsave(fig, filename = file.path(paper_figures, "mst_maps_rsdp123_region_appended.png"),
        height = 2.5, width = 7)
