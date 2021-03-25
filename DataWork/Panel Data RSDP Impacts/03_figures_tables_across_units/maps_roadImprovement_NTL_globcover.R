@@ -66,8 +66,6 @@ p_dmsp <- ggarrange(p_dmsp1996, p_dmsp2012, nrow = 1) %>%
   bgcolor("white") + 
   border("white")
 
-ggsave(p_dmsp,  filename = "~/Desktop/dmsp.png", height = 4, width = 8)
-
 # GlobCover-Urban --------------------------------------------------------------
 #### Prep Data
 ## 1996
