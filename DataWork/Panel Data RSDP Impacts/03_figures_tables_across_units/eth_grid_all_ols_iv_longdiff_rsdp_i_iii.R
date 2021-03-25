@@ -35,7 +35,7 @@ for(DATASET_TYPE in c("woreda",
     CLUSTER_VAR <- "W_CODE"
     
     NEAR_TARGETTED_LOCATION <- 5000
-    RM_DISTANE_ADDIS <- 5000
+    RM_DISTANE_ADDIS <- 5000 / 1000 / 100
     NEAR_ROAD <- 5000
     
     df$dv_dmspols <- df$dmspols_harmon_ihs
@@ -51,7 +51,7 @@ for(DATASET_TYPE in c("woreda",
     CLUSTER_VAR <- 0
     
     NEAR_TARGETTED_LOCATION <- 0
-    RM_DISTANE_ADDIS <- 20000
+    RM_DISTANE_ADDIS <- 20000 / 1000 / 100
     NEAR_ROAD <- 0
     
     df$dv_dmspols <- df$dmspols_harmon_ihs
@@ -68,7 +68,7 @@ for(DATASET_TYPE in c("woreda",
     CLUSTER_VAR <- 0
     
     NEAR_TARGETTED_LOCATION <- 5000
-    RM_DISTANE_ADDIS <- 20000
+    RM_DISTANE_ADDIS <- 20000 / 1000 / 100
     NEAR_ROAD <- 5000
     
     df$dv_dmspols <- df$dmspols_harmon_ihs
@@ -82,6 +82,10 @@ for(DATASET_TYPE in c("woreda",
   }
   
   # Prep Data ------------------------------------------------------------------
+  df$distance_city_addisababa <- df$distance_city_addisababa / 1000 / 100 # 100km scale
+  #df$distance_city_addisababa <- log(df$distance_city_addisababa + 1)
+  df$distance_rsdp123_targettedlocs_log         <- log(df$distance_rsdp123_targettedlocs + 1)
+  
   df <- df %>%
     filter(distance_rsdp123_targettedlocs > NEAR_TARGETTED_LOCATION) %>%
     filter(distance_city_addisababa       > RM_DISTANE_ADDIS) %>%
@@ -121,8 +125,6 @@ for(DATASET_TYPE in c("woreda",
            near_mst_lc_regionXdmspols_1996_bin4_4      = near_mst_lc_region * dmspols_1996_bin4_4,
            near_mst_lc_regionXdistance_city_addisababa = near_mst_lc_region * distance_city_addisababa)
   
-  df$distance_city_addisababa <- df$distance_city_addisababa / 1000 / 100 # 100km scale
-  df$distance_rsdp123_targettedlocs_log         <- log(df$distance_rsdp123_targettedlocs + 1)
   
   # Summary Stats ----------------------------------------------------------------
   df_neartc <- df %>%
@@ -328,7 +330,7 @@ for(DATASET_TYPE in c("woreda",
     bind_rows(
       lm_post_confint_tidy(lm_dmspols_ihs)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
       lm_post_confint_tidy(lm_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
-      lm_post_confint_tidy(lm_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      lm_post_confint_tidy(lm_dmspols_ihs_addis) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
       
       lm_post_confint_tidy(lm_globcover_urban)         %>% mutate(dv = "globcover_urban", interaction = "none"),
       lm_post_confint_tidy(lm_globcover_urban_basentl) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
@@ -344,7 +346,7 @@ for(DATASET_TYPE in c("woreda",
     bind_rows(
       lm_post_confint_tidy(iv_cd_dmspols_ihs)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
       lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
-      lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      lm_post_confint_tidy(iv_cd_dmspols_ihs_addis) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
       
       lm_post_confint_tidy(iv_cd_globcover_urban)         %>% mutate(dv = "globcover_urban", interaction = "none"),
       lm_post_confint_tidy(iv_cd_globcover_urban_basentl) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
@@ -360,7 +362,7 @@ for(DATASET_TYPE in c("woreda",
     bind_rows(
       lm_post_confint_tidy(iv_ld_dmspols_ihs)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
       lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
-      lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      lm_post_confint_tidy(iv_ld_dmspols_ihs_addis) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
       
       lm_post_confint_tidy(iv_ld_globcover_urban)         %>% mutate(dv = "globcover_urban", interaction = "none"),
       lm_post_confint_tidy(iv_ld_globcover_urban_basentl) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
@@ -376,7 +378,7 @@ for(DATASET_TYPE in c("woreda",
     bind_rows(
       lm_post_confint_tidy(iv_cd_dmspols_ihs_regions)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
       lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
-      lm_post_confint_tidy(iv_cd_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      lm_post_confint_tidy(iv_cd_dmspols_ihs_addis_regions) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
       
       lm_post_confint_tidy(iv_cd_globcover_urban_regions)         %>% mutate(dv = "globcover_urban", interaction = "none"),
       lm_post_confint_tidy(iv_cd_globcover_urban_basentl_regions) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
@@ -392,7 +394,7 @@ for(DATASET_TYPE in c("woreda",
     bind_rows(
       lm_post_confint_tidy(iv_ld_dmspols_ihs_regions)         %>% mutate(dv = "dmspols_ihs", interaction = "none"),
       lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "basentl"),
-      lm_post_confint_tidy(iv_ld_dmspols_ihs_basentl_regions) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
+      lm_post_confint_tidy(iv_ld_dmspols_ihs_addis_regions) %>% mutate(dv = "dmspols_ihs", interaction = "addis"),
       
       lm_post_confint_tidy(iv_ld_globcover_urban_regions)         %>% mutate(dv = "globcover_urban", interaction = "none"),
       lm_post_confint_tidy(iv_ld_globcover_urban_basentl_regions) %>% mutate(dv = "globcover_urban", interaction = "basentl"),
@@ -541,11 +543,15 @@ for(DATASET_TYPE in c("woreda",
   # First Stage - Stargazer --------------------------------------
   stargazer(iv_cd_dmspols_ihs$stage1,
             iv_ld_dmspols_ihs$stage1,
+            iv_cd_dmspols_ihs_regions$stage1,
+            iv_ld_dmspols_ihs_regions$stage1,
             dep.var.labels.include = T,
             dep.var.labels = c("Near Improved Road"),
             dep.var.caption = "",
             covariate.labels = c("Near Least Cost MST",
-                                 "Near Min. Distance MST"),
+                                 "Near Min. Distance MST",
+                                 "Near Least Cost MST: Regional",
+                                 "Near Min. Distance MST: Regional"),
             omit = "distance_rsdp123_targettedlocs_log",
             omit.stat = c("f","ser", "rsq"),
             align=TRUE,
@@ -556,8 +562,10 @@ for(DATASET_TYPE in c("woreda",
             omit.table.layout = "n",
             add.lines = list(
               c("1st Stage F-Stat", 
-                lfe::waldtest(iv_cd_dmspols_ihs$stage1, ~near_mst_lc, lhs=iv_cd_dmspols_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
-                lfe::waldtest(iv_ld_dmspols_ihs$stage1, ~near_mst_euc, lhs=iv_ld_dmspols_ihs$stage1$lhs)[5] %>% round(ROUND_NUM)
+                lfe::waldtest(iv_cd_dmspols_ihs$stage1,         ~near_mst_lc,         lhs=iv_cd_dmspols_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
+                lfe::waldtest(iv_ld_dmspols_ihs$stage1,         ~near_mst_euc,        lhs=iv_ld_dmspols_ihs$stage1$lhs)[5] %>% round(ROUND_NUM),
+                lfe::waldtest(iv_cd_dmspols_ihs_regions$stage1, ~near_mst_lc_region,  lhs=iv_cd_dmspols_ihs_regions$stage1$lhs)[5] %>% round(ROUND_NUM),
+                lfe::waldtest(iv_ld_dmspols_ihs_regions$stage1, ~near_mst_euc_region, lhs=iv_ld_dmspols_ihs_regions$stage1$lhs)[5] %>% round(ROUND_NUM)
               )
             ),
             out = file.path(paper_tables, 

@@ -10,7 +10,7 @@ MA_ubanrural <- ""
 for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
   for(log in c("_log")){
     for(theta in c("1", "2", "3_8", "5", "8")){ # 
-      for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude50km", "_exclude100km"
+      for(exclude in c("_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude50km", "_exclude100km"
         for(MA_ubanrural in c("")){ # "_urban2", "_rural2"
           
           # dv_name <- ""
@@ -198,7 +198,7 @@ for(unit in c("woreda")){ # "woreda", "clusters_of_ntl"
                     #  c("MA IV, 50km Doughnut", rep("N", 5), rep("Y", 5))
                     #),
                     out=file.path(paper_tables,
-                                  paste0("MA",MA_ubanrural,"_table_longdiff_theta",theta,log,"_",unit,"_iv.tex")))
+                                  paste0("MA",MA_ubanrural,"_table_longdiff_theta",theta,exclude,log,"_",unit,"_iv.tex")))
         }
       }
     }

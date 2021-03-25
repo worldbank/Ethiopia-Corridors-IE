@@ -73,14 +73,24 @@ ggsave(p_dmsp,  filename = "~/Desktop/dmsp.png", height = 4, width = 8)
 ## 1996
 gc1996_df <- gc1996 %>%
   coordinates() %>%
-  as.data.frame() 
-gc1996_df$value <- as.numeric(gc1996[] == 190)
+  as.data.frame()
+gc1996_df$value <- gc1996[]
+gc1996_df <- gc1996_df[gc1996_df$value %in% 190,]
+
+coordinates(gc1996_df) <- ~x+y
+crs(gc1996_df) <- CRS("+init=epsg:4326")
+gc1996_df <- gBuffer(gc1996_df, width = 2/111.12, byid = T)
 
 ## 2016
 gc2016_df <- gc2016 %>%
   coordinates() %>%
   as.data.frame() 
-gc2016_df$value <- as.numeric(gc2016[] == 190)
+gc2016_df$value <- gc2016[]
+gc2016_df <- gc2016_df[gc2016_df$value %in% 190,]
+
+coordinates(gc2016_df) <- ~x+y
+crs(gc2016_df) <- CRS("+init=epsg:4326")
+gc2016_df <- gBuffer(gc2016_df, width = 2/111.12, byid = T)
 
 #### Map
 make_gc_figure <- function(df, title){
@@ -91,10 +101,13 @@ make_gc_figure <- function(df, title){
     #             fill = "black") +
     geom_polygon(data = eth_adm,
                  aes(x = long, y = lat, group = group),
-                 color = "black", fill = NA,
+                 color = "black", #fill = NA,
+                fill = "gray30",
+                 #fill = "gray60", 
+                 #fill = "black",
                  size = .15) +
-    geom_raster(data = df[df$value > 0,] , 
-                aes(x = x, y = y),
+    geom_polygon(data = df, 
+                aes(x = long, y = lat, group = group),
                 fill = "red") + 
     labs(title = title) +
     coord_quickmap() +
@@ -134,7 +147,9 @@ roads_improved_tidy <- merge(roads_improved_tidy, roads_improved@data, by = "id"
 p_rsdp <- ggplot() +
   geom_polygon(data = eth_adm,
                aes(x = long, y = lat, group = group),
-               fill = "black", color = "black", size=.2) + # gray40
+               fill = "gray30", 
+              # fill = "gray60", 
+               color = "black", size=.2) + # gray40
   geom_path(data = roads_existing,
             aes(x = long, y = lat, group = group),
             color = "gray",

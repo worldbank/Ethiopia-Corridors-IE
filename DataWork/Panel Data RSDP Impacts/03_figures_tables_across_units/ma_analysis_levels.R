@@ -9,9 +9,9 @@ MA_ubanrural <- ""
 
 # Regressions ------------------------------------------------------------------
 for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_urban"
-  for(theta in c("1","2","5","8")){ # 
+  for(theta in c("1","2","3_8","5","8")){ # 
     for(log in c("_log")){
-      for(exclude in c("", "_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude100km","_exclude100km"
+      for(exclude in c("_exclude20km", "_exclude50km", "_exclude100km")){ # "_exclude20km", "_exclude100km","_exclude100km"
         for(MA_ubanrural in c("")){ # "_urban2", "_rural2"
           
           ## Load/Subset Data
@@ -158,7 +158,7 @@ for(unit in c("woreda")){ # "woreda ,"clusters_of_ntl", "clusters_of_globcover_u
                       c("Unit FE", rep("Y", 8))
                     ),
                     out=file.path(paper_tables,
-                                  paste0("MA_table",log,"_theta",theta,exclude,"_",unit,MA_ubanrural,"_ols.tex")))
+                                  paste0("MA_table",log,"_theta",theta,"_",unit,MA_ubanrural,"_ols.tex")))
           
           ## IV Stargazer
           stargazer(iv1,
