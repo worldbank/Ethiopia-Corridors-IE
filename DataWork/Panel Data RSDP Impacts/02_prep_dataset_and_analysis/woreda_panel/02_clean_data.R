@@ -274,6 +274,7 @@ dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% s
 years_since_improved_vars <- names(data) %>% str_subset("years_since_|distance_improvedroad_speedafter_")
 satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
 MA_vars <- names(data) %>% str_subset("MA_")
+year_vars <- names(data) %>% str_subset("year")
 other_vars <- c("gpw2000", "area_polygon", "distance_city_addisababa", "Pop2007", "ntl_group", "far_addis")
 
 vars_all <- c(id_vars,
@@ -284,7 +285,8 @@ vars_all <- c(id_vars,
               satellite_vars,
               MA_vars,
               other_vars,
-              years_since_improved_vars)
+              years_since_improved_vars,
+              year_vars)
 
 data <- data %>%
   dplyr::select(all_of(vars_all))

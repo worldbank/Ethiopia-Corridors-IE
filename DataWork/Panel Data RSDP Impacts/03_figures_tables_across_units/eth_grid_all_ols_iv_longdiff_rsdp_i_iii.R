@@ -314,7 +314,19 @@ for(DATASET_TYPE in c("woreda",
   summary_stats_df <- data.frame(n_original = df_NROW_ORIGINAL,
                                  n = nrow(df),
                                  n_treated = sum(df$near_rsdp123 %in% 1),
-                                 n_control = sum(df$near_rsdp123 %in% 0)) %>%
+                                 n_control = sum(df$near_rsdp123 %in% 0),
+                                 
+                                 near_mst_euc_1 = sum(df$near_mst_euc %in% 1),
+                                 near_mst_euc_0 = sum(df$near_mst_euc %in% 0),
+                                 
+                                 near_mst_euc_region_1 = sum(df$near_mst_euc_region %in% 1),
+                                 near_mst_euc_region_0 = sum(df$near_mst_euc_region %in% 0),
+                                 
+                                 near_mst_lc_1 = sum(df$near_mst_lc %in% 1),
+                                 near_mst_lc_0 = sum(df$near_mst_lc %in% 0),
+                                 
+                                 near_mst_lc_region_1 = sum(df$near_mst_lc_region %in% 1),
+                                 near_mst_lc_region_0 = sum(df$near_mst_lc_region %in% 0)) %>%
     mutate(dataset = DATASET_TYPE,
            rsdp = "RSDP I-III")
   

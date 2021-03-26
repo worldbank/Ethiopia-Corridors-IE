@@ -32,9 +32,7 @@ results_df <- map_df(dataset_types, function(DATASET_TYPE){
   
 })
 
-# Summary Table ----------------------------------------------------------------
-sink(file.path(paper_tables, "iv_sumstat_allunits.tex"))
-
+# Summary Tables ----------------------------------------------------------------
 sum_df <- sum_df %>%
   arrange(rsdp, dataset) %>%
   mutate(dataset = case_when(
@@ -43,32 +41,36 @@ sum_df <- sum_df %>%
     dataset %in% "clusters_of_ntlall" ~ "Cities: Nighttime Lights",
     dataset %in% "dmspols_grid_ethiopia" ~ "1x1km Grid"
   )) %>%
-  mutate(latex = paste(rsdp, "&",
-                       dataset, "&",
-                       n_original %>% prettyNum(big.mark=",",scientific=FALSE), "&",
-                       n          %>% prettyNum(big.mark=",",scientific=FALSE), "&",
-                       n_treated  %>% prettyNum(big.mark=",",scientific=FALSE), "&",
-                       n_control  %>% prettyNum(big.mark=",",scientific=FALSE), "\\\\ \n"))
+  mutate(latex_table1 = paste(rsdp, "&",
+                              dataset, "&",
+                              n_original %>% prettyNum(big.mark=",",scientific=FALSE), "&",
+                              n          %>% prettyNum(big.mark=",",scientific=FALSE), "&",
+                              n_treated  %>% prettyNum(big.mark=",",scientific=FALSE), "&",
+                              near_mst_euc_1  %>% prettyNum(big.mark=",",scientific=FALSE), "&",
+                              near_mst_euc_region_1  %>% prettyNum(big.mark=",",scientific=FALSE), "&",
+                              near_mst_lc_1  %>% prettyNum(big.mark=",",scientific=FALSE), "&",
+                              near_mst_lc_region_1  %>% prettyNum(big.mark=",",scientific=FALSE), "\\\\ \n")) 
+
+
+sink(file.path(paper_tables, "iv_sumstat_allunits.tex"))
 
 sum_rsdp123_df <- sum_df[sum_df$rsdp %in% "RSDP I-III",]
 sum_rsdp1234_df <- sum_df[sum_df$rsdp %in% "RSDP I-V",]
 
-cat("\\begin{tabular}{llllll} \n")
+cat("\\begin{tabular}{llll | lllll} \n")
 cat("\\hline \n")
-cat("RSDP & Unit & N Total & N, Targeted   & N       & N       \\\\ \n")
-cat("     &      &         & Areas Removed & Treated & Control \\\\ \n")
+cat("RSDP & Unit & N Total & N, Targeted   & N       & N MST      & N MST Least    & N MST      & N MST Least  \\\\ \n")
+cat("     &      &         & Areas Removed & Treated & Least Dist & Dist: Regional & Least Cost & Cost: Regional \\\\ \n")
 cat("\\hline \n")
 
-for(i in 1:nrow(sum_rsdp123_df)) cat(sum_rsdp123_df$latex[i])
+for(i in 1:nrow(sum_rsdp123_df)) cat(sum_rsdp123_df$latex_table1[i])
 cat("\\hline \n")
-for(i in 1:nrow(sum_rsdp1234_df)) cat(sum_rsdp1234_df$latex[i])
+for(i in 1:nrow(sum_rsdp1234_df)) cat(sum_rsdp1234_df$latex_table1[i])
 
 cat("\\hline \n")
 cat("\\end{tabular}")
 
 sink()
-
-
 
 # Prep Data --------------------------------------------------------------------
 results_df <- results_df %>%
@@ -117,25 +119,6 @@ results_df$stars[results_df$pvalue <= 0.01] <- "***"
 results_df$b_round <- results_df$b %>% round(3)
 
 results_df$text <- paste0(results_df$b_round, results_df$stars)
-# results_df$text_bottom <- paste0("[", results_df$p025 %>% round(2), 
-#                                  ", ", 
-#                                  results_df$p975 %>% round(2), 
-#                                  "]")
-# 
-# rsdp_i <- "RSDP I-III"
-# df_i <- "dmspols_ihs"
-# interaction_i <- "basentl"
-# 
-# results_df %>%
-#   filter(rsdp %in% rsdp_i,
-#          dv %in% df_i,
-#          interaction %in% interaction_i) %>%
-#   dplyr::select(variable, dataset, text_top) %>%
-#   pivot_wider(id_cols = c(variable, dataset))
-# 
-# 
-
-
 
 make_figure <- function(rsdp_i,
                         df_i,
