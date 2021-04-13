@@ -48,6 +48,7 @@ UTM_ETH <- '+init=epsg:20138' # Ethiopia UTM
 
 # Packages ---------------------------------------------------------------------
 library(AER)
+library(did)
 library(estimatr)
 library(labelled)
 library(clusterSEs)

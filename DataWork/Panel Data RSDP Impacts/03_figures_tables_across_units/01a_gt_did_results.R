@@ -11,15 +11,15 @@ library(did)
 
 # Load Data --------------------------------------------------------------------
 dataset <- "clusters_of_ntlall"
-dep_var <- "globcover_urban_ihs"
-indep_var <- "year_improvedroad"
-ntl_group <- "all"
+dep_var <- "dmspols_harmon_ihs"
+indep_var <- "year_improvedroad_50aboveafter"
+ntl_group <- "high"
 
 for(dataset in c("woreda", 
                  "clusters_of_ntlall",
-                 "clusters_of_globcover_urban",
-                 "dmspols_grid_nearroad")){
-  for(dep_var in c("globcover_urban_ihs", 
+                 #"dmspols_grid_nearroad",
+                 "clusters_of_globcover_urban")){
+  for(dep_var in c("globcover_urban_sum_ihs",
                    "dmspols_harmon_ihs")){
     for(indep_var in c("year_improvedroad",
                        "year_improvedroad_50aboveafter",
@@ -33,18 +33,26 @@ for(dataset in c("woreda",
         ## Load data
         if(dataset == "dmspols_grid_nearroad"){
           data <- readRDS(file.path(panel_rsdp_imp_data_file_path, dataset, "merged_datasets", "grid_data_clean.Rds"))
-          data <- data %>% group_by(woreda_id) %>% mutate(dmspols_1996sum = sum(dmspols[year == 1996], na.rm=T))
+          data <- data %>% dplyr::group_by(woreda_id) %>% dplyr::mutate(dmspols_1996sum = sum(dmspols[year == 1996], na.rm=T))
           cluster_var <- "woreda_id"
         } else{
           data <- readRDS(file.path(panel_rsdp_imp_data_file_path, dataset, "merged_datasets", "panel_data_clean.Rds"))
-          data <- data %>% group_by(cell_id) %>% mutate(dmspols_1996sum = dmspols_sum[year == 1996])
+          data <- data %>% dplyr::group_by(cell_id) %>% dplyr::mutate(dmspols_1996sum = dmspols_sum[year == 1996])
           cluster_var <- NULL
+        }
+        
+        data$dmspols_harmon_ihs_2013 <- data$dmspols_harmon_ihs
+        data$dmspols_harmon_ihs_2013[data$year > 2013] <- NA
+        
+        if(dep_var %in% "dmspols_harmon_ihs_2013"){
+          data <- data %>%
+            dplyr::filter(year <= 2013)
         }
         
         #data <- data[data$cell_id %in% c(1:10, 200:210, 300:310, 400:410, 500:505),]
         
         ## Dep Var / Indep Var Variables
-        if(dep_var %in% "globcover_urban_ihs" & dataset %in% "dmspols_grid_nearroad") dep_var <- "globcover_urban"
+        if(dep_var %in% "globcover_urban_sum_ihs" & dataset %in% "dmspols_grid_nearroad") dep_var <- "globcover_urban"
         
         data$dep_var   <- data[[dep_var]]
         data$indep_var <- data[[indep_var]]
@@ -61,8 +69,8 @@ for(dataset in c("woreda",
         ## Subset
         data = data %>%
           ungroup() %>%
-          dplyr::filter(year >= 1996,
-                        year <= 2016,
+          dplyr::filter(year >= 1992,
+                        year <= 2018,
                         !is.na(indep_var))
         
         # This way of selecting specific variables is robust to some names (ie, woreda_id)

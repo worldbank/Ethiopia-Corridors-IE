@@ -9,7 +9,7 @@
 ROUND_NUM <- 1 # number of digits to round numbers
 
 # dmspols_grid_ethiopia, woreda, clusters_of_ntlall, clusters_of_globcover_urban
-DATASET_TYPE <- "clusters_of_ntlall"
+DATASET_TYPE <- "woreda"
 
 for(DATASET_TYPE in c("woreda",
                       "clusters_of_globcover_urban",
@@ -317,8 +317,8 @@ for(DATASET_TYPE in c("woreda",
   # Grab Stats as Dataframe ---------------------------------------------------
   summary_stats_df <- data.frame(n_original = df_NROW_ORIGINAL,
                                  n = nrow(df),
-                                 n_treated = sum(df$near_rsdp123 %in% 1),
-                                 n_control = sum(df$near_rsdp123 %in% 0),
+                                 n_treated = sum(df$near_rsdp1234 %in% 1),
+                                 n_control = sum(df$near_rsdp1234 %in% 0),
                                  
                                  near_mst_euc_1 = sum(df$near_mst_euc %in% 1),
                                  near_mst_euc_0 = sum(df$near_mst_euc %in% 0),

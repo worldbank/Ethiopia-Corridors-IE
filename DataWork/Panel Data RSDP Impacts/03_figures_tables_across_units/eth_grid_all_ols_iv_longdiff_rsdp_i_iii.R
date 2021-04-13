@@ -9,7 +9,7 @@
 ROUND_NUM <- 1 # number of digits to round numbers
 
 # dmspols_grid_ethiopia, woreda, clusters_of_ntlall, clusters_of_globcover_urban
-DATASET_TYPE <- "clusters_of_globcover_urban"
+DATASET_TYPE <- "woreda"
 
 for(DATASET_TYPE in c("woreda",
                       "clusters_of_globcover_urban",
