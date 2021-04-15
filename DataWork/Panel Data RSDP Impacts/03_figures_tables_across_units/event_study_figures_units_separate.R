@@ -88,7 +88,8 @@ data <- data %>%
     indep_var == "years_since_improvedroad_50aboveafter" ~ ">=50 km/hr",
     indep_var == "years_since_improvedroad_below50after" ~ "<50 km/hr"
   )) %>%
-  dplyr::filter(dep_var != "Cluster Exists")
+  dplyr::filter(dep_var %in% c("Cropland", "NTL", "Urban")) %>%
+  dplyr::mutate(dep_var = dep_var %>% factor(levels = c("NTL", "Urban", "Cropland")))
 
 # Figures ----------------------------------------------------------------------
 ntl_group_i <- "All"
@@ -156,7 +157,7 @@ make_figures_by_base_ntl <- function(unit_i,
 }
 
 addis_dist <- "All"
-for(addis_dist in c("All")){ # "All", "Far"
+for(addis_dist in c("All", "Far")){ # "All", "Far"
   
   p <- make_figures_by_base_ntl("Woreda", addis_dist, data)
   ggsave(p,

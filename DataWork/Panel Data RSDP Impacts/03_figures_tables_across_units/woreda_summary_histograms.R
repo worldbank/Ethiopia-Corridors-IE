@@ -3,32 +3,30 @@
 # Load Data --------------------------------------------------------------------
 unit <- "woreda" # "clusters_of_ntl", "clusters_of_globcover_urban"
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "panel_data_clean.Rds"))
-data12 <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "longdiff_data_clean_base1996_end2012.Rds"))
-data16 <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "longdiff_data_clean_base1996_end2016.Rds"))
+#data12 <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "longdiff_data_clean_base1996_end2012.Rds"))
+data_diff <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "longdiff_data_clean_base1996_end2016.Rds"))
 
 N1 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 1) %>% nrow()
 N2 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 2) %>% nrow()
 N3 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 3) %>% nrow()
 N4 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 4) %>% nrow()
 
-data12 <- data12 %>%
-  dplyr::select(cell_id, dmspols_1996_bin4, dmspols_zhang_ihs, dmspols_zhang_sum2_ihs, dmspols_zhang_sum6_ihs)
+# data12 <- data12 %>%
+#   dplyr::select(cell_id, dmspols_1996_bin4, dmspols_zhang_ihs, dmspols_zhang_sum2_ihs, dmspols_zhang_sum6_ihs)
 
-data16 <- data16 %>%
-  dplyr::select(cell_id, globcover_urban_sum_ihs)
-
-data_diff <- merge(data12, data16, by = "cell_id")
+data_diff <- data_diff %>%
+  dplyr::select(cell_id, dmspols_1996_bin4, globcover_urban_sum_ihs, globcover_cropland_sum_ihs, dmspols_harmon_ihs)
 
 data_sum <- data_diff %>%
   group_by(dmspols_1996_bin4, cell_id) %>%
   pivot_longer(cols = -c(dmspols_1996_bin4, cell_id)) %>%
   dplyr::filter(!is.na(value))
 
-data_sum$name[data_sum$name %in% "dmspols_zhang_sum2_ihs"] <- "NTL \u2265 2"
-data_sum$name[data_sum$name %in% "dmspols_zhang_sum6_ihs"] <- "NTL \u2265 6"
-data_sum$name[data_sum$name %in% "dmspols_zhang_ihs"] <- "NTL"
-data_sum$name[data_sum$name %in% "globcover_urban_sum_ihs"] <- "Urban (Globcover)"
+data_sum$name[data_sum$name %in% "dmspols_harmon_ihs"] <- "NTL"
+data_sum$name[data_sum$name %in% "globcover_urban_sum_ihs"] <- "Urban"
+data_sum$name[data_sum$name %in% "globcover_cropland_sum_ihs"] <- "Cropland"
 
+data_sum$name <- data_sum$name %>% factor(levels = c("NTL", "Urban", "Cropland"))
 
 make_figure <- function(df, title){
   

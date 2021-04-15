@@ -11,18 +11,17 @@ N4 <- data %>% filter(year == 1996, dmspols_1996_bin4 == 4) %>% nrow()
 
 data_sum <- data %>%
   group_by(dmspols_1996_bin4, year) %>%
-  dplyr::summarize(dmspols_zhang = mean(dmspols_zhang),
-                   dmspols_zhang_2_sum = mean(dmspols_zhang_sum2, na.rm=T),
-                   dmspols_zhang_6_sum = mean(dmspols_zhang_sum6, na.rm=T),
-                   globcover_urban_sum = mean(globcover_urban_sum, na.rm=T)) %>%
+  dplyr::summarize(dmspols_harmon         = mean(dmspols_harmon),
+                   globcover_urban_sum    = mean(globcover_urban_sum, na.rm=T),
+                   globcover_cropland_sum = mean(globcover_cropland_sum, na.rm=T)) %>%
   pivot_longer(cols = -c(dmspols_1996_bin4, year)) %>%
   dplyr::filter(!is.na(value))
 
-data_sum$name[data_sum$name %in% "dmspols_zhang_2_sum"] <- "NTL > 2"
-data_sum$name[data_sum$name %in% "dmspols_zhang_6_sum"] <- "NTL > 6"
-data_sum$name[data_sum$name %in% "dmspols_zhang"] <- "NTL"
-data_sum$name[data_sum$name %in% "globcover_urban_sum"] <- "Urban (Globcover)"
+data_sum$name[data_sum$name %in% "dmspols_harmon"] <- "NTL"
+data_sum$name[data_sum$name %in% "globcover_urban_sum"] <- "Urban"
+data_sum$name[data_sum$name %in% "globcover_cropland_sum"] <- "Cropland"
 
+data_sum$name <- data_sum$name %>% factor(levels = c("NTL", "Urban", "Cropland"))
 
 make_figure <- function(df, title){
   

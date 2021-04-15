@@ -89,6 +89,8 @@ library(TTR)
 library(tidyselect)
 library(dvmisc)
 library(purrr)
+library(wesanderson)
+library(hrbrthemes)
 library(facetscales) # devtools::install_github("zeehio/facetscales")
 
 # Functions

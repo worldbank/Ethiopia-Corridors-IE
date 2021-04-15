@@ -44,13 +44,13 @@ data_yr_long$speed <- data_yr_long$name %>%
   factor(levels = c("10", "15", "20", "25", "30", "35", "45", "50", "70", "120")) 
 
 data_yr_long$dmspols_1996_bin4_cat <- NA
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 1] <- "Dark: Max NTL, 0 - 1"
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 2] <- "Low: Max NTL, 2 - 5"
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 3] <- "Medium: Max NTL, 6 - 9"
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 4] <- "High: Max NTL, 10+"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 1] <- "Dark: Max NTL in Woreda, 0 - 1"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 2] <- "Low: Max NTL in Woreda, 2 - 5"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 3] <- "Medium: Max NTL in Woreda, 6 - 9"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 4] <- "High: Max NTL in Woreda, 10+"
 
 data_yr_long$dmspols_1996_bin4_cat <- data_yr_long$dmspols_1996_bin4_cat %>%
-  factor(levels = c("Dark: Max NTL, 0 - 1", "Low: Max NTL, 2 - 5", "Medium: Max NTL, 6 - 9", "High: Max NTL, 10+"))
+  factor(levels = c("Dark: Max NTL in Woreda, 0 - 1", "Low: Max NTL in Woreda, 2 - 5", "Medium: Max NTL in Woreda, 6 - 9", "High: Max NTL in Woreda, 10+"))
 
 data_yr_long$dmspols_1996_bin4 <- data_yr_long$dmspols_1996_bin4 %>% as.factor()
 
@@ -63,7 +63,7 @@ data_yr_long %>%
   facet_wrap(~dmspols_1996_bin4_cat) +
   theme_minimal() +
   labs(x = NULL,
-       y = "Length of Roads",
+       y = "Proportion of Road Network",
        fill = "Speed\n(km/hr)",
        title = "Length of Roads by Estiamted Speed Limit",
        subtitle = "Across Woredas by Baseline Nightime Lights") +

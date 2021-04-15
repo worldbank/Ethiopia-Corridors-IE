@@ -46,14 +46,14 @@ make_sum_stats <- function(data,
     if(var %in% "dmspols_zhang_6")        var_name <- "NTL $\\geq$ 6"
     if(var %in% "dmspols_zhang_sum2")     var_name <- "NTL $\\geq$ 2"
     if(var %in% "dmspols_zhang_sum6")     var_name <- "NTL $\\geq$ 6"
-    if(var %in% "globcover_urban")        var_name <- "GC-Urban"
+    if(var %in% "globcover_urban")        var_name <- "Urban"
     if(var %in% "globcover_cropland")     var_name <- "Cropland"
-    if(var %in% "globcover_urban_sum")    var_name <- "GC-Urban"
+    if(var %in% "globcover_urban_sum")    var_name <- "Urban"
     if(var %in% "globcover_cropland_sum") var_name <- "Cropland"
     if(var %in% "ndvi")                   var_name <- "NDVI"
     if(var %in% "ndvi_cropland")          var_name <- "NDVI in Cropland"
     
-    if(var %in% "globcover_urban"){
+    if(var %in% c("globcover_urban", "globcover_cropland")){
       ROUND_NUM <- ROUND_NUM_URBAN
     } else{
       ROUND_NUM <- ROUND_NUM_NTL
@@ -97,7 +97,8 @@ make_sum_stats(data_grid_full,
                              #"dmspols_zhang_2",
                              #"dmspols_zhang_6",
                              #"dmspols_zhang_base0na",
-                             "globcover_urban"),
+                             "globcover_urban",
+                             "globcover_cropland"),
                ROUND_NUM_URBAN = 4)
 
 cat("\\hline \n")
@@ -110,7 +111,8 @@ make_sum_stats(data_grid_near_rd,
                              #"dmspols_zhang_2",
                              #"dmspols_zhang_6",
                              #"dmspols_zhang_base0na",
-                             "globcover_urban"),
+                             "globcover_urban",
+                             "globcover_cropland"),
                ROUND_NUM_URBAN = 4)
 
 # cat("\\hline \n")
@@ -159,7 +161,8 @@ make_sum_stats(data_woreda,
                              #"dmspols_zhang_sum2",
                              #"dmspols_zhang_sum6",
                              #"dmspols_zhang_base0na",
-                             "globcover_urban_sum"))
+                             "globcover_urban_sum",
+                             "globcover_cropland_sum"))
 
 
 cat("\\hline \n")
