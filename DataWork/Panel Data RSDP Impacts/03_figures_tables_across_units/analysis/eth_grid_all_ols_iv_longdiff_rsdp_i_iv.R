@@ -194,15 +194,15 @@ for(DATASET_TYPE in c("woreda",
   cat(" & Treated & Control & Treated & Control & Treated & Control \\\\ ")
   cat("\\hline ")
   
-  cat("DMSP-OLS & ")
+  cat("Avg. NTL & ")
   cat(make_sum_stat("dv_dmspols", df_tc_coll))
   cat("\\\\ ")
   
-  cat("Urban & ")
+  cat("Prop. Urban & ")
   cat(make_sum_stat("dv_gcurban", df_tc_coll))
   cat("\\\\ ")
   
-  cat("Cropland & ")
+  cat("Prop. Cropland & ")
   cat(make_sum_stat("dv_gccrop", df_tc_coll))
   cat("\\\\ ")
   cat("\\hline ")
