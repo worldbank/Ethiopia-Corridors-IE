@@ -9,12 +9,13 @@
 ROUND_NUM <- 1 # number of digits to round numbers
 
 # dmspols_grid_ethiopia, woreda, clusters_of_ntlall, clusters_of_globcover_urban
-DATASET_TYPE <- "woreda"
+DATASET_TYPE <- "kebele"
 
-for(DATASET_TYPE in c("woreda",
-                      "clusters_of_globcover_urban",
-                      "clusters_of_ntlall",
-                      "dmspols_grid_ethiopia")){
+for(DATASET_TYPE in c(#"woreda",
+  #"clusters_of_globcover_urban",
+  #"clusters_of_ntlall",
+  #"dmspols_grid_ethiopia",
+  "kebele")){
   
   # Load Data --------------------------------------------------------------------
   df <- readRDS(file.path(panel_rsdp_imp_data_file_path, 
@@ -31,7 +32,7 @@ for(DATASET_TYPE in c("woreda",
   # Dataset specific parameters and variables ------------------------------------
   # Distances in meters
   
-  if(DATASET_TYPE %in% c("dmspols_grid_ethiopia")){
+  if(DATASET_TYPE %in% c("dmspols_grid_ethiopia", "kebele")){
     CLUSTER_VAR <- "W_CODE"
     
     NEAR_TARGETTED_LOCATION <- 5000

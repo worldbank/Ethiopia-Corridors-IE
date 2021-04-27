@@ -126,10 +126,10 @@ calc_travel_time <- function(year, woreda_points){
     #                   woreda_points[100,],
     #             output = "SpatialLines")
     
-    # tt1 <- shortestPath(cost_t,
-    #                    woreda_points[1,],
-    #                    woreda_points[100:101,],
-    #              output = "SpatialLines")
+    tt1 <- shortestPath(cost_t,
+                       woreda_points[1,],
+                       woreda_points[100:101,],
+                 output = "SpatialLines")
     
     #coordinates(woreda_points[1,] %>% spTransform(CRS("+init=epsg:4326"))) %>% rev()
     #coordinates(woreda_points[100,] %>% spTransform(CRS("+init=epsg:4326"))) %>% rev()
@@ -147,13 +147,12 @@ calc_travel_time <- function(year, woreda_points){
   
   tt_df$year <- year
   
-  saveRDS(as.data.table(tt_df), 
-          file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", paste0("ma1_travel_times_for_market_access_",year,".Rds")))
-  
-  return(NULL)
+  return(tt_df)
 }
 
-tmp <- lapply(1996:2016, calc_travel_time, woreda_points)
+location_traveltimes <- lapply(1996:2016, calc_travel_time, woreda_points) %>% 
+  bind_rows() %>%
+  as.data.table()
 
 # Calculate Linear Distance ----------------------------------------------------
 distance_df <- lapply(1:nrow(woreda_points), function(i){
@@ -173,7 +172,11 @@ distance_df <- lapply(1:nrow(woreda_points), function(i){
   bind_rows %>%
   as.data.table()
 
-saveRDS(distance_df, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "ma1_travel_times_for_market_access_lineardist.Rds"))
+location_traveltimes <- merge(location_traveltimes, distance_df, by=c("orig_uid",
+                                                                      "dest_uid"))
+
+# Export -----------------------------------------------------------------------
+saveRDS(location_traveltimes, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "ma1_travel_times_for_market_access.Rds"))
 
 
 

@@ -4,7 +4,8 @@
 dataset_types <- c("woreda",
                    "clusters_of_globcover_urban",
                    "clusters_of_ntlall",
-                   "dmspols_grid_ethiopia")
+                   "dmspols_grid_ethiopia",
+                   "kebele")
 
 sum_df <- map_df(dataset_types, function(DATASET_TYPE){
   
@@ -36,6 +37,7 @@ results_df <- map_df(dataset_types, function(DATASET_TYPE){
 sum_df <- sum_df %>%
   arrange(rsdp, dataset) %>%
   mutate(dataset = case_when(
+    dataset %in% "kebele" ~ "Kebeles",
     dataset %in% "woreda" ~ "Woreda",
     dataset %in% "clusters_of_globcover_urban" ~ "Cities: Globcover",
     dataset %in% "clusters_of_ntlall" ~ "Cities: Nighttime Lights",

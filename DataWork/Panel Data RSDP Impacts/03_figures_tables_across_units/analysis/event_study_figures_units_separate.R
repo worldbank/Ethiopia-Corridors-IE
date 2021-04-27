@@ -13,6 +13,15 @@ data_woreda <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "resul
                         "globcover_cropland_sum_ihs",
                         "globcover_urban_sum_ihs"))
 
+data_kebele <- readRDS(file.path(panel_rsdp_imp_data_file_path, "kebele", "results_datasets",
+                                 "did_coef_every_year.Rds")) %>%
+  filter(dep_var %in% c("dmspols_harmon_ihs",
+                        #"dmspols_harmon_ihs2013",
+                        #"dmspols_zhang_sum2_ihs",
+                        #"dmspols_zhang_sum6_ihs",
+                        "globcover_cropland_sum_ihs",
+                        "globcover_urban_sum_ihs"))
+
 data_urban <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "results_datasets",
                                 "did_coef_every_year.Rds")) %>%
   filter(dep_var %in% c("dmspols_harmon_ihs",
@@ -50,6 +59,8 @@ data_grid <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_near
 data <- bind_rows(
   data_woreda %>%
     mutate(unit = "Woreda"),
+  data_kebele %>%
+    mutate(unit = "Kebele"),
   data_urban %>%
     mutate(unit = "Urban Cluster"),
   data_ntl %>%
@@ -162,6 +173,12 @@ for(addis_dist in c("All", "Far")){ # "All", "Far"
   p <- make_figures_by_base_ntl("Woreda", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_woreda_",addis_dist,".png")),
+         height = 7, width = 8.5)
+  rm(p)
+  
+  p <- make_figures_by_base_ntl("Kebele", addis_dist, data)
+  ggsave(p,
+         filename = file.path(paper_figures, paste0("eventstudy_kebele_",addis_dist,".png")),
          height = 7, width = 8.5)
   rm(p)
   

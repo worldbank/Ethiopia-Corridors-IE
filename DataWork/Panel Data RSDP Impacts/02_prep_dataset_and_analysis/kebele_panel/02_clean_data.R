@@ -4,7 +4,7 @@ NEAR_CUTOFF <- 5 * 1000
 ALL_YEARS_IMPROVED_VAR <- F
 
 # Load Data / Create Dataset Lists ---------------------------------------------
-data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "kebele", "merged_datasets", "panel_data.Rds"))
+data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data.Rds"))
 
 # Distance improved road -------------------------------------------------------
 data$distance_improvedroad <- apply(data[,paste0("distance_improvedroad_speedafter_",c(20,25,30,35,45,50,70,120))], 1, FUN = min_na)
@@ -156,7 +156,7 @@ data <- data %>%
          globcover_cropland_sum_ihs_1996    = globcover_cropland_sum_ihs[year == 1996],
          
          ndvi_1996              = ndvi[year == 1996],
-         #ndvi_cropland_1996     = ndvi_cropland[year == 1996],
+         ndvi_cropland_1996     = ndvi_cropland[year == 1996],
          dmspols_zhang_sum2_ihs_1996 = dmspols_zhang_sum2_ihs[year == 1996],
          dmspols_zhang_sum6_ihs_1996 = dmspols_zhang_sum6_ihs[year == 1996],
          dmspols_harmon_sum2_ihs_1996 = dmspols_harmon_sum2_ihs[year == 1996],
@@ -261,35 +261,35 @@ data <- data %>%
 data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
 
 # Select Relevant Variables ----------------------------------------------------
-# id_vars <- c("cell_id", "year")
-# adm_vars <- c("W_CODE", "R_CODE", "Z_CODE", "cell_id")
-# road_length_vars <- names(data) %>% str_subset("road_length_") %>% str_subset("above")
-# road_distance_vars <- c("distance_mst", "distance_rsdp123", "distance_rsdp123_targettedlocs",
-#                         "distance_rsdp123_mst_euc", "distance_rsdp123_mst_lc",
-#                         "distance_rsdp123_mst_euc_region", "distance_rsdp123_mst_lc_region",
-#                         "distance_rsdp1234", "distance_rsdp1234_targettedlocs",
-#                         "distance_rsdp1234_mst_euc", "distance_rsdp1234_mst_lc",
-#                         "distance_rsdp1234_mst_euc_region", "distance_rsdp1234_mst_lc_region")
-# dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% str_subset("above")
-# years_since_improved_vars <- names(data) %>% str_subset("years_since_|distance_improvedroad_speedafter_")
-# satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
-# MA_vars <- names(data) %>% str_subset("MA_")
-# year_vars <- names(data) %>% str_subset("year")
-# other_vars <- c("gpw2000", "area_polygon", "distance_city_addisababa", "Pop2007", "ntl_group", "far_addis")
-# 
-# vars_all <- c(id_vars,
-#               adm_vars,
-#               road_length_vars,
-#               road_distance_vars,
-#               dist_road_speed_vars,
-#               satellite_vars,
-#               MA_vars,
-#               other_vars,
-#               years_since_improved_vars,
-#               year_vars)
-# 
-# data <- data %>%
-#   dplyr::select(all_of(vars_all))
+id_vars <- c("cell_id", "year")
+adm_vars <- c("W_CODE", "R_CODE", "Z_CODE", "woreda_id")
+road_length_vars <- names(data) %>% str_subset("road_length_") %>% str_subset("above")
+road_distance_vars <- c("distance_mst", "distance_rsdp123", "distance_rsdp123_targettedlocs", 
+                        "distance_rsdp123_mst_euc", "distance_rsdp123_mst_lc",
+                        "distance_rsdp123_mst_euc_region", "distance_rsdp123_mst_lc_region",
+                        "distance_rsdp1234", "distance_rsdp1234_targettedlocs", 
+                        "distance_rsdp1234_mst_euc", "distance_rsdp1234_mst_lc",
+                        "distance_rsdp1234_mst_euc_region", "distance_rsdp1234_mst_lc_region")
+dist_road_speed_vars <- names(data) %>% str_subset("distance_road_speed_") %>% str_subset("above")
+years_since_improved_vars <- names(data) %>% str_subset("years_since_|distance_improvedroad_speedafter_")
+satellite_vars <- names(data) %>% str_subset("viirs|dmspols|ndvi|globcover|temp|precipitation")
+MA_vars <- names(data) %>% str_subset("MA_")
+year_vars <- names(data) %>% str_subset("year")
+other_vars <- c("gpw2000", "area_polygon", "distance_city_addisababa", "Pop2007", "ntl_group", "far_addis")
+
+vars_all <- c(id_vars,
+              adm_vars,
+              road_length_vars,
+              road_distance_vars,
+              dist_road_speed_vars,
+              satellite_vars,
+              MA_vars,
+              other_vars,
+              years_since_improved_vars,
+              year_vars)
+
+data <- data %>%
+  dplyr::select(all_of(vars_all))
 
 # Label variables --------------------------------------------------------------
 # var_label(data$cell_id) <- "Unique unit ID"
@@ -331,6 +331,6 @@ data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
 # var_label(data$gpw2000) <- "Population in 2000 (Gridded Population of the World)"
 
 # Export -----------------------------------------------------------------------
-saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "kebele", "merged_datasets", "panel_data_clean.Rds"))
+saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))
 #write_dta(data, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.dta"))
 

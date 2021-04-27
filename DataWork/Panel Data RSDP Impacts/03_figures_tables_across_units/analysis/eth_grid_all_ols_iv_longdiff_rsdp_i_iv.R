@@ -11,11 +11,12 @@ ROUND_NUM <- 1 # number of digits to round numbers
 # dmspols_grid_ethiopia, woreda, clusters_of_ntlall, clusters_of_globcover_urban
 DATASET_TYPE <- "woreda"
 
-for(DATASET_TYPE in c("woreda",
-                      "clusters_of_globcover_urban",
-                      "clusters_of_ntlall",
-                      "dmspols_grid_ethiopia")){
-  
+for(DATASET_TYPE in c(#"woreda",
+  #"clusters_of_globcover_urban",
+  #"clusters_of_ntlall",
+  #"dmspols_grid_ethiopia",
+  "kebele")){
+
   # Load Data --------------------------------------------------------------------
   df <- readRDS(file.path(panel_rsdp_imp_data_file_path, 
                           DATASET_TYPE, 
@@ -31,7 +32,7 @@ for(DATASET_TYPE in c("woreda",
   # Dataset specific parameters and variables ------------------------------------
   # Distances in meters
   
-  if(DATASET_TYPE %in% c("dmspols_grid_ethiopia")){
+  if(DATASET_TYPE %in% c("dmspols_grid_ethiopia", "kebele")){
     CLUSTER_VAR <- "W_CODE"
     
     NEAR_TARGETTED_LOCATION <- 5000
@@ -125,7 +126,7 @@ for(DATASET_TYPE in c("woreda",
            near_mst_lc_regionXdmspols_1996_bin4_4      = near_mst_lc_region * dmspols_1996_bin4_4,
            near_mst_lc_regionXdistance_city_addisababa = near_mst_lc_region * distance_city_addisababa)
   
-
+  
   # Summary Stats ----------------------------------------------------------------
   df_neartc <- df %>%
     mutate(N_units = 1) %>%
@@ -356,7 +357,7 @@ for(DATASET_TYPE in c("woreda",
       lm_post_confint_tidy(lm_globcover_crop_basentl) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
       lm_post_confint_tidy(lm_globcover_crop_addis)   %>% mutate(dv = "globcover_crop", interaction = "addis")
     ) %>% 
-      mutate(olsiv = "ols", ivtype = "OLS"),
+    mutate(olsiv = "ols", ivtype = "OLS"),
     
     ## MST - Cost Distance
     bind_rows(
@@ -372,7 +373,7 @@ for(DATASET_TYPE in c("woreda",
       lm_post_confint_tidy(iv_cd_globcover_crop_basentl) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
       lm_post_confint_tidy(iv_cd_globcover_crop_addis)   %>% mutate(dv = "globcover_crop", interaction = "addis")
     ) %>% 
-      mutate(olsiv = "iv", ivtype = "Cost Distance"),
+    mutate(olsiv = "iv", ivtype = "Cost Distance"),
     
     ## MST - Least Distance
     bind_rows(
@@ -388,7 +389,7 @@ for(DATASET_TYPE in c("woreda",
       lm_post_confint_tidy(iv_ld_globcover_crop_basentl) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
       lm_post_confint_tidy(iv_ld_globcover_crop_addis)   %>% mutate(dv = "globcover_crop", interaction = "addis")
     ) %>% 
-      mutate(olsiv = "iv", ivtype = "Least Distance"),
+    mutate(olsiv = "iv", ivtype = "Least Distance"),
     
     ## MST - Cost Distance
     bind_rows(
@@ -404,7 +405,7 @@ for(DATASET_TYPE in c("woreda",
       lm_post_confint_tidy(iv_cd_globcover_crop_basentl_regions) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
       lm_post_confint_tidy(iv_cd_globcover_crop_addis_regions)   %>% mutate(dv = "globcover_crop", interaction = "addis")
     ) %>% 
-      mutate(olsiv = "iv", ivtype = "Cost Distance - Regional"),
+    mutate(olsiv = "iv", ivtype = "Cost Distance - Regional"),
     
     ## MST - Least Distance
     bind_rows(
@@ -420,7 +421,7 @@ for(DATASET_TYPE in c("woreda",
       lm_post_confint_tidy(iv_ld_globcover_crop_basentl_regions) %>% mutate(dv = "globcover_crop", interaction = "basentl"),
       lm_post_confint_tidy(iv_ld_globcover_crop_addis_regions)   %>% mutate(dv = "globcover_crop", interaction = "addis")
     ) %>% 
-      mutate(olsiv = "iv", ivtype = "Least Distance - Regional")
+    mutate(olsiv = "iv", ivtype = "Least Distance - Regional")
     
   ) %>%
     mutate(dataset = DATASET_TYPE,
@@ -613,5 +614,5 @@ for(DATASET_TYPE in c("woreda",
             out = file.path(paper_tables, 
                             paste0("iv_near_mst_5km_1ststage_",DATASET_TYPE,"_results_rsdp1234_regions.tex")))
   
-}
+  }
 

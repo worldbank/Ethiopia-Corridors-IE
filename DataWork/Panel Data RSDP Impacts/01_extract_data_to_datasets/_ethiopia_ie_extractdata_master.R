@@ -20,7 +20,7 @@
 # --"clusters_of_ntl": Urban Clusters from NTL
 # --"clusters_of_ntlall": Urban Clusters from NTL
 
-DATASET_TYPE <- "dmspols_grid_ethiopia"
+DATASET_TYPE <- "kebele"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -49,7 +49,7 @@ DIST_THRESH <- 2
 CREATE_UNIT_LEVEL_DATASET <- F
 
 EXTRACT_DATA <- T
-OVERWRITE_EXTRACTED_DATA <- T # Checks if data already extracted. If T, re-extracts
+OVERWRITE_EXTRACTED_DATA <- F # Checks if data already extracted. If T, re-extracts
 # data. If F, skips extracting data
 
 # RUN SCRIPTS ==================================================================
@@ -89,14 +89,14 @@ if(EXTRACT_DATA){
       list.files(pattern = ".R", full.names = T)
   } 
   
-  if(grepl("woreda", DATASET_TYPE)){
+  if(grepl("woreda|kebele", DATASET_TYPE)){
     scripts_unit_specific <- file.path(rsdp_impact_prep_data_code_file_path, 
                                        "02_extract_variables_woreda_specific") %>%
       list.files(pattern = ".R", full.names = T)
   }
   
   ## Market Access Scripts
-  if(grepl("woreda|clusters_", DATASET_TYPE)){
+  if(grepl("woreda|kebele|clusters_", DATASET_TYPE)){
     scripts_market_access <- file.path(rsdp_impact_prep_data_code_file_path, 
                                        "02_extract_market_access") %>%
       list.files(pattern = ".R", full.names = T)
@@ -135,12 +135,12 @@ if(EXTRACT_DATA){
   }
   
   ## Remove select scrips for all
-  rm_all <- c("extract_distance_roads_improved_by_speedlimit_before.R")
+  rm_all <- c("extract_distance_roads_improved_by_speedlimit_before.R", "extract_road_length.R")
   rm_all_rx <- rm_all %>% paste(collapse = "|")
   scripts <- scripts[!grepl(rm_all_rx, scripts)]
   
   ## Run scripts
-  for(script_i in rev(scripts)){
+  for(script_i in scripts){
     print(paste(script_i, "----------------------------------------------------"))
     source(script_i)
   } 
