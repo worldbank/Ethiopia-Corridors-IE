@@ -54,16 +54,8 @@ for(i in 1:nrow(base_end_df)){
                    str_remove_vec(rx = "_1996") %>%
                    str_remove_vec(rx = "distance_rsdp123") %>%
                    str_remove_vec(rx = "_pretnd96_92"), 
-                 diff) #%>%
+                 diff) 
     
-    # Remove select variables
-    #dplyr::select(-c(#dmspols_1996,
-    #                 #dmspols_2bin_1996, 
-    #                 #dmspols_6bin_1996, 
-    #                 #dmspols_33bin_1996, 
-    #                 dmspols_pretnd96_92, dmspols_log_pretnd96_92, dmspols_ihs_pretnd96_92,
-    #                 dmspols_zhang_log_pretnd96_92, dmspols_zhang_ihs_pretnd96_92))
-  
   ## Grab time invariant variables
   data_time_invar <- data %>%
     filter(year %in% base_year) %>%
@@ -81,7 +73,5 @@ for(i in 1:nrow(base_end_df)){
   
   saveRDS(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
                           paste0(file_name, ".Rds")))
-  #write_dta(data_clean, file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", 
-  #                          paste0(file_name, ".dta")))
 }
 

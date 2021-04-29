@@ -1,7 +1,10 @@
 # Compute Market Access
 
+# TODO: Need to break up by "uid" group - too large
+
 # Load Data --------------------------------------------------------------------
-location_traveltimes <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "ma1_travel_times_for_market_access.Rds"))
+year = 1996
+location_traveltimes <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", paste0("ma1_travel_times_for_market_access_",year,".Rds")))
 woreda <- readRDS(file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "polygons_no_road_cut.Rds"))
 gpw <- raster(file.path(data_file_path, "Gridded Population of the World", "RawData", "gpw-v4-population-density_2000.tif"))
 ntl <- raster(file.path(data_file_path, "Nighttime Lights", "DMSPOLS", "RawData", "Individual Files", "eth_dmspols_1996.tif"))
@@ -33,119 +36,41 @@ woreda@data <- woreda@data %>%
                 dest_poplog2000 = pop_geom_log,
                 dest_uid = cell_id)
 
-# Extract NTL ------------------------------------------------------------------
-# Add woreda population from gpw. First, use geometry, then centroid. If population
-# from geometry is NA, then use centroid
-
-## Population using geometry
-ntl <- crop(ntl, woreda)
-woreda$ntl_geom <- velox(ntl)$extract(sp = woreda, fun = function(x) sum(x, na.rm=T)) %>% as.vector()
-
-## Population using centroid
-# Use when geometry returns NA
-woreda_ntl_centroid <- gCentroid(woreda, byid=T)
-woreda$ntl_centroid <- raster::extract(ntl, woreda_ntl_centroid)
-
-## If population using geometry is NA, use from centroid
-woreda$ntl_geom[is.na(woreda$ntl_geom)] <- woreda$ntl_centroid[is.na(woreda$ntl_geom)]
-
-## Cleanup
-woreda@data <- woreda@data %>%
-  dplyr::rename(dest_ntl1996 = ntl_geom)
-
-# Extract NTL - Urban Threshold ------------------------------------------------
-# Add woreda population from gpw. First, use geometry, then centroid. If population
-# from geometry is NA, then use centroid
-
-## Population using geometry
-ntl <- crop(ntl, woreda)
-
-ntl_urban2 <- ntl
-ntl_urban6 <- ntl
-ntl_urban33 <- ntl
-ntl_urban2[] <- as.numeric(ntl[] >= 2)
-ntl_urban6[] <- as.numeric(ntl[] >= 6)
-ntl_urban33[] <- as.numeric(ntl[] > 33)
-
-woreda$ntlurban2_geom  <- velox(ntl_urban2)$extract(sp = woreda, fun = function(x) sum(x, na.rm=T)) %>% as.vector()
-woreda$ntlurban6_geom  <- velox(ntl_urban6)$extract(sp = woreda, fun = function(x) sum(x, na.rm=T)) %>% as.vector()
-woreda$ntlurban33_geom <- velox(ntl_urban33)$extract(sp = woreda, fun = function(x) sum(x, na.rm=T)) %>% as.vector()
-
-## Population using centroid
-# Use when geometry returns NA
-woreda_ntlurban_centroid <- gCentroid(woreda, byid=T)
-woreda$ntlurban2_centroid  <- raster::extract(ntl_urban2, woreda_ntl_centroid)
-woreda$ntlurban6_centroid  <- raster::extract(ntl_urban6, woreda_ntl_centroid)
-woreda$ntlurban33_centroid <- raster::extract(ntl_urban33, woreda_ntl_centroid)
-
-## If population using geometry is NA, use from centroid
-woreda$ntlurban2_geom[is.na(woreda$ntlurban_geom)]  <- woreda$ntlurban2_centroid[is.na(woreda$ntlurban2_geom)]
-woreda$ntlurban6_geom[is.na(woreda$ntlurban_geom)]  <- woreda$ntlurban6_centroid[is.na(woreda$ntlurban6_geom)]
-woreda$ntlurban33_geom[is.na(woreda$ntlurban_geom)] <- woreda$ntlurban33_centroid[is.na(woreda$ntlurban33_geom)]
-
-## Cleanup
-woreda@data <- woreda@data %>%
-  dplyr::rename(dest_ntlurban2_1996  = ntlurban2_geom,
-                dest_ntlurban6_1996  = ntlurban6_geom,
-                dest_ntlurban33_1996 = ntlurban33_geom) %>%
-  dplyr::mutate(dest_ntlurban2_1996  = as.numeric(dest_ntlurban2_1996 > 0),
-                dest_ntlurban6_1996  = as.numeric(dest_ntlurban6_1996 > 0),
-                dest_ntlurban33_1996 = as.numeric(dest_ntlurban33_1996 > 0)) # just urban/rural binary
-
-# Extract Globcover Urban ------------------------------------------------------
-# Add woreda population from gpw. First, use geometry, then centroid. If population
-# from geometry is NA, then use centroid
-
-## Population using geometry
-woreda$gcu_geom <- velox(globcover_urban)$extract(sp = woreda, fun = function(x) sum(x, na.rm=T)) %>% as.vector()
-
-## Population using centroid
-# Use when geometry returns NA
-woreda_gcu_centroid <- gCentroid(woreda, byid=T)
-woreda$gcu_centroid <- raster::extract(ntl, woreda_gcu_centroid)
-
-## If population using geometry is NA, use from centroid
-woreda$gcu_geom[is.na(woreda$gcu_geom)] <- woreda$gcu_centroid[is.na(woreda$gcu_geom)]
-
-## Cleanup
-woreda@data <- woreda@data %>%
-  dplyr::rename(dest_gc_urban1996 = gcu_geom)
-
 # Merge Data -------------------------------------------------------------------
-location_traveltimes <- merge(location_traveltimes, 
-                              woreda@data, 
+location_traveltimes <- merge(as.data.table(location_traveltimes), 
+                              as.data.table(woreda@data), 
                               by="dest_uid")
 
 # Prep Travel Time and Iceberg Costs -------------------------------------------
 # Remove cases where travel time is zero
-location_traveltimes <- location_traveltimes[!(location_traveltimes$travel_time %in% 0),]
-
-# Travel time to minutes
-location_traveltimes$travel_time <- location_traveltimes$travel_time * 60
-
-#### Iceberg tt/cost
-location_traveltimes_1996 <- location_traveltimes %>% filter(year %in% 1996)
-
-psi <- 0.6
-
-## find p, such that median iceberg costs are 1.25
-m_itt <- 0
-p <- 0
-step <- 0.0000001
-while(m_itt <= 1.25){
-
-  p <- p + step
-  
-  itt <- 1 + (p*location_traveltimes_1996$travel_time)^psi
-  m_itt <- median(itt)
-
-  print(paste(round(m_itt, 4), " ", p))
-}
-
-p <- p - step
-
-## Calc iceberg trade costs
-location_traveltimes$iceberg_cost <- 1 + (p*location_traveltimes$travel_time)^psi
+# location_traveltimes <- location_traveltimes[!(location_traveltimes$travel_time %in% 0),]
+# 
+# # Travel time to minutes
+# location_traveltimes$travel_time <- location_traveltimes$travel_time * 60
+# 
+# #### Iceberg tt/cost
+# location_traveltimes_1996 <- location_traveltimes %>% filter(year %in% 1996)
+# 
+# psi <- 0.6
+# 
+# ## find p, such that median iceberg costs are 1.25
+# m_itt <- 0
+# p <- 0
+# step <- 0.0000001
+# while(m_itt <= 1.25){
+# 
+#   p <- p + step
+#   
+#   itt <- 1 + (p*location_traveltimes_1996$travel_time)^psi
+#   m_itt <- median(itt)
+# 
+#   print(paste(round(m_itt, 4), " ", p))
+# }
+# 
+# p <- p - step
+# 
+# ## Calc iceberg trade costs
+# location_traveltimes$iceberg_cost <- 1 + (p*location_traveltimes$travel_time)^psi
 
 # Pop Divided by TT ------------------------------------------------------------
 location_traveltimes <- location_traveltimes %>%
@@ -162,7 +87,7 @@ location_traveltimes <- location_traveltimes %>%
                 )
 
 for(y_var in c("pop", "poplog", "ntl", "gcu")){
-  for(tt_var in c("tt", "ic")){
+  for(tt_var in c("tt")){ # "ic"
     for(theta in c(1,2,3.8,5,8)){
       #location_traveltimes$pop_DIV_tt_theta1 <- location_traveltimes$dest_pop2000 / (location_traveltimes$travel_time^1)
       
@@ -331,7 +256,7 @@ for(dist in c(10, 20, 50, 100)){
 }
 
 # Export -----------------------------------------------------------------------
-saveRDS(MA_all_df, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", "ma2_market_access.Rds"))
+saveRDS(MA_all_df, file.path(panel_rsdp_imp_data_file_path, DATASET_TYPE, "individual_datasets", paste0("ma2_market_access_",year,".Rds")))
 
 
 
