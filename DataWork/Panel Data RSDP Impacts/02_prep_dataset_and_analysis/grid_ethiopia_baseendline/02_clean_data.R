@@ -16,8 +16,8 @@ data <- data %>%
                 
                 dmspols_harmon_ihs = calc_ihs(dmspols_harmon),
                 
-                globcover_urban = as.numeric(globcover_urban    >= 0),
-                globcover_cropland = as.numeric(globcover_cropland >= 0),
+                globcover_urban = as.numeric(globcover_urban    > 0),
+                globcover_cropland = as.numeric(globcover_cropland > 0),
                 
                 far_addis = as.numeric(distance_city_addisababa >= 100*1000),
                 
@@ -47,8 +47,7 @@ data <- data %>%
                 dmspols_harmon_sum2_1996_woreda   = sum(dmspols_harmon_2_1996, na.rm = T),
                 dmspols_harmon_sum6_1996_woreda   = sum(dmspols_harmon_6_1996, na.rm = T),
                 dmspols_harmon_sum10_1996_woreda  = sum(dmspols_harmon_10_1996, na.rm = T)) %>%
-  dplyr::ungroup() %>%
-  dplyr::select(-c(distance_city_addisababa))
+  dplyr::ungroup() 
 
 #### Groupigs
 ## Median
@@ -63,6 +62,11 @@ data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda %in% 0] <- 1
 data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda > 0]    <- 2
 data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum6_1996_woreda > 0]    <- 3
 data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum10_1996_woreda > 0]   <- 4
+
+data$dmspols_harmon_1996_bin4_1 <- as.numeric(data$dmspols_harmon_1996_bin4 == 1)
+data$dmspols_harmon_1996_bin4_2 <- as.numeric(data$dmspols_harmon_1996_bin4 == 2)
+data$dmspols_harmon_1996_bin4_3 <- as.numeric(data$dmspols_harmon_1996_bin4 == 3)
+data$dmspols_harmon_1996_bin4_4 <- as.numeric(data$dmspols_harmon_1996_bin4 == 4)
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",

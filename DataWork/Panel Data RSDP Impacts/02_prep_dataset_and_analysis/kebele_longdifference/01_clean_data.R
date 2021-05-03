@@ -1,6 +1,5 @@
 # Prep data for long difference
-
-# NOTE: Uses clean panel data
+# Kebele
 
 #### Parameters
 NEAR_THRESHOLD <- 5*1000
@@ -51,7 +50,7 @@ for(i in 1:nrow(base_end_df)){
     dplyr::select(c(contains("_1996"),
                     contains("distance_rsdp123"),
                     ends_with("_pretnd96_92"),
-                    cell_id, W_CODE, R_CODE, Z_CODE,  distance_mst, # Pop2007
+                    cell_id, woreda_id, R_CODE, Z_CODE, # Pop2007
                     area_polygon, distance_city_addisababa)) 
   
   ## Merge

@@ -1,6 +1,5 @@
 # Prep data for long difference
-
-# NOTE: Uses clean panel data
+# Woreda
 
 #### Parameters
 # 0 meters, meaning woreda must intersect
@@ -17,21 +16,11 @@ base_end_df <- data.frame(baseline = c(1996, 1996, 1996),
 # Load Data --------------------------------------------------------------------
 data <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda", "merged_datasets", "panel_data_clean.Rds"))
 
-## Make sure have woreda in both years. Check why this always wouldn't be case?
-# data <- data %>%
-#   group_by(cell_id) %>%
-#   mutate(N_woreda = n()) %>%
-#   filter(N_woreda == max(N_woreda))
-
 data <- data[,!grepl("MA_ntl2000_|MA_poplog2000_|MA_gcu2000_|_ic_|_rural33|_rural2|_urban33|_urban2|_urban6|_rural6", names(data))]
 
 # Clean Data -------------------------------------------------------------------
-str_remove_vec <- function(x, rx){
-  # Remove items in vector "x" that contain "rx"
-  x[!grepl(rx, x)]
-}
-
 for(i in 1:nrow(base_end_df)){
+  print(i)
 
   #### Grab start/end years
   base_year <- base_end_df$baseline[i]
@@ -62,7 +51,7 @@ for(i in 1:nrow(base_end_df)){
     dplyr::select(c(contains("_1996"),
                     contains("distance_rsdp123"),
                     ends_with("_pretnd96_92"),
-                    cell_id, R_CODE, Z_CODE,Pop2007,  distance_mst, 
+                    cell_id, R_CODE, Z_CODE, Pop2007, 
                     area_polygon, distance_city_addisababa)) 
   
   ## Merge
