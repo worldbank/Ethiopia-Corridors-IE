@@ -11,9 +11,11 @@ for(unit in c("woreda", "kebele")){
     for(log in c("_log")){
       for(exclude in c("_exclude20km", "_exclude50km", "_exclude100km")){ 
         
+        print(paste(unit, theta, log, exclude))
+        
         #### Load/Subset Data
         data <- readRDS(file.path(panel_rsdp_imp_data_file_path, unit, "merged_datasets", "panel_data_clean.Rds"))
-    
+        
         data <- data %>%
           filter(year >= 1996)
         
@@ -24,6 +26,8 @@ for(unit in c("woreda", "kebele")){
         #### Prep Variables
         data$MA_var     <- data[[paste0("MA_pop2000_tt_theta",theta, log)]]
         data$MA_var_exc <- data[[paste0("MA_pop2000_tt_theta",theta,exclude, log)]]
+        
+        data <- data[data$MA_var != Inf,] # CAN DELETE ME!
         
         data$distance_city_addisababa <- data$distance_city_addisababa / 1000 / 100
 

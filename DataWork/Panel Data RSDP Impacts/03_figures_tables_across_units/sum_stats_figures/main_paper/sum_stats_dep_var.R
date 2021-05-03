@@ -25,11 +25,11 @@ if_zero_return <- function(x,
 }
 
 # Sum Stats --------------------------------------------------------------------
-data_woreda        <- readRDS(file.path(panel_rsdp_imp_data_file_path, "woreda",                      "merged_datasets", "panel_data_clean.Rds"))
-#data_ntl           <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_ntl",             "merged_datasets", "panel_data_clean.Rds"))
-#data_urban         <- readRDS(file.path(panel_rsdp_imp_data_file_path, "clusters_of_globcover_urban", "merged_datasets", "panel_data_clean.Rds"))
-data_grid_near_rd  <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad",       "merged_datasets", "grid_data_clean.Rds"))
-data_grid_full     <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia",       "merged_datasets", "panel_data_clean.Rds"))
+data_kebele_full   <- readRDS(file.path(panel_rsdp_imp_data_file_path, "kebele",                "merged_datasets", "panel_data_clean.Rds"))
+data_grid_near_rd  <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "panel_data_clean.Rds"))
+data_grid_full     <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", "merged_datasets", "panel_data_clean.Rds"))
+
+data_kebele_near_rd <- data_kebele_full[!is.na(data_kebele_full$years_since_improvedroad),]
 
 # Function for Sum Stats -------------------------------------------------------
 make_sum_stats <- function(data, 
@@ -60,19 +60,19 @@ make_sum_stats <- function(data,
     }
     
     mean_1996 <- data[[var]][data$year %in% 1996] %>% mean(na.rm = T) %>% round(ROUND_NUM)
-    mean_2012 <- data[[var]][data$year %in% 2012] %>% mean(na.rm = T) %>% round(ROUND_NUM)
+    mean_2013 <- data[[var]][data$year %in% 2013] %>% mean(na.rm = T) %>% round(ROUND_NUM)
     mean_2016 <- data[[var]][data$year %in% 2016] %>% mean(na.rm = T) %>% round(ROUND_NUM) %>% if_na_return()
     
     sumNon_1996 <- sum(data[[var]][data$year %in% 1996] > 0, na.rm = T) 
-    sumNon_2012 <- sum(data[[var]][data$year %in% 2012] > 0, na.rm = T) 
+    sumNon_2013 <- sum(data[[var]][data$year %in% 2013] > 0, na.rm = T) 
     sumNon_2016 <- sum(data[[var]][data$year %in% 2016] > 0, na.rm = T) %>% if_zero_return()
     
     cat(var_name, " & ",
         mean_1996 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
-        mean_2012 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
+        mean_2013 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
         mean_2016 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
         sumNon_1996 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
-        sumNon_2012 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
+        sumNon_2013 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
         sumNon_2016 %>% prettyNum(big.mark=",",scientific=FALSE), " \\\\ \n")
     
   }
@@ -88,79 +88,44 @@ cat("Variable & \\multicolumn{3}{c|}{Average} & \\multicolumn{3}{c}{Number of Un
 cat("         & 1996 & 2013 & 2016           &  1996 & 2013 & 2016                  \\\\ \n")
 cat("\\hline \n")
 
+## 1x1km Grid - Full
 N <- data_grid_full %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
 cat("\\multicolumn{4}{l}{{\\bf 1x1km Grid}} & ")
 cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-#cat("\\multicolumn{7}{c}{ } \\\\ \n")
 make_sum_stats(data_grid_full, 
                variables = c("dmspols_harmon", 
-                             #"dmspols_zhang_2",
-                             #"dmspols_zhang_6",
-                             #"dmspols_zhang_base0na",
                              "globcover_urban",
                              "globcover_cropland"),
                ROUND_NUM_URBAN = 4)
 
+## 1x1km Grid - Near Road
 cat("\\hline \n")
 N <- data_grid_near_rd %>% dplyr::filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid - Pixels Near Improved Road}} & ")
+cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid - Near Improved Road}} & ")
 cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
-#cat("\\multicolumn{7}{c}{ } \\\\ \n")
 make_sum_stats(data_grid_near_rd,
                variables = c("dmspols_harmon",
-                             #"dmspols_zhang_2",
-                             #"dmspols_zhang_6",
-                             #"dmspols_zhang_base0na",
                              "globcover_urban",
                              "globcover_cropland"),
                ROUND_NUM_URBAN = 4)
 
-# cat("\\hline \n")
-# N <- data_ntl %>% 
-#   filter(year %in% 1996,
-#          distance_anyimproved_ever <= 5000) %>% 
-#   nrow() %>% 
-#   prettyNum(big.mark=",",scientific=FALSE)
-# cat("\\multicolumn{4}{l}{{\\bf Cities [Defined from Lit Pixels]}} & ")
-# cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-# #cat("\\multicolumn{7}{c}{ } \\\\ \n")
-# make_sum_stats(data_ntl, 
-#                variables = c("dmspols_zhang", 
-#                              "dmspols_zhang_sum2",
-#                              "dmspols_zhang_sum6",
-#                              #"dmspols_zhang_base0na",
-#                              "globcover_urban_sum"))
-# 
-# cat("\\hline \n")
-# N <- data_urban %>% 
-#   filter(year %in% 1996,
-#          distance_anyimproved_ever <= 5000) %>% 
-#   nrow() %>% 
-#   prettyNum(big.mark=",",scientific=FALSE)
-# cat("\\multicolumn{4}{l}{{\\bf Cities [Defined from Globcover Urban Pixels]}} & ")
-# cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-# #cat("\\multicolumn{7}{c}{ } \\\\ \n")
-# make_sum_stats(data_urban, 
-#                variables = c("dmspols_zhang", 
-#                              "dmspols_zhang_sum2",
-#                              "dmspols_zhang_sum6",
-#                              #"dmspols_zhang_base0na",
-#                              "globcover_urban_sum"))
-
-
+## Kebele - Full
 cat("\\hline \n")
-N <- data_woreda %>% 
-  filter(year %in% 1996) %>% 
-  nrow() %>% 
-  prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{4}{l}{{\\bf Woreda}} & ")
+N <- data_kebele_full %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
+cat("\\multicolumn{4}{l}{{\\bf Kebele}} & ")
 cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-#cat("\\multicolumn{7}{c}{ } \\\\ \n")
-make_sum_stats(data_woreda, 
+make_sum_stats(data_kebele_full, 
                variables = c("dmspols_harmon", 
-                             #"dmspols_zhang_sum2",
-                             #"dmspols_zhang_sum6",
-                             #"dmspols_zhang_base0na",
+                             "globcover_urban_sum",
+                             "globcover_cropland_sum"))
+
+## Kebele - Full
+cat("\\hline \n")
+N <- data_kebele_near_rd %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
+cat("\\multicolumn{4}{l}{{\\bf Kebele - Near Improved Road}} & ")
+cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
+make_sum_stats(data_kebele_near_rd, 
+               variables = c("dmspols_harmon", 
                              "globcover_urban_sum",
                              "globcover_cropland_sum"))
 

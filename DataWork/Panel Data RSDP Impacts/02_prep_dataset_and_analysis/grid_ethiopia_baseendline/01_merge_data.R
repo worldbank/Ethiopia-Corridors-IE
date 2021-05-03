@@ -2,7 +2,7 @@
 
 #### Parameters
 # Vector of all baseline and endline years that would later use
-YEARS_USE <- c(1996, 2009, 2012, 2016)
+YEARS_USE <- c(1996, 2009, 2013, 2016)
 
 # Load Data / Create Dataset Lists -----------------------------------------------
 
@@ -36,10 +36,7 @@ DATASETS_TIME_VARYING <- c("viirs.Rds",
                            #"distance_roads_by_speedlimit.Rds",
                            "temperature.Rds",
                            "precipitation.Rds",
-                           "ndvi.Rds",
-                           "dmspols.Rds",
-                           "dmspolsharmon.Rds",
-                           "dmspols_intercalibrated_zhang.Rds")
+                           "dmspolsharmon.Rds")
 
 # Merge ------------------------------------------------------------------------
 for(dataset in DATASETS_TIME_VARYING){
