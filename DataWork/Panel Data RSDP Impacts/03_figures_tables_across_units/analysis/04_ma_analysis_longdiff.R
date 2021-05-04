@@ -17,7 +17,7 @@ for(unit in c("woreda", "kebele")){ # "woreda", "clusters_of_ntl"
         
         #### Cluster Var and FE Var
         if(unit %in% "woreda") data$cluster_var <- data$Z_CODE
-        if(unit %in% "kebele") data$cluster_var <- data$Z_CODE
+        if(unit %in% "kebele") data$cluster_var <- data$woreda_id
         
         if(unit %in% "woreda") data$fe_var <- data$Z_CODE
         if(unit %in% "kebele") data$fe_var <- data$Z_CODE

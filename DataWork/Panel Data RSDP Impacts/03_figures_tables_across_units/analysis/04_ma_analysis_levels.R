@@ -21,7 +21,7 @@ for(unit in c("woreda", "kebele")){
         
         #### Cluster Var and FE Var
         if(unit %in% "woreda") data$cluster_var <- data$Z_CODE
-        if(unit %in% "kebele") data$cluster_var <- data$Z_CODE
+        if(unit %in% "kebele") data$cluster_var <- data$woreda_id
         
         #### Prep Variables
         data$MA_var     <- data[[paste0("MA_pop2000_tt_theta",theta, log)]]
