@@ -17,7 +17,7 @@ points_all <- points_all %>%
 #  -- time invarient (merge by cell_id)
 #  -- time varying (merge by cell_id and year)
 
-DATASETS_TIME_INVARIANT <- c("kebele_details.Rds",
+DATASETS_TIME_INVARIANT <- c(#"kebele_details.Rds",
                              "distance_roads_by_rsdp_phase.Rds",
                              "distance_roads_any_improved_ever.Rds",
                              "distance_roads_any_2016_ever.Rds",
@@ -25,6 +25,7 @@ DATASETS_TIME_INVARIANT <- c("kebele_details.Rds",
                              "distance_rsdp_iii_roads_mst_and_targetted_areas.Rds",
                              "distance_rsdp_iv_roads_mst_and_targetted_areas.Rds",
                              "distance_cities.Rds",
+                             "adm_units.Rds",
                              "gpw.Rds",
                              "area.Rds")
 

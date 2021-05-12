@@ -101,20 +101,20 @@ data <- merge(data, data_MA_vars, by = "cell_id")
 # NTL Bins/Groups --------------------------------------------------------------
 
 # Woreda Values
-data <- data %>%
-  dplyr::group_by(W_CODE) %>% 
-  dplyr::mutate(dmspols_harmon_1996_woreda        = mean(dmspols_harmon_1996, na.rm=T),
-                dmspols_harmon_sum2_1996_woreda   = sum(dmspols_harmon_sum2_1996, na.rm = T),
-                dmspols_harmon_sum6_1996_woreda   = sum(dmspols_harmon_sum6_1996, na.rm = T),
-                dmspols_harmon_sum10_1996_woreda  = sum(dmspols_harmon_sum10_1996, na.rm = T)) %>%
-  dplyr::ungroup()
+# data <- data %>%
+#   dplyr::group_by(W_CODE) %>% 
+#   dplyr::mutate(dmspols_harmon_1996_woreda        = mean(dmspols_harmon_1996, na.rm=T),
+#                 dmspols_harmon_sum2_1996_woreda   = sum(dmspols_harmon_sum2_1996, na.rm = T),
+#                 dmspols_harmon_sum6_1996_woreda   = sum(dmspols_harmon_sum6_1996, na.rm = T),
+#                 dmspols_harmon_sum10_1996_woreda  = sum(dmspols_harmon_sum10_1996, na.rm = T)) %>%
+#   dplyr::ungroup()
 
 # NTL Bins
-data$dmspols_harmon_1996_bin4 <- NA
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda %in% 0] <- 1
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda > 0]    <- 2
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum6_1996_woreda > 0]    <- 3
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum10_1996_woreda > 0]   <- 4
+data$dmspols_harmon_1996_bin4 <- data$wor_ntlgroup_4bin
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda %in% 0] <- 1
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda > 0]    <- 2
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum6_1996_woreda > 0]    <- 3
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum10_1996_woreda > 0]   <- 4
 
 data$dmspols_harmon_1996_bin4_1 <- as.numeric(data$dmspols_harmon_1996_bin4 == 1)
 data$dmspols_harmon_1996_bin4_2 <- as.numeric(data$dmspols_harmon_1996_bin4 == 2)
@@ -122,10 +122,10 @@ data$dmspols_harmon_1996_bin4_3 <- as.numeric(data$dmspols_harmon_1996_bin4 == 3
 data$dmspols_harmon_1996_bin4_4 <- as.numeric(data$dmspols_harmon_1996_bin4 == 4)
 
 # Baseline NTL quantiles
-m <- data$dmspols_harmon_1996_woreda[data$dmspols_harmon_1996_woreda > 0] %>% median(na.rm=T) 
-data$ntl_group <- NA
-data$ntl_group[data$dmspols_harmon_1996_woreda < m] <- "1"
-data$ntl_group[data$dmspols_harmon_1996_woreda >= m] <- "2"
+#m <- data$dmspols_harmon_1996_woreda[data$dmspols_harmon_1996_woreda > 0] %>% median(na.rm=T) 
+data$ntl_group <- data$wor_ntlgroup_2bin
+#data$ntl_group[data$dmspols_harmon_1996_woreda < m] <- "1"
+#data$ntl_group[data$dmspols_harmon_1996_woreda >= m] <- "2"
 
 # Pretrends Variables ----------------------------------------------------------
 data <- data %>%
@@ -139,9 +139,6 @@ data$far_addis <- as.numeric(data$distance_city_addisababa >= 100*1000)
 
 data$dmspols_harmon_ihs2013 <- data$dmspols_harmon_ihs
 data$dmspols_harmon_ihs2013[data$year > 2013] <- NA
-
-data <- data %>%
-  dplyr::rename(woreda_id = W_CODE)
 
 # Export -----------------------------------------------------------------------
 saveRDS(data, file.path(panel_rsdp_imp_data_file_path, "kebele", "merged_datasets", "panel_data_clean.Rds"))

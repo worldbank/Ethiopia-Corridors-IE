@@ -51,17 +51,18 @@ data <- data %>%
 
 #### Groupigs
 ## Median
-m <- data$dmspols_harmon_woreda_1996[data$dmspols_harmon_woreda_1996 > 0] %>% median(na.rm=T)
-data$ntl_group <- NA
-data$ntl_group[data$dmspols_harmon_woreda_1996 <= m] <- "1"
-data$ntl_group[data$dmspols_harmon_woreda_1996 > m] <- "2"
+# m <- data$dmspols_harmon_woreda_1996[data$dmspols_harmon_woreda_1996 > 0] %>% median(na.rm=T)
+# data$ntl_group <- NA
+# data$ntl_group[data$dmspols_harmon_woreda_1996 <= m] <- "1"
+# data$ntl_group[data$dmspols_harmon_woreda_1996 > m] <- "2"
+data$ntl_group <- data$wor_ntlgroup_2bin
 
 ## bin4
-data$dmspols_harmon_1996_bin4 <- NA
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda %in% 0] <- 1
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda > 0]    <- 2
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum6_1996_woreda > 0]    <- 3
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum10_1996_woreda > 0]   <- 4
+data$dmspols_harmon_1996_bin4 <- data$wor_ntlgroup_4bin
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda %in% 0] <- 1
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996_woreda > 0]    <- 2
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum6_1996_woreda > 0]    <- 3
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum10_1996_woreda > 0]   <- 4
 
 data$dmspols_harmon_1996_bin4_1 <- as.numeric(data$dmspols_harmon_1996_bin4 == 1)
 data$dmspols_harmon_1996_bin4_2 <- as.numeric(data$dmspols_harmon_1996_bin4 == 2)

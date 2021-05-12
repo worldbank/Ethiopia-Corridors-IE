@@ -20,7 +20,7 @@
 # --"clusters_of_ntl": Urban Clusters from NTL
 # --"clusters_of_ntlall": Urban Clusters from NTL
 
-DATASET_TYPE <- "kebele"
+DATASET_TYPE <- "dmspols_grid_ethiopia"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -83,7 +83,7 @@ if(EXTRACT_DATA){
     list.files(pattern = ".R", full.names = T)
   
   ## Scripts specific to units
-  if(GRID_DATASET | grepl("clusters", DATASET_TYPE)){
+  if(GRID_DATASET | grepl("kebele", DATASET_TYPE)){
     scripts_unit_specific <- file.path(rsdp_impact_prep_data_code_file_path, 
                                        "02_extract_variables_grid_cluster_specific") %>%
       list.files(pattern = ".R", full.names = T)

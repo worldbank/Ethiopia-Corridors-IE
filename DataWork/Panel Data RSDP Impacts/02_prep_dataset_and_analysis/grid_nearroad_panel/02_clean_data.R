@@ -57,17 +57,10 @@ data_all <- data_all %>%
 
 #### Groupigs
 ## Median
-m <- data_all$dmspols_harmon_woreda_1996[data_all$dmspols_harmon_woreda_1996 > 0] %>% median(na.rm=T)
-data_all$ntl_group <- NA
-data_all$ntl_group[data_all$dmspols_harmon_woreda_1996 <= m] <- "1"
-data_all$ntl_group[data_all$dmspols_harmon_woreda_1996 > m] <- "2"
+data$ntl_group <- data$wor_ntlgroup_2bin
 
 ## bin4
-data_all$dmspols_harmon_1996_bin4 <- NA
-data_all$dmspols_harmon_1996_bin4[data_all$dmspols_harmon_sum2_1996_woreda %in% 0] <- 1
-data_all$dmspols_harmon_1996_bin4[data_all$dmspols_harmon_sum2_1996_woreda > 0]    <- 2
-data_all$dmspols_harmon_1996_bin4[data_all$dmspols_harmon_sum6_1996_woreda > 0]    <- 3
-data_all$dmspols_harmon_1996_bin4[data_all$dmspols_harmon_sum10_1996_woreda > 0]   <- 4
+data_all$dmspols_harmon_1996_bin4 <- data$wor_ntlgroup_4bin
 
 #### Other
 data$dmspols_harmon_ihs2013 <- data$dmspols_harmon_ihs

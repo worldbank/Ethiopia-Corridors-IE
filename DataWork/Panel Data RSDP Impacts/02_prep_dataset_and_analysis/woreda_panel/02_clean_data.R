@@ -101,11 +101,11 @@ data <- merge(data, data_MA_vars, by = "cell_id")
 # NTL Bins/Groups --------------------------------------------------------------
 
 # NTL Bins
-data$dmspols_harmon_1996_bin4 <- NA
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996 %in% 0] <- 1
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996 > 0]    <- 2
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum6_1996 > 0]    <- 3
-data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum10_1996 > 0]   <- 4
+data$dmspols_harmon_1996_bin4 <- data$wor_ntlgroup_4bin
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996 %in% 0] <- 1
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum2_1996 > 0]    <- 2
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum6_1996 > 0]    <- 3
+# data$dmspols_harmon_1996_bin4[data$dmspols_harmon_sum10_1996 > 0]   <- 4
 
 data$dmspols_harmon_1996_bin4_1 <- as.numeric(data$dmspols_harmon_1996_bin4 == 1)
 data$dmspols_harmon_1996_bin4_2 <- as.numeric(data$dmspols_harmon_1996_bin4 == 2)
@@ -113,10 +113,10 @@ data$dmspols_harmon_1996_bin4_3 <- as.numeric(data$dmspols_harmon_1996_bin4 == 3
 data$dmspols_harmon_1996_bin4_4 <- as.numeric(data$dmspols_harmon_1996_bin4 == 4)
 
 # Baseline NTL quantiles
-dmspols_harmon_1996_median <- data$dmspols_harmon_1996[data$dmspols_harmon_1996 > 0] %>% median(na.rm=T) 
-data$dmspols_harmon_1996_group[data$dmspols_harmon_1996 < dmspols_harmon_1996_median] <- "1"
-data$dmspols_harmon_1996_group[data$dmspols_harmon_1996 >= dmspols_harmon_1996_median] <- "2"
-data$ntl_group <- data$dmspols_harmon_1996_group
+# dmspols_harmon_1996_median <- data$dmspols_harmon_1996[data$dmspols_harmon_1996 > 0] %>% median(na.rm=T) 
+# data$dmspols_harmon_1996_group[data$dmspols_harmon_1996 < dmspols_harmon_1996_median] <- "1"
+# data$dmspols_harmon_1996_group[data$dmspols_harmon_1996 >= dmspols_harmon_1996_median] <- "2"
+data$ntl_group <- data$wor_ntlgroup_2bin
 
 # Pretrends Variables ----------------------------------------------------------
 data <- data %>%
