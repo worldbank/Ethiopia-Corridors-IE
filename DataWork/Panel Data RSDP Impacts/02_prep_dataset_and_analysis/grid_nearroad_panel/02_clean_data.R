@@ -57,14 +57,14 @@ data_all <- data_all %>%
 
 #### Groupigs
 ## Median
-data$ntl_group <- data$wor_ntlgroup_2bin
+data_all$ntl_group <- data_all$wor_ntlgroup_2bin
 
 ## bin4
-data_all$dmspols_harmon_1996_bin4 <- data$wor_ntlgroup_4bin
+data_all$dmspols_harmon_1996_bin4 <- data_all$wor_ntlgroup_4bin
 
 #### Other
-data$dmspols_harmon_ihs2013 <- data$dmspols_harmon_ihs
-data$dmspols_harmon_ihs2013[data$year > 2013] <- NA
+data_all$dmspols_harmon_ihs2013 <- data_all$dmspols_harmon_ihs
+data_all$dmspols_harmon_ihs2013[data_all$year > 2013] <- NA
 
 # Set Up Loop Over Chunks ------------------------------------------------------
 

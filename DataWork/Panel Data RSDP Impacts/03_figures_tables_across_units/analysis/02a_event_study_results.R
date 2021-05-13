@@ -6,7 +6,7 @@
 OVERWRITE_FILES <- T
 
 #### Default
-dataset <- "kebele"
+dataset <- "dmspols_grid_nearroad"
 dep_var <- "globcover_urban"
 indep_var <- "years_since_improvedroad"
 controls <- ""

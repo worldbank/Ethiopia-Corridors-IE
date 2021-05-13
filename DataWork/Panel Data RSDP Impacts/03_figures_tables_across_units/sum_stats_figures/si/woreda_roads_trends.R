@@ -21,13 +21,13 @@ data$road_length_70 <- data$road_length_70above - data$road_length_120above
 data$road_length_120 <- data$road_length_120above
 
 data_yr <- data %>%
-  group_by(year, dmspols_1996_bin4) %>%
+  group_by(year, dmspols_harmon_1996_bin4) %>%
   dplyr::summarise_at(vars(contains("road_length")), mean) %>%
   ungroup()
 
 # Data to Long -----------------------------------------------------------------
 data_yr_long <- data_yr %>%
-  pivot_longer(cols = -c(year, dmspols_1996_bin4)) %>%
+  pivot_longer(cols = -c(year, dmspols_harmon_1996_bin4)) %>%
   filter(year >= 1996,
          year <= 2016)
 
@@ -44,15 +44,15 @@ data_yr_long$speed <- data_yr_long$name %>%
   factor(levels = c("10", "15", "20", "25", "30", "35", "45", "50", "70", "120")) 
 
 data_yr_long$dmspols_1996_bin4_cat <- NA
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 1] <- "Dark: Max NTL in Woreda, 0 - 1"
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 2] <- "Low: Max NTL in Woreda, 2 - 5"
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 3] <- "Medium: Max NTL in Woreda, 6 - 9"
-data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_1996_bin4 %in% 4] <- "High: Max NTL in Woreda, 10+"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_harmon_1996_bin4 %in% 1] <- "Dark: Max NTL in Woreda, 0"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_harmon_1996_bin4 %in% 2] <- "Low: Max NTL in Woreda, 1 - 5"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_harmon_1996_bin4 %in% 3] <- "Medium: Max NTL in Woreda, 6 - 8"
+data_yr_long$dmspols_1996_bin4_cat[data_yr_long$dmspols_harmon_1996_bin4 %in% 4] <- "High: Max NTL in Woreda, 9+"
 
 data_yr_long$dmspols_1996_bin4_cat <- data_yr_long$dmspols_1996_bin4_cat %>%
-  factor(levels = c("Dark: Max NTL in Woreda, 0 - 1", "Low: Max NTL in Woreda, 2 - 5", "Medium: Max NTL in Woreda, 6 - 9", "High: Max NTL in Woreda, 10+"))
+  factor(levels = c("Dark: Max NTL in Woreda, 01", "Low: Max NTL in Woreda, 1 - 5", "Medium: Max NTL in Woreda, 6 - 8", "High: Max NTL in Woreda, 9+"))
 
-data_yr_long$dmspols_1996_bin4 <- data_yr_long$dmspols_1996_bin4 %>% as.factor()
+data_yr_long$dmspols_harmon_1996_bin4 <- data_yr_long$dmspols_harmon_1996_bin4 %>% as.factor()
 
 # [Figure] All Speeds ----------------------------------------------------------
 data_yr_long %>%
@@ -85,8 +85,8 @@ data_yr_long %>%
   #           color = "black",
   #           size = 1) +
   geom_line(aes(x = year, y = value, 
-                group = dmspols_1996_bin4, 
-                color = dmspols_1996_bin4),
+                group = dmspols_harmon_1996_bin4, 
+                color = dmspols_harmon_1996_bin4),
             size = 1.5) +
   labs(x = NULL,
        y = "Kilometers of Road",
@@ -94,7 +94,7 @@ data_yr_long %>%
        subtitle = "Across Woredas with Different Baseline Nighttime Lights",
        color = "Maximum Value of\nNighttime Lights\nWithin Woreda") +
   scale_color_manual(values = c("black", "gold", "orange2", "red"),
-                     labels = c("Dark: 0-1", "Low: 2-5", "Medium: 6-9", "High: 10+")) +
+                     labels = c("Dark: 0", "Low: 1-5", "Medium: 6-8", "High: 9+")) +
   facet_wrap(~speed_name,
              scale = "free_y",
              nrow = 1) +

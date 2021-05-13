@@ -5,7 +5,7 @@
 # https://cran.r-project.org/web/packages/did/vignettes/did-basics.html
 
 #### Parameters
-OVERWRITE_FILES <- F
+OVERWRITE_FILES <- T
 
 library(did)
 
@@ -15,54 +15,38 @@ dep_var <- "dmspols_harmon_ihs"
 indep_var <- "year_improvedroad_50aboveafter"
 ntl_group <- "high"
 
-for(dataset in c("woreda", 
-                 "clusters_of_ntlall",
-                 #"dmspols_grid_nearroad",
-                 "clusters_of_globcover_urban")){
-  for(dep_var in c("globcover_urban_sum_ihs",
-                   "dmspols_harmon_ihs")){
+for(dataset in c("kebele", "dmspols_grid_nearroad")){
+  
+  # Define Dependent Variables -------------------------------------------------
+  if(dataset %in% "kebele"){
+    dep_var_vec <- c("globcover_urban_sum_ihs", "globcover_cropland_sum_ihs", "dmspols_harmon_ihs", "dmspols_harmon_ihs2013")
+  }           
+  
+  if(dataset %in% "dmspols_grid_nearroad"){
+    dep_var_vec <- c("globcover_urban", "globcover_cropland", "dmspols_harmon_ihs", "dmspols_harmon_ihs2013")
+  } 
+  
+  for(dep_var in dep_var_vec){
     for(indep_var in c("year_improvedroad",
                        "year_improvedroad_50aboveafter",
                        "year_improvedroad_below50after")){
-      for(ntl_group in c("all", 
-                         "low", 
-                         "high")){
+      for(ntl_group in c("all", "low", "high")){
         
         print(paste(dataset, dep_var, indep_var, ntl_group, sep = " - "))
         
-        ## Load data
-        if(dataset == "dmspols_grid_nearroad"){
-          data <- readRDS(file.path(panel_rsdp_imp_data_file_path, dataset, "merged_datasets", "grid_data_clean.Rds"))
-          data <- data %>% dplyr::group_by(woreda_id) %>% dplyr::mutate(dmspols_1996sum = sum(dmspols[year == 1996], na.rm=T))
-          cluster_var <- "woreda_id"
-        } else{
-          data <- readRDS(file.path(panel_rsdp_imp_data_file_path, dataset, "merged_datasets", "panel_data_clean.Rds"))
-          data <- data %>% dplyr::group_by(cell_id) %>% dplyr::mutate(dmspols_1996sum = dmspols_sum[year == 1996])
-          cluster_var <- NULL
-        }
-        
-        data$dmspols_harmon_ihs_2013 <- data$dmspols_harmon_ihs
-        data$dmspols_harmon_ihs_2013[data$year > 2013] <- NA
+        ## Load/Prep Data
+        data <- readRDS(file.path(panel_rsdp_imp_data_file_path, dataset, "merged_datasets", "panel_data_clean.Rds"))
+        cluster_var <- "woreda_id"
         
         if(dep_var %in% "dmspols_harmon_ihs_2013"){
           data <- data %>%
             dplyr::filter(year <= 2013)
         }
         
-        #data <- data[data$cell_id %in% c(1:10, 200:210, 300:310, 400:410, 500:505),]
-        
-        ## Dep Var / Indep Var Variables
-        if(dep_var %in% "globcover_urban_sum_ihs" & dataset %in% "dmspols_grid_nearroad") dep_var <- "globcover_urban"
-        
         data$dep_var   <- data[[dep_var]]
         data$indep_var <- data[[indep_var]]
         
         ## Median Group
-        m <- data$dmspols_1996sum[data$dmspols_1996sum > 0] %>% median(na.rm=T)
-        data$ntl_group <- NA
-        data$ntl_group[data$dmspols_1996sum <= m] <- "1"
-        data$ntl_group[data$dmspols_1996sum > m] <- "2"
-        
         if(ntl_group %in% "low")  data <- data[data$ntl_group %in% "1",]
         if(ntl_group %in% "high") data <- data[data$ntl_group %in% "2",]
         
@@ -78,18 +62,19 @@ for(dataset in c("woreda",
         data <- data[,names(data) %in% c("dep_var", "indep_var", "cell_id", "year", "woreda_id")]
         
         ## Title
-        dataset_name <- case_when(dataset %in% "woreda"                      ~ "Woreda",
-                                  dataset %in% "clusters_of_globcover_urban" ~ "Cities - GC-Urban",
-                                  dataset %in% "clusters_of_ntlall"          ~ "Cities - NTL",
+        dataset_name <- case_when(dataset %in% "kebele"                      ~ "Kebele",
                                   dataset %in% "dmspols_grid_nearroad"       ~ "1x1km Grid")
         
         indepvar_name <- case_when(indep_var %in% "year_improvedroad"              ~ "All Roads",
                                    indep_var %in% "year_improvedroad_50aboveafter" ~ "Roads >= 50km/hr After Upgrade",
                                    indep_var %in% "year_improvedroad_below50after" ~ "Roads < 50km/hr After Upgrade")
         
-        depvar_name <- case_when(dep_var %in% "globcover_urban_ihs" ~ "Urban",
+        depvar_name <- case_when(dep_var %in% "globcover_urban_sum_ihs" ~ "Urban",
                                  dep_var %in% "globcover_urban" ~ "Urban",
-                                 dep_var %in% "dmspols_harmon_ihs" ~ "NTL")
+                                 dep_var %in% "dmspols_harmon_ihs" ~ "NTL",
+                                 dep_var %in% "dmspols_harmon_ihs2013" ~ "NTL [2013]",
+                                 dep_var %in% "globcover_cropland_sum_ihs" ~ "Cropland",
+                                 dep_var %in% "globcover_cropland" ~ "Cropland")
         
         ntl_group_name <- case_when(ntl_group %in% "low" ~ "Low",
                                     ntl_group %in% "high" ~ "High",

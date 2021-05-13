@@ -45,3 +45,5 @@ woreda$wor_ntlgroup_4bin[woreda$woreda_dmspols96_max %in% 0:1] <- 1
 
 # Export -----------------------------------------------------------------------
 saveRDS(woreda, file.path(project_file_path, "Data", "Woreda Population", "FinalData", "woreda.Rds"))
+
+
