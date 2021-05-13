@@ -153,7 +153,7 @@ calc_travel_time <- function(year, woreda_points){
   return(NULL)
 }
 
-tmp <- lapply(1996:2016, calc_travel_time, woreda_points)
+tmp <- lapply(2016:1996, calc_travel_time, woreda_points)
 
 # Calculate Linear Distance ----------------------------------------------------
 distance_df <- lapply(1:nrow(woreda_points), function(i){

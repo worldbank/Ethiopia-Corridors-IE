@@ -15,6 +15,7 @@ if(Sys.info()[["user"]] == "WB521633") code_file_path <- "C:/Users/wb521633/Docu
 if(Sys.info()[["user"]] == "andm2")    code_file_path <- "G:/Work/Ethiopia/Ethiopia-Corridors-IE"
 
 if(Sys.info()[["user"]] == "robmarty") overleaf_path <- "~/Dropbox/Apps/Overleaf/The Impact of Ethiopia RSDP Evidence from Satellite Data"
+if(Sys.info()[["user"]] == "WB521633") overleaf_path <- "C:/Users/wb521633/Dropbox/Apps/Overleaf/The Impact of Ethiopia RSDP Evidence from Satellite Data"
 
 data_file_path <- file.path(project_file_path, "Data")
 panel_rsdp_imp_file_path <- file.path(project_file_path, "Data", "Panel Data RSDP Impacts")
