@@ -4,15 +4,6 @@
 p_dodge_width <- 1
 
 # Load Data --------------------------------------------------------------------
-group_df <-  file.path(panel_rsdp_imp_data_file_path,
-                       "all_units",
-                       "results_datasets",
-                       "individual_datasets") %>%
-  list.files(full.names = T,
-             pattern = "*.Rds") %>%
-  str_subset("group_did_attgt") %>%
-  map_df(readRDS)
-
 dynamic_df <- file.path(panel_rsdp_imp_data_file_path,
                         "all_units",
                         "results_datasets",
@@ -22,17 +13,30 @@ dynamic_df <- file.path(panel_rsdp_imp_data_file_path,
   str_subset("dynamic_did_attgt") %>%
   map_df(readRDS)
 
+# group_df <-  file.path(panel_rsdp_imp_data_file_path,
+#                        "all_units",
+#                        "results_datasets",
+#                        "individual_datasets") %>%
+#   list.files(full.names = T,
+#              pattern = "*.Rds") %>%
+#   str_subset("group_did_attgt") %>%
+#   map_df(readRDS)
+
 # Clean Data -------------------------------------------------------------------
 dynamic_df <- dynamic_df %>%
   dplyr::filter(dep_var %in% c("dmspols_harmon_ihs",
                                "globcover_urban",
-                               "globcover_urban_sum_ihs")) %>%
+                               "globcover_urban_sum_ihs",
+                               "globcover_cropland",
+                               "globcover_cropland_sum_ihs")) %>%
   
   ## Rename/Factor Dep Var
   mutate(dep_var = case_when(
     dep_var == "dmspols_harmon_ihs" ~ "NTL",
     dep_var == "globcover_urban_sum_ihs" ~ "Urban",
-    dep_var == "globcover_urban" ~ "Urban"
+    dep_var == "globcover_urban" ~ "Urban",
+    dep_var == "globcover_cropland_sum_ihs" ~ "Cropland",
+    dep_var == "globcover_cropland" ~ "Cropland"
   )) %>%
   mutate(indep_var = case_when(
     indep_var == "year_improvedroad" ~ "All",
@@ -106,33 +110,13 @@ ggsave(p,
        height = 6.5, width = 8.5)
 rm(p)
 
-p <- make_figures_by_base_ntl("woreda", dynamic_df)
+p <- make_figures_by_base_ntl("kebele", dynamic_df)
 ggsave(p,
-       filename = file.path(paper_figures, paste0("eventstudy_attgt_woreda_",addis_dist,".png")),
-       height = 6.5, width = 8.5)
-rm(p)
-
-p <- make_figures_by_base_ntl("clusters_of_globcover_urban", dynamic_df)
-ggsave(p,
-       filename = file.path(paper_figures, paste0("eventstudy_attgt_urbancluster_",addis_dist,".png")),
-       height = 6.5, width = 8.5)
-rm(p)
-
-p <- make_figures_by_base_ntl("clusters_of_ntlall", dynamic_df)
-ggsave(p,
-       filename = file.path(paper_figures, paste0("eventstudy_attgt_ntlcluster_",addis_dist,".png")),
+       filename = file.path(paper_figures, paste0("eventstudy_attgt_kebele_",addis_dist,".png")),
        height = 6.5, width = 8.5)
 rm(p)
 
 
-data_city <- dynamic_df[(dynamic_df$dataset %in% "clusters_of_ntlall" & dynamic_df$dep_var %in% c("NTL")) |
-                          (dynamic_df$dataset %in% "clusters_of_globcover_urban" & dynamic_df$dep_var %in% c("Urban")),]
-p <- make_figures_by_base_ntl(c("clusters_of_ntlall", 
-                                "clusters_of_globcover_urban"), data_city)
-ggsave(p,
-       filename = file.path(paper_figures, paste0("eventstudy_attgt_cities_",addis_dist,".png")),
-       height = 6.5, width = 8.5)
-rm(p)
 
 
 
