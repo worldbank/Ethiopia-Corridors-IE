@@ -4,9 +4,6 @@
 roads <- readRDS(file.path(data_file_path, "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 eth_adm <- readRDS(file.path(data_file_path, "GADM", "RawData", "gadm36_ETH_0_sp.rds"))
 
-#dmsp1996 <- raster(file.path(data_file_path, "Nighttime Lights", "DMSPOLS", "RawData", "Individual Files", "eth_dmspols_1996.tif")) %>% crop(eth_adm)
-#dmsp2012 <- raster(file.path(data_file_path, "Nighttime Lights", "DMSPOLS", "RawData", "Individual Files", "eth_dmspols_2012.tif")) %>% crop(eth_adm)
-
 dmsp1996 <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", "Harmonized_DN_NTL_1992_calDMSP.tif")) %>% crop(eth_adm) %>% mask(eth_adm)
 dmsp2012 <- raster(file.path(data_file_path, "Nighttime Lights", "VIIRS_DMSPOLS_Intercalibrated", "Harmonized_DN_NTL_2013_calDMSP.tif")) %>% crop(eth_adm) %>% mask(eth_adm)
 
@@ -38,14 +35,19 @@ make_dmsp_figure <- function(df, title){
     #            fill = "black") +
     geom_polygon(data = eth_adm,
                  aes(x = long, y = lat, group = group),
-                 color = "black", fill = "black",
+                 color = "black", fill = "white",
                  size = .15) +
     geom_raster(data = df[df$value_log > 0,] , 
                 aes(x = x, y = y,
                     fill = value_log)) + 
-    scale_fill_gradient2(low = "yellow",
-                         mid = "gold",
-                         high = "darkorange1",
+    scale_fill_gradient2(low = "darkorange1",# "darkorange1",
+                         mid = "firebrick1",
+                         high = "yellow",
+                         
+                        # high = "darkorange1",
+                        # mid = "gold",
+                        # low = "firebrick1",
+                         
                          midpoint = 2, # 2
                          limits = c(0, 4.2)) +
     labs(title = title) +
@@ -100,7 +102,7 @@ make_gc_figure <- function(df, title){
     geom_polygon(data = eth_adm,
                  aes(x = long, y = lat, group = group),
                  color = "black", #fill = NA,
-                fill = "gray30",
+                 fill = "white",
                  #fill = "gray60", 
                  #fill = "black",
                  size = .15) +
@@ -120,12 +122,69 @@ make_gc_figure <- function(df, title){
 p_gc1996 <- make_gc_figure(gc1996_df, "Baseline")
 p_gc2016 <- make_gc_figure(gc2016_df, "Endline")
 
-p_gc <- ggarrange(p_gc1996, p_gc2016, nrow = 1) %>%
+p_gc_urban <- ggarrange(p_gc1996, p_gc2016, nrow = 1) %>%
   annotate_figure(top = text_grob("GlobCover-Urban", color = "black", face = "bold", size = 14, vjust = 1)) +
   bgcolor("white") + 
   border("white")
 
-#ggsave(p_gc,  filename = "~/Desktop/test.png", height = 4, width = 8)
+# GlobCover-Cropland --------------------------------------------------------------
+#### Prep Data
+## 1996
+gc1996_df <- gc1996 %>%
+  coordinates() %>%
+  as.data.frame()
+gc1996_df$value <- gc1996[]
+gc1996_df <- gc1996_df[gc1996_df$value %in% c(10,11,12,20,30),]
+
+#coordinates(gc1996_df) <- ~x+y
+#crs(gc1996_df) <- CRS("+init=epsg:4326")
+#gc1996_df <- gBuffer(gc1996_df, width = 2/111.12, byid = T)
+
+## 2016
+gc2016_df <- gc2016 %>%
+  coordinates() %>%
+  as.data.frame() 
+gc2016_df$value <- gc2016[]
+gc2016_df <- gc2016_df[gc2016_df$value %in% c(10,11,12,20,30),]
+
+#coordinates(gc2016_df) <- ~x+y
+#crs(gc2016_df) <- CRS("+init=epsg:4326")
+#gc2016_df <- gBuffer(gc2016_df, width = 2/111.12, byid = T)
+
+#### Map
+make_gc_figure <- function(df, title){
+  
+  ggplot() +
+    # geom_raster(data = df,
+    #             aes(x = x, y = y),
+    #             fill = "black") +
+    geom_polygon(data = eth_adm,
+                 aes(x = long, y = lat, group = group),
+                 color = "black", #fill = NA,
+                 fill = "white",
+                 #fill = "gray60", 
+                 #fill = "black",
+                 size = .15) +
+    geom_raster(data = df[df$value > 0,] , 
+                aes(x = x, y = y),
+                fill = "chartreuse3") + 
+    labs(title = title) +
+    coord_quickmap() +
+    theme_void() +
+    theme(legend.position = "none",
+          plot.background = element_rect(fill = "white",
+                                         color = "white"),
+          plot.title = element_text(hjust = 0.5, color = "black"))
+  
+}
+
+p_gc1996 <- make_gc_figure(gc1996_df, "Baseline")
+p_gc2016 <- make_gc_figure(gc2016_df, "Endline")
+
+p_gc_crop <- ggarrange(p_gc1996, p_gc2016, nrow = 1) %>%
+  annotate_figure(top = text_grob("GlobCover-Cropland", color = "black", face = "bold", size = 14, vjust = 1)) +
+  bgcolor("white") + 
+  border("white")
 
 # RSDP Upgrades ----------------------------------------------------------------
 ## Road completion year
@@ -145,7 +204,7 @@ roads_improved_tidy <- merge(roads_improved_tidy, roads_improved@data, by = "id"
 p_rsdp <- ggplot() +
   geom_polygon(data = eth_adm,
                aes(x = long, y = lat, group = group),
-               fill = "gray30", 
+               fill = "white", 
               # fill = "gray60", 
                color = "black", size=.2) + # gray40
   geom_path(data = roads_existing,
@@ -153,8 +212,12 @@ p_rsdp <- ggplot() +
             color = "gray",
             size = .15) +
   geom_path(data = roads_improved_tidy,
+            aes(x = long, y = lat, group = group),
+            color = "gray70",
+            size = .4) +
+  geom_path(data = roads_improved_tidy,
             aes(x = long, y = lat, group = group, color = completion_year),
-            size = .15) +
+            size = .3) +
   theme_void() +
   scale_colour_gradientn(colours = rev(brewer.pal(n = 11, name = "Spectral"))) +
   labs(color = "Road\nImprovement\nYear",
@@ -168,23 +231,16 @@ p_rsdp <- ggplot() +
 
 # Append and Export ------------------------------------------------------------
 p_all <- ggarrange(p_dmsp,
-                   p_gc, 
+                   p_gc_urban, 
+                   p_gc_crop,
                    p_rsdp,
-                   ncol = 1) +
-  bgcolor("white") + 
-  border("white")
+                   ncol = 1) 
 
 ggsave(p_all, 
        filename = file.path(paper_figures,
                             "maps_NTL_GC_RSDP.png"),
-       height = 12,
+       height = 16,
        width = 8)
-
-
-
-
-
-
 
 
 

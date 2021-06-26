@@ -4,6 +4,10 @@
 # https://rpubs.com/wsundstrom/t_ivreg
 # http://eclr.humanities.manchester.ac.uk/index.php/IV_in_R
 
+NEAR_TARGETTED_LOCATION <- 5000
+RM_DISTANE_ADDIS <- 0 # (100km scale; so 1 = 100km)
+NEAR_ROAD <- 5000
+
 ROUND_NUM <- 1 # number of digits to round numbers
 
 DATASET_TYPE <- "kebele" 
@@ -29,9 +33,7 @@ prep_data <- function(DATASET_TYPE, rsdp_type){
   #CLUSTER_VAR <- "woreda_id"
   df$cluster_var <- df$woreda_id
   
-  NEAR_TARGETTED_LOCATION <- 5000
-  RM_DISTANE_ADDIS <- 0 # (100km scale; so 1 = 100km)
-  NEAR_ROAD <- 5000
+
   
   #### Dep Vars
   if(DATASET_TYPE %in% "dmspols_grid_ethiopia"){
@@ -113,115 +115,115 @@ prep_data <- function(DATASET_TYPE, rsdp_type){
                   near_mst_lc_regionXdistance_city_addisababa = near_mst_lc_region * distance_city_addisababa)
   
   # Summary Stats ----------------------------------------------------------------
-  df_neartc <- df %>%
-    mutate(N_units = 1) %>%
-    group_by(near_rsdp123) %>%
-    dplyr::summarise(N_units = sum(N_units))
-  
-  df_mean <- df %>%
-    group_by(near_rsdp123) %>%
-    dplyr::summarise_at(vars(c(dv_dmspols,
-                               dv_gcurban,
-                               dv_gccrop,
-                               dv_dmspols_1996,
-                               dv_gcurban_1996,
-                               dv_gccrop_1996)),
-                        mean, na.rm = T)
-  
-  df_sum_nonzero <- df %>%
-    mutate(dv_dmspols_1996_g0 = as.numeric(dv_dmspols_1996 > 0),
-           dv_gcurban_1996_g0 = as.numeric(dv_gcurban_1996 > 0),
-           dv_gccrop_1996_g0 = as.numeric(dv_gccrop_1996 > 0)) %>%
-    dplyr::group_by(near_rsdp123) %>%
-    dplyr::summarise_at(vars(c(dv_dmspols_1996_g0,
-                               dv_gcurban_1996_g0,
-                               dv_gccrop_1996_g0)),
-                        sum, na.rm = T)
-  
-  df_tc_coll <- df_mean %>%
-    left_join(df_sum_nonzero, by = "near_rsdp123") %>%
-    pivot_longer(cols = -c(near_rsdp123)) 
-  
-  df_tc_coll$type <- "mean_change"
-  df_tc_coll$type[grepl("_1996$", df_tc_coll$name)] <- "mean_1996"
-  df_tc_coll$type[grepl("_1996_g0$", df_tc_coll$name)] <- "g0_1996"
-  
-  df_tc_coll$name <- df_tc_coll$name %>% str_replace_all("_1996_g0", "") %>% str_replace_all("_1996", "")
-  
-  make_sum_stat <- function(dvname, df_tc_coll){
-    df_dv_i <- df_tc_coll[df_tc_coll$name %in% dvname,]
-    
-    paste(
-      df_dv_i$value[(df_dv_i$near_rsdp123 %in% T) & (df_dv_i$type %in% "mean_change")] %>% round(4),
-      df_dv_i$value[(df_dv_i$near_rsdp123 %in% F) & (df_dv_i$type %in% "mean_change")] %>% round(4),
-      
-      df_dv_i$value[(df_dv_i$near_rsdp123 %in% T) & (df_dv_i$type %in% "mean_1996")] %>% round(4),
-      df_dv_i$value[(df_dv_i$near_rsdp123 %in% F) & (df_dv_i$type %in% "mean_1996")] %>% round(4),
-      
-      df_dv_i$value[(df_dv_i$near_rsdp123 %in% T) & (df_dv_i$type %in% "g0_1996")] %>% round(3),
-      df_dv_i$value[(df_dv_i$near_rsdp123 %in% F) & (df_dv_i$type %in% "g0_1996")] %>% round(3),
-      sep = " & "
-    )
-    
-  }
-  
-  sink(file.path(paper_tables,
-                 paste0("iv_",rsdp_type,"_sumstat_",DATASET_TYPE,".tex")))
-  
-  cat("\\begin{tabular}{l | cc | cc | cc} ")
-  cat("\\hline ")
-  
-  cat("Variable & \\multicolumn{2}{c|}{Mean Change} & \\multicolumn{2}{c|}{Mean, 1996} & \\multicolumn{2}{c}{N Units $>0$, 1996} \\\\ ")
-  #cat("\\hline ")
-  cat(" & Treated & Control & Treated & Control & Treated & Control \\\\ ")
-  cat("\\hline ")
-  
-  cat("Avg. NTL & ")
-  cat(make_sum_stat("dv_dmspols", df_tc_coll))
-  cat("\\\\ ")
-  
-  cat("Prop. Urban & ")
-  cat(make_sum_stat("dv_gcurban", df_tc_coll))
-  cat("\\\\ ")
-  
-  cat("Prop. Cropland & ")
-  cat(make_sum_stat("dv_gccrop", df_tc_coll))
-  cat("\\\\ ")
-  cat("\\hline ")
-  cat("\\multicolumn{7}{l}{N Units = ",
-      nrow(df) %>% prettyNum(big.mark=",",scientific=FALSE),
-      "; N Treated = ", df_neartc$N_units[df_neartc$near_rsdp123 %in% 1] %>% prettyNum(big.mark=",",scientific=FALSE),
-      "; N Control = ", df_neartc$N_units[df_neartc$near_rsdp123 %in% 0] %>% prettyNum(big.mark=",",scientific=FALSE),
-      "} ", sep = "")
-  
-  cat("\\end{tabular} ")
-  
-  sink()
-  
-  # Grab Stats as Dataframe ---------------------------------------------------
-  summary_stats_df <- data.frame(n_original = df_NROW_ORIGINAL,
-                                 n = nrow(df),
-                                 n_treated = sum(df$near_rsdp123 %in% 1),
-                                 n_control = sum(df$near_rsdp123 %in% 0),
-                                 
-                                 near_mst_euc_1 = sum(df$near_mst_euc %in% 1),
-                                 near_mst_euc_0 = sum(df$near_mst_euc %in% 0),
-                                 
-                                 near_mst_euc_region_1 = sum(df$near_mst_euc_region %in% 1),
-                                 near_mst_euc_region_0 = sum(df$near_mst_euc_region %in% 0),
-                                 
-                                 near_mst_lc_1 = sum(df$near_mst_lc %in% 1),
-                                 near_mst_lc_0 = sum(df$near_mst_lc %in% 0),
-                                 
-                                 near_mst_lc_region_1 = sum(df$near_mst_lc_region %in% 1),
-                                 near_mst_lc_region_0 = sum(df$near_mst_lc_region %in% 0)) %>%
-    mutate(dataset = DATASET_TYPE,
-           rsdp = rsdp_type)
-  
-  saveRDS(summary_stats_df,
-          file.path(project_file_path, "Data", "Panel Data RSDP Impacts",
-                    "Data", DATASET_TYPE, "results_datasets", 
-                    paste0("iv_",rsdp_type,"_summary_stats.Rds")))
+  # df_neartc <- df %>%
+  #   mutate(N_units = 1) %>%
+  #   group_by(near_rsdp123) %>%
+  #   dplyr::summarise(N_units = sum(N_units))
+  # 
+  # df_mean <- df %>%
+  #   group_by(near_rsdp123) %>%
+  #   dplyr::summarise_at(vars(c(dv_dmspols,
+  #                              dv_gcurban,
+  #                              dv_gccrop,
+  #                              dv_dmspols_1996,
+  #                              dv_gcurban_1996,
+  #                              dv_gccrop_1996)),
+  #                       mean, na.rm = T)
+  # 
+  # df_sum_nonzero <- df %>%
+  #   mutate(dv_dmspols_1996_g0 = as.numeric(dv_dmspols_1996 > 0),
+  #          dv_gcurban_1996_g0 = as.numeric(dv_gcurban_1996 > 0),
+  #          dv_gccrop_1996_g0 = as.numeric(dv_gccrop_1996 > 0)) %>%
+  #   dplyr::group_by(near_rsdp123) %>%
+  #   dplyr::summarise_at(vars(c(dv_dmspols_1996_g0,
+  #                              dv_gcurban_1996_g0,
+  #                              dv_gccrop_1996_g0)),
+  #                       sum, na.rm = T)
+  # 
+  # df_tc_coll <- df_mean %>%
+  #   left_join(df_sum_nonzero, by = "near_rsdp123") %>%
+  #   pivot_longer(cols = -c(near_rsdp123)) 
+  # 
+  # df_tc_coll$type <- "mean_change"
+  # df_tc_coll$type[grepl("_1996$", df_tc_coll$name)] <- "mean_1996"
+  # df_tc_coll$type[grepl("_1996_g0$", df_tc_coll$name)] <- "g0_1996"
+  # 
+  # df_tc_coll$name <- df_tc_coll$name %>% str_replace_all("_1996_g0", "") %>% str_replace_all("_1996", "")
+  # 
+  # make_sum_stat <- function(dvname, df_tc_coll){
+  #   df_dv_i <- df_tc_coll[df_tc_coll$name %in% dvname,]
+  #   
+  #   paste(
+  #     df_dv_i$value[(df_dv_i$near_rsdp123 %in% T) & (df_dv_i$type %in% "mean_change")] %>% round(4),
+  #     df_dv_i$value[(df_dv_i$near_rsdp123 %in% F) & (df_dv_i$type %in% "mean_change")] %>% round(4),
+  #     
+  #     df_dv_i$value[(df_dv_i$near_rsdp123 %in% T) & (df_dv_i$type %in% "mean_1996")] %>% round(4),
+  #     df_dv_i$value[(df_dv_i$near_rsdp123 %in% F) & (df_dv_i$type %in% "mean_1996")] %>% round(4),
+  #     
+  #     df_dv_i$value[(df_dv_i$near_rsdp123 %in% T) & (df_dv_i$type %in% "g0_1996")] %>% round(3),
+  #     df_dv_i$value[(df_dv_i$near_rsdp123 %in% F) & (df_dv_i$type %in% "g0_1996")] %>% round(3),
+  #     sep = " & "
+  #   )
+  #   
+  # }
+  # 
+  # sink(file.path(paper_tables,
+  #                paste0("iv_",rsdp_type,"_sumstat_",DATASET_TYPE,".tex")))
+  # 
+  # cat("\\begin{tabular}{l | cc | cc | cc} ")
+  # cat("\\hline ")
+  # 
+  # cat("Variable & \\multicolumn{2}{c|}{Mean Change} & \\multicolumn{2}{c|}{Mean, 1996} & \\multicolumn{2}{c}{N Units $>0$, 1996} \\\\ ")
+  # #cat("\\hline ")
+  # cat(" & Treated & Control & Treated & Control & Treated & Control \\\\ ")
+  # cat("\\hline ")
+  # 
+  # cat("Avg. NTL & ")
+  # cat(make_sum_stat("dv_dmspols", df_tc_coll))
+  # cat("\\\\ ")
+  # 
+  # cat("Prop. Urban & ")
+  # cat(make_sum_stat("dv_gcurban", df_tc_coll))
+  # cat("\\\\ ")
+  # 
+  # cat("Prop. Cropland & ")
+  # cat(make_sum_stat("dv_gccrop", df_tc_coll))
+  # cat("\\\\ ")
+  # cat("\\hline ")
+  # cat("\\multicolumn{7}{l}{N Units = ",
+  #     nrow(df) %>% prettyNum(big.mark=",",scientific=FALSE),
+  #     "; N Treated = ", df_neartc$N_units[df_neartc$near_rsdp123 %in% 1] %>% prettyNum(big.mark=",",scientific=FALSE),
+  #     "; N Control = ", df_neartc$N_units[df_neartc$near_rsdp123 %in% 0] %>% prettyNum(big.mark=",",scientific=FALSE),
+  #     "} ", sep = "")
+  # 
+  # cat("\\end{tabular} ")
+  # 
+  # sink()
+  # 
+  # # Grab Stats as Dataframe ---------------------------------------------------
+  # summary_stats_df <- data.frame(n_original = df_NROW_ORIGINAL,
+  #                                n = nrow(df),
+  #                                n_treated = sum(df$near_rsdp123 %in% 1),
+  #                                n_control = sum(df$near_rsdp123 %in% 0),
+  #                                
+  #                                near_mst_euc_1 = sum(df$near_mst_euc %in% 1),
+  #                                near_mst_euc_0 = sum(df$near_mst_euc %in% 0),
+  #                                
+  #                                near_mst_euc_region_1 = sum(df$near_mst_euc_region %in% 1),
+  #                                near_mst_euc_region_0 = sum(df$near_mst_euc_region %in% 0),
+  #                                
+  #                                near_mst_lc_1 = sum(df$near_mst_lc %in% 1),
+  #                                near_mst_lc_0 = sum(df$near_mst_lc %in% 0),
+  #                                
+  #                                near_mst_lc_region_1 = sum(df$near_mst_lc_region %in% 1),
+  #                                near_mst_lc_region_0 = sum(df$near_mst_lc_region %in% 0)) %>%
+  #   mutate(dataset = DATASET_TYPE,
+  #          rsdp = rsdp_type)
+  # 
+  # saveRDS(summary_stats_df,
+  #         file.path(project_file_path, "Data", "Panel Data RSDP Impacts",
+  #                   "Data", DATASET_TYPE, "results_datasets", 
+  #                   paste0("iv_",rsdp_type,"_summary_stats.Rds")))
   # ---
   return(df)
 }

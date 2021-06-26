@@ -24,34 +24,40 @@ if_zero_return <- function(x,
   return(x)
 }
 
-# Sum Stats --------------------------------------------------------------------
-data_kebele_full   <- readRDS(file.path(panel_rsdp_imp_data_file_path, "kebele",                "merged_datasets", "panel_data_clean.Rds"))
-data_grid_near_rd  <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_nearroad", "merged_datasets", "panel_data_clean.Rds"))
-data_grid_full     <- readRDS(file.path(panel_rsdp_imp_data_file_path, "dmspols_grid_ethiopia", "merged_datasets", "panel_data_clean.Rds"))
-
-data_kebele_near_rd <- data_kebele_full[!is.na(data_kebele_full$years_since_improvedroad),]
-
 # Function for Sum Stats -------------------------------------------------------
-make_sum_stats <- function(data, 
-                           variables,
+make_sum_stats <- function(var,
+                           data_full,
+                           data_near,
+                           data_far,
+                           fun,
+                           dataset_type,
                            ROUND_NUM_NTL = 2,
                            ROUND_NUM_URBAN = 2){
+  # Summary statistics of variable
+  # ARGS
+  # -- data: Dataset
+  # -- variables: variable to summarize
+  # -- fun: "mean" or "N_g0" (N_g0 = number greater than zero)
+  # -- tex_endline: If should have \\ at the end, not &
+  # -- dataset_type: grid or kebele
   
-  for(var in variables){
+  for(tex_position in c("left", "middle", "right")){
     
-    if(var %in% "dmspols_harmon")          var_name <- "NTL"
-    if(var %in% "dmspols_zhang")          var_name <- "NTL"
-    if(var %in% "dmspols_zhang_base0na")  var_name <- "NTL ($>$ 0 at Baseline)"
-    if(var %in% "dmspols_zhang_2")        var_name <- "NTL $\\geq$ 2"
-    if(var %in% "dmspols_zhang_6")        var_name <- "NTL $\\geq$ 6"
-    if(var %in% "dmspols_zhang_sum2")     var_name <- "NTL $\\geq$ 2"
-    if(var %in% "dmspols_zhang_sum6")     var_name <- "NTL $\\geq$ 6"
-    if(var %in% "globcover_urban")        var_name <- "Urban"
-    if(var %in% "globcover_cropland")     var_name <- "Cropland"
-    if(var %in% "globcover_urban_sum")    var_name <- "Urban"
-    if(var %in% "globcover_cropland_sum") var_name <- "Cropland"
-    if(var %in% "ndvi")                   var_name <- "NDVI"
-    if(var %in% "ndvi_cropland")          var_name <- "NDVI in Cropland"
+    if(tex_position %in% "left")   data <- data_full
+    if(tex_position %in% "middle") data <- data_near
+    if(tex_position %in% "right")  data <- data_far
+    
+    if(grepl("dmsp", var) & fun %in% "mean" & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "NTL"
+    if(grepl("dmsp", var) & fun %in% "mean" & dataset_type %in% "kebele") var_name <- "Avg. NTL"
+    if(grepl("dmsp", var) & fun %in% "N_g0") var_name <- "NTL"
+    
+    if(grepl("urban", var) & (fun %in% "mean") & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "Urban Pixel"
+    if(grepl("crop", var)  & (fun %in% "mean") & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "Cropland Pixel"
+    if(grepl("urban", var) & (fun %in% "mean") & dataset_type %in% "kebele") var_name <- "Number Urban Pixels"
+    if(grepl("crop", var)  & (fun %in% "mean") & dataset_type %in% "kebele") var_name <- "Number Cropland Pixels"
+    
+    if(grepl("urban", var) & (fun %in% "N_g0")) var_name <- "Urban"
+    if(grepl("crop", var)  & (fun %in% "N_g0")) var_name <- "Cropland"
     
     if(var %in% c("globcover_urban", "globcover_cropland")){
       ROUND_NUM <- ROUND_NUM_URBAN
@@ -59,80 +65,91 @@ make_sum_stats <- function(data,
       ROUND_NUM <- ROUND_NUM_NTL
     }
     
-    mean_1996 <- data[[var]][data$year %in% 1996] %>% mean(na.rm = T) %>% round(ROUND_NUM)
-    mean_2013 <- data[[var]][data$year %in% 2013] %>% mean(na.rm = T) %>% round(ROUND_NUM)
-    mean_2016 <- data[[var]][data$year %in% 2016] %>% mean(na.rm = T) %>% round(ROUND_NUM) %>% if_na_return()
+    if(fun %in% "mean"){
+      value_1996 <- data[[var]][data$year %in% 1996] %>% mean(na.rm = T) %>% round(ROUND_NUM)
+      value_2013 <- data[[var]][data$year %in% 2013] %>% mean(na.rm = T) %>% round(ROUND_NUM)
+      value_2016 <- data[[var]][data$year %in% 2016] %>% mean(na.rm = T) %>% round(ROUND_NUM) %>% if_na_return()
+    }
     
-    sumNon_1996 <- sum(data[[var]][data$year %in% 1996] > 0, na.rm = T) 
-    sumNon_2013 <- sum(data[[var]][data$year %in% 2013] > 0, na.rm = T) 
-    sumNon_2016 <- sum(data[[var]][data$year %in% 2016] > 0, na.rm = T) %>% if_zero_return()
+    if(fun %in% "N_g0"){
+      value_1996 <- sum(data[[var]][data$year %in% 1996] > 0, na.rm = T) 
+      value_2013 <- sum(data[[var]][data$year %in% 2013] > 0, na.rm = T) 
+      value_2016 <- sum(data[[var]][data$year %in% 2016] > 0, na.rm = T) %>% if_zero_return()
+    }
     
-    cat(var_name, " & ",
-        mean_1996 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
-        mean_2013 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
-        mean_2016 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
-        sumNon_1996 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
-        sumNon_2013 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
-        sumNon_2016 %>% prettyNum(big.mark=",",scientific=FALSE), " \\\\ \n")
+    if(tex_position %in% c("right"))          tex_end_txt <- " \\\\ \n"
+    if(tex_position %in% c("left", "middle")) tex_end_txt <- " & "
+    
+    if(tex_position %in% "left"){
+      cat(var_name, " & ",
+          value_1996 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
+          value_2013 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
+          value_2016 %>% prettyNum(big.mark=",",scientific=FALSE), tex_end_txt)
+    } else{
+      cat(value_1996 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
+          value_2013 %>% prettyNum(big.mark=",",scientific=FALSE), " & ",
+          value_2016 %>% prettyNum(big.mark=",",scientific=FALSE), tex_end_txt)
+    }
     
   }
 }
 
 # Make Table -------------------------------------------------------------------
-sink(file.path(paper_tables,
-               "depvar_sumstats.tex"))
+for(dataset_type in c("kebele", "dmspols_grid_ethiopia")){
+  
+  data_full <- readRDS(file.path(panel_rsdp_imp_data_file_path, dataset_type, "merged_datasets", "panel_data_clean.Rds"))
+  
+  data_near_rd <- data_full[data_full$distance_anyimproved_ever <= 5000,]
+  data_far_rd  <- data_full[data_full$distance_anyimproved_ever > 5000,]
+  
+  if(dataset_type %in% "kebele"){
+    data_name <- "Kebeles"
+    vars_to_summarise <- c("dmspols_harmon",
+                           "globcover_urban_sum",
+                           "globcover_cropland_sum")
 
-cat("\\begin{tabular}{l | ccc | ccc } \n")
-cat("\\hline \n")
-cat("Variable & \\multicolumn{3}{c|}{Average} & \\multicolumn{3}{c}{Number of Units with Value $>$ 0} \\\\ \n")
-cat("         & 1996 & 2013 & 2016           &  1996 & 2013 & 2016                  \\\\ \n")
-cat("\\hline \n")
-
-## 1x1km Grid - Full
-N <- data_grid_full %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{4}{l}{{\\bf 1x1km Grid}} & ")
-cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-make_sum_stats(data_grid_full, 
-               variables = c("dmspols_harmon", 
-                             "globcover_urban",
-                             "globcover_cropland"),
-               ROUND_NUM_URBAN = 4)
-
-## 1x1km Grid - Near Road
-cat("\\hline \n")
-N <- data_grid_near_rd %>% dplyr::filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{5}{l}{{\\bf 1x1km Grid - Near Improved Road}} & ")
-cat(paste0("\\multicolumn{2}{r}{N Units: ", N, "} \\\\ \n"))
-make_sum_stats(data_grid_near_rd,
-               variables = c("dmspols_harmon",
-                             "globcover_urban",
-                             "globcover_cropland"),
-               ROUND_NUM_URBAN = 4)
-
-## Kebele - Full
-cat("\\hline \n")
-N <- data_kebele_full %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{4}{l}{{\\bf Kebele}} & ")
-cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-make_sum_stats(data_kebele_full, 
-               variables = c("dmspols_harmon", 
-                             "globcover_urban_sum",
-                             "globcover_cropland_sum"))
-
-## Kebele - Full
-cat("\\hline \n")
-N <- data_kebele_near_rd %>% filter(year %in% 1996) %>% nrow() %>% prettyNum(big.mark=",",scientific=FALSE)
-cat("\\multicolumn{4}{l}{{\\bf Kebele - Near Improved Road}} & ")
-cat(paste0("\\multicolumn{3}{r}{N Units: ", N, "} \\\\ \n"))
-make_sum_stats(data_kebele_near_rd, 
-               variables = c("dmspols_harmon", 
-                             "globcover_urban_sum",
-                             "globcover_cropland_sum"))
-
-
-cat("\\hline \n")
-cat("\\end{tabular} \n")
-
-sink()
-
+  } else{
+    data_name <- "1x1km Grids"
+    vars_to_summarise <- c("dmspols_harmon",
+                           "globcover_urban",
+                           "globcover_cropland")
+  }
+  
+  sink(file.path(paper_tables,
+                 paste0("depvar_sumstats_",dataset_type,".tex")))
+  
+  cat("\\begin{tabular}{l ccc | ccc | ccc} \n")
+  cat("\\hline \n")
+  cat(" Variable 
+    & \\multicolumn{3}{c|}{All} 
+    & \\multicolumn{3}{c|}{Within 5km of Improved Road}
+    & \\multicolumn{3}{c}{$>$5km of Improved Road} \\\\ \n")
+  cat(" \\hline ")
+  cat(" & 1996 & 2013 & 2016        
+      & 1996 & 2013 & 2016   
+      & 1996 & 2013 & 2016 \\\\ \n")
+  cat(" \\hline \n")
+  
+  cat("\\multicolumn{3}{l}{\\textbf{\\textit{Average across ",data_name,"}}} & & & & & & & \\\\ \n ")
+  for(var in vars_to_summarise){
+    make_sum_stats(var, data_full, data_near_rd, data_far_rd, "mean", dataset_type, ROUND_NUM_URBAN = 4)
+  }
+  
+  cat("\\multicolumn{3}{l}{\\textbf{\\textit{N ",data_name," with Positive Value}}} & & & & & & & \\\\ \n ")
+  for(var in vars_to_summarise){
+    make_sum_stats(var, data_full, data_near_rd, data_far_rd, "N_g0", dataset_type, ROUND_NUM_URBAN = 4)
+  }
+  
+  cat(" \\hline ")
+  cat(" N & ", 
+      nrow(data_full[data_full$year %in% 1996,]) %>% prettyNum(big.mark=",",scientific=FALSE), " & & & ",
+      nrow(data_near_rd[data_near_rd$year %in% 1996,]) %>% prettyNum(big.mark=",",scientific=FALSE), " & & & ",
+      nrow(data_far_rd[data_far_rd$year %in% 1996,]) %>% prettyNum(big.mark=",",scientific=FALSE), " & & \\\\ \n")
+  
+  cat("\\hline \n")
+  cat("\\end{tabular} ")
+  
+  sink()
+  
+}
 
