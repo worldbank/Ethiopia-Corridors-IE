@@ -28,11 +28,14 @@ for(dataset in c("kebele", "dmspols_grid_nearroad")){
   # Load Data --------------------------------------------------------------------
   data <- readRDS(file.path(panel_rsdp_imp_data_file_path, dataset, "merged_datasets", "panel_data_clean.Rds"))
   
+  data$ntl_group <- data$dmspols_harmon_1996_bin4 %>% as.character()
+  
   for(dep_var in dep_var_vec){
     for(indep_var in c("years_since_improvedroad", "years_since_improvedroad_50aboveafter", "years_since_improvedroad_below50after")){
       for(controls in c("", "+temp_avg+precipitation")){
         for(addis_distance in c("All", "Far")){
-          for(ntl_group in c("All", "1", "2")){
+          for(ntl_group in c("All", "1", "2", "3", "4")){
+          #for(ntl_group in c("All", "1", "2")){
             
             ## Check if exists  
             filename <- paste0("twowayFE_", dataset, "-", dep_var, "-", indep_var, "-", controls, "-", addis_distance, "-", ntl_group, ".Rds")
@@ -51,6 +54,7 @@ for(dataset in c("kebele", "dmspols_grid_nearroad")){
               if(ntl_group %in% "1")        data_temp <- data_temp[data_temp$ntl_group %in% "1",]
               if(ntl_group %in% "2")        data_temp <- data_temp[data_temp$ntl_group %in% "2",]
               if(ntl_group %in% "3")        data_temp <- data_temp[data_temp$ntl_group %in% "3",]
+              if(ntl_group %in% "4")        data_temp <- data_temp[data_temp$ntl_group %in% "4",]
               
               ### Run model
               results_df_temp <- tryCatch({     

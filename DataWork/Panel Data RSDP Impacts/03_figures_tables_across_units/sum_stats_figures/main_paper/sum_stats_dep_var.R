@@ -47,14 +47,14 @@ make_sum_stats <- function(var,
     if(tex_position %in% "middle") data <- data_near
     if(tex_position %in% "right")  data <- data_far
     
-    if(grepl("dmsp", var) & fun %in% "mean" & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "NTL"
+    if(grepl("dmsp", var) & fun %in% "mean" & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "Avg. NTL"
     if(grepl("dmsp", var) & fun %in% "mean" & dataset_type %in% "kebele") var_name <- "Avg. NTL"
     if(grepl("dmsp", var) & fun %in% "N_g0") var_name <- "NTL"
     
-    if(grepl("urban", var) & (fun %in% "mean") & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "Urban Pixel"
-    if(grepl("crop", var)  & (fun %in% "mean") & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "Cropland Pixel"
-    if(grepl("urban", var) & (fun %in% "mean") & dataset_type %in% "kebele") var_name <- "Number Urban Pixels"
-    if(grepl("crop", var)  & (fun %in% "mean") & dataset_type %in% "kebele") var_name <- "Number Cropland Pixels"
+    if(grepl("urban", var) & (fun %in% "mean") & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "Prop. Urban"
+    if(grepl("crop", var)  & (fun %in% "mean") & dataset_type %in% "dmspols_grid_ethiopia") var_name <- "Prop. Cropland"
+    if(grepl("urban", var) & (fun %in% "mean") & dataset_type %in% "kebele") var_name <- "Avg. Urban Area (km$^2$)"
+    if(grepl("crop", var)  & (fun %in% "mean") & dataset_type %in% "kebele") var_name <- "Avg. Cropland Area (km$^2$)"
     
     if(grepl("urban", var) & (fun %in% "N_g0")) var_name <- "Urban"
     if(grepl("crop", var)  & (fun %in% "N_g0")) var_name <- "Cropland"
@@ -75,6 +75,12 @@ make_sum_stats <- function(var,
       value_1996 <- sum(data[[var]][data$year %in% 1996] > 0, na.rm = T) 
       value_2013 <- sum(data[[var]][data$year %in% 2013] > 0, na.rm = T) 
       value_2016 <- sum(data[[var]][data$year %in% 2016] > 0, na.rm = T) %>% if_zero_return()
+    }
+    
+    if(dataset_type %in% "kebele" & grepl("globcover", var)){
+      value_1996 <- (300*value_1996) / 1000
+      value_2013 <- (300*value_2013) / 1000
+      value_2016 <- (300*value_2016) / 1000
     }
     
     if(tex_position %in% c("right"))          tex_end_txt <- " \\\\ \n"
@@ -122,8 +128,12 @@ for(dataset_type in c("kebele", "dmspols_grid_ethiopia")){
   cat("\\hline \n")
   cat(" Variable 
     & \\multicolumn{3}{c|}{All} 
-    & \\multicolumn{3}{c|}{Within 5km of Improved Road}
-    & \\multicolumn{3}{c}{$>$5km of Improved Road} \\\\ \n")
+    & \\multicolumn{3}{c|}{Treated Areas}
+    & \\multicolumn{3}{c}{Control Areas} \\\\ \n")
+  cat("  
+    & \\multicolumn{3}{c|}{ } 
+    & \\multicolumn{3}{c|}{(Within 5km of Improved Road)}
+    & \\multicolumn{3}{c}{($>$5km of Improved Road)} \\\\ \n")
   cat(" \\hline ")
   cat(" & 1996 & 2013 & 2016        
       & 1996 & 2013 & 2016   

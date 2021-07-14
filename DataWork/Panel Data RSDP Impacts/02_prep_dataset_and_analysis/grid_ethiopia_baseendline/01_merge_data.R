@@ -2,7 +2,7 @@
 
 #### Parameters
 # Vector of all baseline and endline years that would later use
-YEARS_USE <- c(1996, 2009, 2013, 2016)
+YEARS_USE <- c(1992, 1996, 2009, 2013, 2016)
 
 # Load Data / Create Dataset Lists -----------------------------------------------
 

@@ -11,6 +11,20 @@ data <- readRDS(file.path(panel_rsdp_imp_data_file_path,
 
 # Prep Data --------------------------------------------------------------------
 data <- data %>%
+  # mutate(ntl_group = case_when(
+  #   ntl_group %in% "All" ~ "All Units",
+  #   ntl_group %in% "1" ~ "Zero NTL at Baseline",
+  #   ntl_group %in% "2" ~ "Low NTL at Baseline",
+  #   ntl_group %in% "3" ~ "Medium NTL at Baseline",
+  #   ntl_group %in% "4" ~ "High NTL at Baseline"
+  # )) %>%
+  # mutate(ntl_group = ntl_group %>%
+  #          factor(levels = c("All Units",
+  #                            "Zero NTL at Baseline",
+  #                            "Low NTL at Baseline",
+  #                            "Medium NTL at Baseline",
+  #                            "High NTL at Baseline"))) %>%
+  
   dplyr::filter(indep_var %>% str_detect("years_since_")) %>%
   dplyr::filter(controls %in% "+temp_avg+precipitation") %>%
   
@@ -57,12 +71,15 @@ make_1_figure <- function(ntl_group_i,
   
   title <- ""
   
-  #if(addis_distance_i %in% "Far") title <- paste0(title, ", Areas >100km Addis Ababa")
+  #if(ntl_group_i %in% "All") title <- paste0(title, "All Units")
+  #if(ntl_group_i %in% "1") title <- paste0(title, "Below Median Baseline Nighttime Lights")
+  #if(ntl_group_i %in% "2") title <- paste0(title, "Above Median Baseline Nighttime Lights")
+  
   if(ntl_group_i %in% "All") title <- paste0(title, "All Units")
-  # if(ntl_group_i %in% "1") title <- paste0(title, "Baseline NTL Below Median")
-  # if(ntl_group_i %in% "2") title <- paste0(title, "Baseline NTL Above Median")
-  if(ntl_group_i %in% "1") title <- paste0(title, "Below Median Baseline Nighttime Lights")
-  if(ntl_group_i %in% "2") title <- paste0(title, "Above Median Baseline Nighttime Lights")
+  if(ntl_group_i %in% "1") title <- paste0(title, "Units with Zero NTL at Baseline")
+  if(ntl_group_i %in% "2") title <- paste0(title, "Units with Low NTL at Baseline")
+  if(ntl_group_i %in% "3") title <- paste0(title, "Units with Medium NTL at Baseline")
+  if(ntl_group_i %in% "4") title <- paste0(title, "Units with High NTL at Baseline")
   
   p <- data %>%
     filter(dataset %in% all_of(dataset_i),
@@ -82,7 +99,8 @@ make_1_figure <- function(ntl_group_i,
     scale_color_manual(values = c("dodgerblue1", "darkorange", "black"),
                        guide = guide_legend(reverse = TRUE)) +
     theme_minimal() +
-    theme(plot.title = element_text(hjust = 0.5, face = "bold", size=10)) +
+    theme(plot.title = element_text(hjust = 0.5, face = "bold", size=10),
+          axis.title.x = element_text(size = 10)) +
     facet_wrap(~dep_var,
                scales = "free_y",
                nrow = 1)
@@ -92,7 +110,7 @@ make_figures_by_base_ntl <- function(dataset_i,
                                      addis_distance_i,
                                      data){
   
-  p_all <- lapply(c("All", "1", "2"),
+  p_all <- lapply(c("All", "1", "2", "3", "4"), # c("All", "1", "2"),
                   make_1_figure,
                   dataset_i,
                   addis_distance_i,
@@ -101,33 +119,34 @@ make_figures_by_base_ntl <- function(dataset_i,
   p_arrange <- ggarrange(p_all[[1]],
                          p_all[[2]],
                          p_all[[3]],
-                         nrow = 3,
+                         p_all[[4]],
+                         p_all[[5]],
+                         nrow = 5, # 3
                          common.legend = T,
                          legend = "bottom")
   
   return(p_arrange)
 }
 
+HEIGHT = 11
+WIDTH = 9
 addis_dist <- "All"
 for(addis_dist in c("All", "Far")){ # "All", "Far"
   
   p <- make_figures_by_base_ntl("kebele", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_kebele_",addis_dist,".png")),
-         height = 7, width = 8.5)
+         height = HEIGHT, width = WIDTH)
   rm(p)
   
   p <- make_figures_by_base_ntl("dmspols_grid_nearroad", addis_dist, data)
   ggsave(p,
          filename = file.path(paper_figures, paste0("eventstudy_1kmgrid_",addis_dist,".png")),
-         height = 6.5, width = 8.5)
+         height = HEIGHT, width = WIDTH)
   rm(p)
   
-
+  
 }
-
-
-
 
 
 

@@ -134,7 +134,7 @@ roads_2016@data <- roads_2016@data %>%
 roads_2016 <- roads_2016 %>% spTransform("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0")
 
 # Export -----------------------------------------------------------------------
-saveRDS(roads_2016, file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.Rds"))
+saveRDS(roads_2016, file.path(project_file_path, "Data", "RSDP Roads", "FinalData", "RoadNetworkPanelData_1996_2016.Rds"))
 
 roads_2016_sf <- st_as_sf(roads_2016)
 st_write(roads_2016_sf, file.path(project_file_path, "Data", "FinalData", "roads", "RoadNetworkPanelData_1996_2016.geojson"), delete_dsn=T)

@@ -20,7 +20,7 @@
 # --"clusters_of_ntl": Urban Clusters from NTL
 # --"clusters_of_ntlall": Urban Clusters from NTL
 
-DATASET_TYPE <- "dmspols_grid_ethiopia"
+DATASET_TYPE <- "kebele"
 
 # Some scripts check whether DATASET_TYPE is a grid or polygon (eg, woreda) level.
 # Inidates whether grid level for if/else statements for script
@@ -49,7 +49,7 @@ DIST_THRESH <- 2
 CREATE_UNIT_LEVEL_DATASET <- F
 
 EXTRACT_DATA <- T
-OVERWRITE_EXTRACTED_DATA <- F # Checks if data already extracted. If T, re-extracts
+OVERWRITE_EXTRACTED_DATA <- T # Checks if data already extracted. If T, re-extracts
 # data. If F, skips extracting data
 
 # RUN SCRIPTS ==================================================================

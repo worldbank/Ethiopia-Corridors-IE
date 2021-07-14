@@ -4,9 +4,44 @@
 # 1km of the road to prevent against capturing affects of just capturing the roads.
 
 # Load Data --------------------------------------------------------------------
+#### Kebeles
+kebele_no_som <- readOGR(file.path(project_file_path, "Data", "Kebeles", "RawData", "0cfabb08-2469-4e3a-8770-6aa5425bc49d2020328-1-lp203n.6k02l.shp"))
+kebele_no_som <- spTransform(kebele, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+kebele_no_som@data <- kebele_no_som@data %>%
+  dplyr::select(R_NAME,
+                Z_NAME,
+                W_NAME,
+                RK_NAME,
+                R_CODE,
+                Z_CODE,
+                W_CODE,
+                RK_CODE)
+
 #### Woredas
-kebele <- readOGR(file.path(project_file_path, "Data", "Kebeles", "RawData", "0cfabb08-2469-4e3a-8770-6aa5425bc49d2020328-1-lp203n.6k02l.shp"))
-kebele <- spTransform(kebele, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+woreda <- readRDS(file.path(project_file_path, "Data", "Woreda Population", "FinalData", "woreda.Rds"))
+woreda <- spTransform(woreda, CRS("+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"))
+
+woreda_som <- woreda[woreda$R_NAME %in% "SOMALI REGION",]
+
+woreda_som$RK_NAME <- woreda_som$W_NAME
+woreda_som$RK_CODE <- woreda_som$W_CODE
+
+woreda_som@data <- woreda_som@data %>%
+  dplyr::select(R_NAME,
+                Z_NAME,
+                W_NAME,
+                RK_NAME,
+                R_CODE,
+                Z_CODE,
+                W_CODE,
+                RK_CODE)
+
+#### Append
+# The kebele shapefile does not include polygons for the Somali region
+kebele <- rbind(kebele_no_som, woreda_som)
+
+#### Adjust
 kebele$cell_id <- 1:nrow(kebele)
 
 kebele_blank <- kebele
